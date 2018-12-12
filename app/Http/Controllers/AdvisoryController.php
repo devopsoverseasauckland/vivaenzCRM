@@ -12,6 +12,8 @@ use App\Country;
 use App\City;
 use App\Profession;
 use App\EnglishLevel;
+use App\Purpouse;
+use App\ContactMean;
 
 use DB;
 
@@ -137,7 +139,14 @@ class AdvisoryController extends Controller
         switch($estado)
         {
             case 1:
-                return view('advisory.editStep2')->with('advisory', $advisory);
+                $purpouses = Purpouse::pluck('descripcion', 'intencion_viaje_id');
+                $contactMeans = ContactMean::pluck('descripcion', 'metodo_contacto_id');
+
+                return view('advisory.editStep2', [
+                                                    'advisory'=>$advisory,
+                                                    'purpouses'=>$purpouses,
+                                                    'contactMeans'=>$contactMeans
+                                                  ]);
                 break;
             case 2:
                 return view('advisory.editStep3');
@@ -198,7 +207,15 @@ class AdvisoryController extends Controller
     public function editStep2($id)
     {
         $advisory = Advisory::find($id);
-        return view('advisory.editStep2')->with('advisory', $advisory);
+
+        $purpouses = Purpouse::pluck('descripcion', 'intencion_viaje_id');
+        $contactMeans = ContactMean::pluck('descripcion', 'metodo_contacto_id');
+        
+        return view('advisory.editStep2', [
+                                            'advisory'=>$advisory,
+                                            'purpouses'=>$purpouses,
+                                            'contactMeans'=>$contactMeans
+                                          ]);
     }
 
     /**

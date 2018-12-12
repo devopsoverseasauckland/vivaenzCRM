@@ -28,7 +28,7 @@
                     <div class="form-inline p-1">
                         {{Form::label('purpose', 'Intencion',  ['class' => 'w-50'])}}
                         <div class="col-sm-1">
-                            {{Form::text('purpose', $advisory->intencion_viaje_id, ['class' => 'form-control form-control-sm', 'placeholder' => '' ])}}
+                            {{Form::select('purpose', $purpouses, $advisory->intencion_viaje_id, ['class' => 'form-control form-control-sm w-auto', 'placeholder' => '-- Seleccione --' ])}}
                         </div>
                     </div>
 
@@ -42,7 +42,7 @@
                     <div class="form-inline p-1">
                         {{Form::label('contactMean', 'Metodo de contacto',  ['class' => 'w-50'])}}
                         <div class="col-sm-1">
-                            {{Form::text('contactMean', $advisory->metodo_contacto_id, ['class' => 'form-control form-control-sm', 'placeholder' => '' ])}}
+                            {{Form::select('contactMean', $contactMeans, $advisory->metodo_contacto_id, ['class' => 'form-control form-control-sm w-auto', 'placeholder' => '-- Seleccione --' ])}}
                         </div>
                     </div>
                     <div class="form-inline pl-1 pt-3">
