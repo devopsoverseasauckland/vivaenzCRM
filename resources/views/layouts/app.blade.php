@@ -5,68 +5,17 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+        <!-- -->
+        <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <!-- -->
         <title>{{ config('app.name', 'vivaenzCRM') }}</title>
-        <script>
-        
-            /*
-            * Sidebar
-            */
-
-            .sidebar {
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            z-index: 100; /* Behind the navbar */
-            padding: 48px 0 0; /* Height of navbar */
-            box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
-            }
-
-            .sidebar-sticky {
-            position: relative;
-            top: 0;
-            height: calc(100vh - 48px);
-            padding-top: .5rem;
-            overflow-x: hidden;
-            overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
-            }
-
-            @supports ((position: -webkit-sticky) or (position: sticky)) {
-            .sidebar-sticky {
-                position: -webkit-sticky;
-                position: sticky;
-            }
-            }
-
-            .sidebar .nav-link {
-            font-weight: 500;
-            color: #333;
-            }
-
-            .sidebar .nav-link .feather {
-            margin-right: 4px;
-            color: #999;
-            }
-
-            .sidebar .nav-link.active {
-            color: #007bff;
-            }
-
-            .sidebar .nav-link:hover .feather,
-            .sidebar .nav-link.active .feather {
-            color: inherit;
-            }
-
-            .sidebar-heading {
-            font-size: .75rem;
-            text-transform: uppercase;
-            }
-
-        </script>
     </head>
     <body>
 
-       <div class="row h-100" >
+        <div id="dvMain" class="row h-100" >
 
             <div class="col-2 h-100">
 
@@ -96,7 +45,14 @@
 
             </div>
 
-       </div>
+        </div>
+        <!--<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>-->
+        <script>
+            jQuery(document).ready(function() {
+                console.log('ready');
+                @yield('postJquery');
+            });
+        </script>
 
     </body>
 </html>

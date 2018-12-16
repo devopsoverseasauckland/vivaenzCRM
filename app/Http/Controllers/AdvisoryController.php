@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Traits\TAdvisoryInfoSent;
+
 use Illuminate\Http\Request;
+
 use App\Advisory;
 use App\Student;
-
 use App\DocumentType;
 use App\MaritalStatus;
 use App\Country;
@@ -14,11 +16,15 @@ use App\Profession;
 use App\EnglishLevel;
 use App\Purpouse;
 use App\ContactMean;
+use App\CourseType;
+use App\CourseTypeInstitution;
 
 use DB;
 
 class AdvisoryController extends Controller
 {
+    use TAdvisoryInfoSent;
+
     /**
      * Display a listing of the resource.
      *
@@ -142,11 +148,18 @@ class AdvisoryController extends Controller
                 $purpouses = Purpouse::pluck('descripcion', 'intencion_viaje_id');
                 $contactMeans = ContactMean::pluck('descripcion', 'metodo_contacto_id');
 
+                $courseTypes = CourseType::pluck('descripcion', 'tipo_curso_id');
+
+                $docsSent = $this->getDocuments($id);
+
                 return view('advisory.editStep2', [
                                                     'advisory'=>$advisory,
                                                     'purpouses'=>$purpouses,
-                                                    'contactMeans'=>$contactMeans
+                                                    'contactMeans'=>$contactMeans,
+                                                    'courseTypes'=>$courseTypes,
+                                                    'docsSent'=>$docsSent
                                                   ]);
+
                 break;
             case 2:
                 return view('advisory.editStep3');
@@ -211,10 +224,16 @@ class AdvisoryController extends Controller
         $purpouses = Purpouse::pluck('descripcion', 'intencion_viaje_id');
         $contactMeans = ContactMean::pluck('descripcion', 'metodo_contacto_id');
         
+        $courseTypes = CourseType::pluck('descripcion', 'tipo_curso_id');
+
+        $docsSent = $this->getDocuments($id);
+
         return view('advisory.editStep2', [
                                             'advisory'=>$advisory,
                                             'purpouses'=>$purpouses,
-                                            'contactMeans'=>$contactMeans
+                                            'contactMeans'=>$contactMeans,
+                                            'courseTypes'=>$courseTypes,
+                                            'docsSent'=>$docsSent
                                           ]);
     }
 
@@ -226,7 +245,20 @@ class AdvisoryController extends Controller
      */
     public function editStep3($id)
     {
-        return 3;
+        $advisory = Advisory::find($id);
+        $estado = $advisory->asesoria_estado_id;
+
+        if ($estado == 1)
+        {
+            $advisory->asesoria_estado_id = 2; 
+            $advisory->modificacion_fecha = date("Y-m-d H:i:s");
+            $advisory->modificacion_usuario_id = 0;
+            $advisory->save();
+        }
+
+        return view('advisory.editStep3', [
+            'advisory'=>$advisory
+          ]);
     }
 
     /**
@@ -335,7 +367,30 @@ class AdvisoryController extends Controller
         $advisory->modificacion_usuario_id = 0;
         $advisory->save();
 
-        return view('advisory.editStep2')->with('advisory', $advisory)->with('success', 'Advisory Updated');
+
+
+        $purpouses = Purpouse::pluck('descripcion', 'intencion_viaje_id');
+        $contactMeans = ContactMean::pluck('descripcion', 'metodo_contacto_id');
+
+        $courseTypes = CourseType::pluck('descripcion', 'tipo_curso_id');
+        //$institutions = CourseTypeInstitution::pluck('descripcion', 'intencion_viaje_id');
+                    
+        $infoSent = DB::select('SELECT a.asesoria_id, a.estudiante_id, a.asesoria_estado_id,
+                        CONCAT(e.primer_nombre, " ", e.primer_apellido) cliente,
+                        ae.nombre estado
+                        FROM asesoria a
+                        INNER JOIN estudiante e ON a.estudiante_id = e.estudiante_id
+                        INNER JOIN asesoria_estado ae ON a.asesoria_estado_id = ae.asesoria_estado_id');
+
+        $docsSent = $this->getDocuments($id);
+
+        return view('advisory.editStep2', [
+                                            'advisory'=>$advisory,
+                                            'purpouses'=>$purpouses,
+                                            'contactMeans'=>$contactMeans,
+                                            'courseTypes'=>$courseTypes,
+                                            'docsSent'=>$docsSent
+                                          ]);
     }
 
     /**
@@ -347,7 +402,7 @@ class AdvisoryController extends Controller
      */
     public function updateStep3(Request $request, $id)
     {
-        //
+        return 5;
     }
 
     /**

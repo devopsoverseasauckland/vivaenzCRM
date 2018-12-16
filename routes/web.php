@@ -50,3 +50,12 @@ Route::match(['put', 'match'], '/updateStep1/{id}', 'AdvisoryController@updateSt
 Route::match(['put', 'match'], '/updateStep2/{id}', 'AdvisoryController@updateStep2')->name('advisory.updateStep2');
 
 Route::match(['put', 'match'], '/updateStep3/{id}', 'AdvisoryController@updateStep3')->name('advisory.updateStep3');
+
+
+Route::get('combo/institutions', 'ComboController@institutions')->name('combo.institutions');
+
+
+Route::post('advisoryInfoSent/registerDocument', 'AdvisoryInfoSentController@registerDocument')->name('advisoryInfoSent.registerDocument');
+
+Route::post('advisoryInfoSent/deleteDocument', 'AdvisoryInfoSentController@deleteDocument')->name('advisoryInfoSent.deleteDocument');
+
