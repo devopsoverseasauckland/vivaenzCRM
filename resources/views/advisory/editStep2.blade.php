@@ -90,7 +90,7 @@
 
             <div class="form-row pl-3 pb-3">
 
-                <a class="btn btn-outline-secondary" href="/editStep1/{{$advisory->asesoria_id}}" role="button">Volver</a>
+                <a class="btn btn-outline-secondary" href="/editStep1/{{$advisory->asesoria_id}}" role="button">Estudiante</a>
 
                 {{ Form::hidden('advisoryId', $advisory->asesoria_id, array('id' => 'advisoryId')) }}
 
@@ -100,7 +100,7 @@
 
                 {{Form::submit('Inscripcion', [ 'id' => 'inscripcion', 'class' => 'btn btn-outline-success', 'onclick' => 'return false;'])}}
                 
-                <a class="btn btn-outline-secondary" href="/advisory" role="button">Cerrar</a>
+                <a class="btn btn-outline-secondary" href="/advisory" role="button">Seguimientos</a>
                             
             </div>
 

@@ -210,11 +210,11 @@
             <div class="form-row pl-3 pb-3">
 
                 {{Form::hidden('_method', 'PUT')}}
-                {{Form::submit('Actualizar', ['class' => 'btn btn-outline-success'])}}
+                {{Form::submit('Actualizar', ['class' => 'btn btn-outline-primary'])}}
                 
-                <a class="btn btn-outline-secondary" href="/editStep2/{{$advisory->asesoria_id}}}" role="button">Asesoria</a>
+                <a class="btn btn-outline-success" href="/editStep2/{{$advisory->asesoria_id}}}" role="button">Asesoria</a>
 
-                <a class="btn btn-outline-secondary" href="/advisory" role="button">Cerrar</a>
+                <a class="btn btn-outline-secondary" href="/advisory" role="button">Seguimientos</a>
                             
             </div>
            

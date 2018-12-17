@@ -18,6 +18,7 @@ use App\Purpouse;
 use App\ContactMean;
 use App\CourseType;
 use App\CourseTypeInstitution;
+use App\AdvisoryEnrollment;
 
 use DB;
 
@@ -123,8 +124,13 @@ class AdvisoryController extends Controller
         $advisory->modificacion_usuario_id = 0;
         $advisory->save();
 
-        //$advisory->asesoria_id;
-
+        
+        $advisoryEnroll = new AdvisoryEnrollment;
+        $advisoryEnroll->asesoria_id = $advisory->asesoria_id;
+        $advisoryEnroll->modificacion_fecha = date("Y-m-d H:i:s");
+        $advisoryEnroll->modificacion_usuario_id = 0;
+        $advisoryEnroll->save();
+        
 
         //return redirect('/editStep2')->with('success', 'Informacion estudiante actualizada exitosamente');
         //return view('/editStep2/' . $advisory->asesoria_id)->with('advisory', $advisory);
@@ -162,7 +168,30 @@ class AdvisoryController extends Controller
 
                 break;
             case 2:
-                return view('advisory.editStep3');
+                $advisory = Advisory::find($id);
+                $estado = $advisory->asesoria_estado_id;
+        
+                if ($estado == 1)
+                {
+                    $advisory->asesoria_estado_id = 2; 
+                    $advisory->modificacion_fecha = date("Y-m-d H:i:s");
+                    $advisory->modificacion_usuario_id = 0;
+                    $advisory->save();
+                }
+        
+                $advisoryEnroll = DB::table('asesoria_enrollment')->where('asesoria_enrollment.asesoria_id', '=', $id)->distinct()->first();
+        
+                //return $advisoryEnroll;
+        
+                $progs = $this->getDocuments($id)->pluck('descripcion', 'asesoria_enrollment_id');;
+        
+                //return $progs;
+        
+                return view('advisory.editStep3', [
+                    'advisoryEnroll'=>$advisoryEnroll,
+                    'progs'=>$progs
+                ]);
+
                 break;
             default:
                 return view('advisory.editStep1');
@@ -256,9 +285,18 @@ class AdvisoryController extends Controller
             $advisory->save();
         }
 
+        $advisoryEnroll = DB::table('asesoria_enrollment')->where('asesoria_enrollment.asesoria_id', '=', $id)->distinct()->first();
+
+        //return $advisoryEnroll;
+
+        $progs = $this->getDocuments($id)->pluck('descripcion', 'asesoria_enrollment_id');;
+
+        //return $progs;
+
         return view('advisory.editStep3', [
-            'advisory'=>$advisory
-          ]);
+            'advisoryEnroll'=>$advisoryEnroll,
+            'progs'=>$progs
+        ]);
     }
 
     /**
@@ -402,7 +440,29 @@ class AdvisoryController extends Controller
      */
     public function updateStep3(Request $request, $id)
     {
-        return 5;
+        // $this->validate($request, [
+        //     'prog1' => 'required'
+        // ]);
+
+        $advisoryEnroll = AdvisoryEnrollment::find($id);
+        $advisoryEnroll->opcion1_asesoria_informacion_enviada_id = $request->input('prog1'); 
+        $advisoryEnroll->opcion2_asesoria_informacion_enviada_id = $request->input('prog2'); 
+        $advisoryEnroll->opcion3_asesoria_informacion_enviada_id = $request->input('prog3'); 
+        $advisoryEnroll->fecha_llegada = date("Y-m-d", strtotime( $request->input('dateArrive'))); 
+        $advisoryEnroll->fecha_inicio_clases = date("Y-m-d", strtotime( $request->input('dateStartClass'))); 
+        $advisoryEnroll->fecha_fin_clases = date("Y-m-d", strtotime( $request->input('dateFinishClass'))); 
+        $advisoryEnroll->fecha_inicio_homestay = date("Y-m-d", strtotime( $request->input('dateHomestay'))); 
+        $advisoryEnroll->save();
+
+
+        $progs = $this->getDocuments($id)->pluck('descripcion', 'asesoria_enrollment_id');;
+
+        //return $progs;
+
+        return view('advisory.editStep3', [
+            'advisoryEnroll'=>$advisoryEnroll,
+            'progs'=>$progs
+        ]);
     }
 
     /**
