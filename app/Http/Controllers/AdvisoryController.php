@@ -146,11 +146,12 @@ class AdvisoryController extends Controller
     public function show($id)
     {
         $advisory = Advisory::find($id);
-        $estado = $advisory->asesoria_estado_id;
+        $state = $advisory->asesoria_estado_id;
 
-        switch($estado)
+        switch($state)
         {
             case 1:
+            default:
                 $purpouses = Purpouse::pluck('descripcion', 'intencion_viaje_id');
                 $contactMeans = ContactMean::pluck('descripcion', 'metodo_contacto_id');
 
@@ -169,9 +170,9 @@ class AdvisoryController extends Controller
                 break;
             case 2:
                 $advisory = Advisory::find($id);
-                $estado = $advisory->asesoria_estado_id;
+                $state = $advisory->asesoria_estado_id;
         
-                if ($estado == 1)
+                if ($state == 1)
                 {
                     $advisory->asesoria_estado_id = 2; 
                     $advisory->modificacion_fecha = date("Y-m-d H:i:s");
@@ -183,18 +184,15 @@ class AdvisoryController extends Controller
         
                 //return $advisoryEnroll;
         
-                $progs = $this->getDocuments($id)->pluck('descripcion', 'asesoria_enrollment_id');;
+                $progs = $this->getDocuments($id)->pluck('descripcion', 'asesoria_informacion_enviada_id');
         
                 //return $progs;
         
                 return view('advisory.editStep3', [
                     'advisoryEnroll'=>$advisoryEnroll,
-                    'progs'=>$progs
+                    'progs'=>$progs->all()
                 ]);
-
-                break;
-            default:
-                return view('advisory.editStep1');
+        
                 break;
         }
     }
@@ -275,9 +273,9 @@ class AdvisoryController extends Controller
     public function editStep3($id)
     {
         $advisory = Advisory::find($id);
-        $estado = $advisory->asesoria_estado_id;
+        $state = $advisory->asesoria_estado_id;
 
-        if ($estado == 1)
+        if ($state == 1)
         {
             $advisory->asesoria_estado_id = 2; 
             $advisory->modificacion_fecha = date("Y-m-d H:i:s");
@@ -289,13 +287,13 @@ class AdvisoryController extends Controller
 
         //return $advisoryEnroll;
 
-        $progs = $this->getDocuments($id)->pluck('descripcion', 'asesoria_enrollment_id');;
+        $progs = $this->getDocuments($id)->pluck('descripcion', 'asesoria_informacion_enviada_id');
 
         //return $progs;
 
         return view('advisory.editStep3', [
             'advisoryEnroll'=>$advisoryEnroll,
-            'progs'=>$progs
+            'progs'=>$progs->all()
         ]);
     }
 
@@ -454,8 +452,7 @@ class AdvisoryController extends Controller
         $advisoryEnroll->fecha_inicio_homestay = date("Y-m-d", strtotime( $request->input('dateHomestay'))); 
         $advisoryEnroll->save();
 
-
-        $progs = $this->getDocuments($id)->pluck('descripcion', 'asesoria_enrollment_id');;
+        $progs = $this->getDocuments($id)->pluck('descripcion', 'asesoria_informacion_enviada_id');
 
         //return $progs;
 
@@ -463,6 +460,20 @@ class AdvisoryController extends Controller
             'advisoryEnroll'=>$advisoryEnroll,
             'progs'=>$progs
         ]);
+    }
+
+    public function finalizar(Request $request, $id)
+    {
+        $advisory = Advisory::find($id);
+        $state = $advisory->asesoria_estado_id;
+        
+        if ($state == 2)
+        {
+            $advisory->asesoria_estado_id = 3; 
+            $advisory->save();    
+        }
+
+        return redirect('/advisory');
     }
 
     /**

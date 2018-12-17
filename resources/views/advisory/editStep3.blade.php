@@ -1,16 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
-    <!--<br/>
-    <br/>
-    <br/>-->
+    
     <h3 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted" >
         Nueva Asesoria
     </h3>
     <nav class="col-md- d-none d-md-block bg-light sidebar shadow pt-2">
         <div class="mx-auto sidebar-sticky">
             
-            {!! Form::open(['action' => ['AdvisoryController@updateStep3', $advisoryEnroll->asesoria_enrollment_id], 'method' => 'POST']) !!}
+            {!! Form::open(['id' => 'step3Form', 'action' => ['AdvisoryController@updateStep3', $advisoryEnroll->asesoria_enrollment_id], 'method' => 'POST']) !!}
 
             <img class="img-fluid sidebar-sticky"  src="{{ asset('img/FlowStep3.png') }}" > 
 
@@ -124,7 +122,7 @@
                 {{Form::hidden('_method', 'PUT')}}
                 {{Form::submit('Actualizar', ['class' => 'btn btn-outline-primary'])}}
 
-                {{Form::submit('Finalizar', [ 'id' => 'finalizar', 'class' => 'btn btn-outline-success', 'onclick' => 'return false;'])}}
+                {{Form::submit('Montar Visa', [ 'id' => 'finalizar', 'class' => 'btn btn-outline-success', 'onclick' => 'return false;'])}}
                 
                 <a class="btn btn-outline-secondary" href="/advisory" role="button">Seguimientos</a>
                             
@@ -139,5 +137,16 @@
     $("#dateArrive,#dateHomestay,#dateStartClass,#dateFinishClass").datepicker({
         changeMonth: true,
         changeYear: true
-      });
+    });
+
+    $('#finalizar').on("click", function(e) {
+        var prog1 = $('select#prog1 option:checked').val();
+        if(prog1 == '')
+        {
+            alert('Debe elegir un programa para seguir con el montaje de la visa');
+        } else 
+        {   
+            $('#step3Form').attr('action', '{{ route('advisory.finalizar', ['id'=>$advisoryEnroll->asesoria_id]) }}').submit();
+        }
+    });
 @endsection
