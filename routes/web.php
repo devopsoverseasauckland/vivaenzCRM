@@ -59,3 +59,8 @@ Route::post('advisoryInfoSent/registerDocument', 'AdvisoryInfoSentController@reg
 
 Route::post('advisoryInfoSent/deleteDocument', 'AdvisoryInfoSentController@deleteDocument')->name('advisoryInfoSent.deleteDocument');
 
+
+Route::post('authorization/login', 'AuthorizationController@login')->name('authorization.login');
+
+
+
