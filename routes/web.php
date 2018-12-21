@@ -59,8 +59,13 @@ Route::post('advisoryInfoSent/registerDocument', 'AdvisoryInfoSentController@reg
 
 Route::post('advisoryInfoSent/deleteDocument', 'AdvisoryInfoSentController@deleteDocument')->name('advisoryInfoSent.deleteDocument');
 
+Route::post('studentExperience/registerExperience', 'StudentExperienceController@registerExperience')->name('studentExperience.registerExperience');
 
-Route::post('authorization/login', 'AuthorizationController@login')->name('authorization.login');
+Route::post('studentExperience/deleteExperience', 'StudentExperienceController@deleteExperience')->name('studentExperience.deleteExperience');
 
+//Route::post('authorization/login', 'AuthorizationController@login')->name('authorization.login');
 
+Auth::routes();
 
+//Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/advisory', 'AdvisoryController@index');

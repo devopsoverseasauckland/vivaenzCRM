@@ -74,18 +74,36 @@
                 <div class="col">
                     <div class="form-inline p-1">
                         {{Form::label('dateArrive', 'Fecha Llegada',  ['class' => 'w-50'])}}
-                        <div class="col-sm-3">
-                            {{Form::text('dateArrive', $advisoryEnroll->fecha_llegada, ['class' => 'form-control form-control-sm', 'placeholder' => '' ])}}
+
+                        <div class="col-sm-6">
+                            
+                            <div class="input-group ">
+                                {{Form::text('dateArrive', $advisoryEnroll->fecha_llegada, ['class' => 'form-control form-control-sm', 'placeholder' => '' ])}}
+                                <div class="input-group-append">
+                                    <span class="input-group-text"><i class="fa fa-calendar" aria-hidden="true"></i></span>
+                                </div>
+                            </div>
+
                         </div>
+                        
                     </div>
                 </div>
 
                 <div class="col">
                     <div class="form-inline p-1">
                         {{Form::label('dateHomestay', 'Fecha Inicio Homestay',  ['class' => 'w-50'])}}
-                        <div class="col-sm-3">
-                            {{Form::text('dateHomestay', $advisoryEnroll->fecha_inicio_homestay, ['class' => 'form-control form-control-sm', 'placeholder' => '' ])}}
+                        
+                        <div class="col-sm-6">
+
+                            <div class="input-group ">
+                                {{Form::text('dateHomestay', $advisoryEnroll->fecha_inicio_homestay, ['class' => 'form-control form-control-sm', 'placeholder' => '' ])}}
+                                <div class="input-group-append">
+                                    <span class="input-group-text"><i class="fa fa-calendar" aria-hidden="true"></i></span>
+                                </div>
+                            </div>
+
                         </div>
+
                     </div>
                 </div>
 
@@ -96,18 +114,36 @@
                 <div class="col">
                     <div class="form-inline p-1">
                         {{Form::label('dateStartClass', 'Fecha Inicio Clases',  ['class' => 'w-50'])}}
-                        <div class="col-sm-3">
-                            {{Form::text('dateStartClass', $advisoryEnroll->fecha_inicio_clases, ['class' => 'form-control form-control-sm', 'placeholder' => '' ])}}
+
+                        <div class="col-sm-6">
+
+                            <div class="input-group ">
+                                {{Form::text('dateStartClass', $advisoryEnroll->fecha_inicio_clases, ['class' => 'form-control form-control-sm', 'placeholder' => '' ])}}
+                                <div class="input-group-append">
+                                    <span class="input-group-text"><i class="fa fa-calendar" aria-hidden="true"></i></span>
+                                </div>
+                            </div>
+                            
                         </div>
+                        
                     </div>
                 </div>
 
                 <div class="col">
                     <div class="form-inline p-1">
                         {{Form::label('dateFinishClass', 'Fecha Inicio Clases',  ['class' => 'w-50'])}}
-                        <div class="col-sm-3">
-                            {{Form::text('dateFinishClass', $advisoryEnroll->fecha_fin_clases, ['class' => 'form-control form-control-sm', 'placeholder' => '' ])}}
+
+                        <div class="col-sm-6">
+                            
+                            <div class="input-group ">
+                                {{Form::text('dateFinishClass', $advisoryEnroll->fecha_fin_clases, ['class' => 'form-control form-control-sm', 'placeholder' => '' ])}}
+                                <div class="input-group-append">
+                                    <span class="input-group-text"><i class="fa fa-calendar" aria-hidden="true"></i></span>
+                                </div>
+                            </div>
+
                         </div>
+
                     </div>
                 </div>
 

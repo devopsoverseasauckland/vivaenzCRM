@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Traits\TAdvisoryInfoSent;
+use App\Traits\TStudentExperience;
 
 use Illuminate\Http\Request;
 
@@ -25,6 +26,27 @@ use DB;
 class AdvisoryController extends Controller
 {
     use TAdvisoryInfoSent;
+    use TStudentExperience;
+
+/**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
+    // /**
+    //  * Show the application dashboard.
+    //  *
+    //  * @return \Illuminate\Http\Response
+    //  */
+    // public function index()
+    // {
+    //     return view('home');
+    // }
 
     /**
      * Display a listing of the resource.
@@ -51,7 +73,22 @@ class AdvisoryController extends Controller
      */
     public function create()
     {
-        return view('advisory.create');
+        $docType = DocumentType::pluck('nombre', 'tipo_documento_id');
+        $maritalStatus = MaritalStatus::pluck('nombre', 'estado_civil_id');
+        $countries = Country::pluck('nombre', 'pais_id');
+        $cities = City::pluck('nombre', 'ciudad_id');
+        $professions = Profession::pluck('nombre', 'profesion_id');
+        $englishLev = EnglishLevel::pluck('nombre', 'nivel_ingles_id');
+
+        //return view('advisory.editStep1')->with('advisory', $advisory)->with('student', $student);
+        return view('advisory.create', [
+                                            'docTypes'=>$docType, 
+                                            'maritalStatus'=>$maritalStatus,
+                                            'countries'=>$countries,
+                                            'cities'=>$cities,
+                                            'professions'=>$professions,
+                                            'englishLev'=>$englishLev
+                                       ]);
     }
 
     /**
@@ -82,7 +119,7 @@ class AdvisoryController extends Controller
             'bornCountry' => 'required',
             'bornCity' => 'required',
             'profesion' => 'required',
-            'profBack' => 'required',
+            //'profBack' => 'required',
             'maritalStatus' => 'required',
             'email' => 'required',
             'whatsapp' => 'required',
@@ -134,7 +171,25 @@ class AdvisoryController extends Controller
 
         //return redirect('/editStep2')->with('success', 'Informacion estudiante actualizada exitosamente');
         //return view('/editStep2/' . $advisory->asesoria_id)->with('advisory', $advisory);
-        return view('advisory.editStep2')->with('advisory', $advisory);
+        //return view('advisory.editStep2')->with('advisory', $advisory);
+
+        // $purpouses = Purpouse::pluck('descripcion', 'intencion_viaje_id');
+        // $contactMeans = ContactMean::pluck('descripcion', 'metodo_contacto_id');
+
+        // $courseTypes = CourseType::pluck('descripcion', 'tipo_curso_id');
+
+        // $docsSent = $this->getDocuments($advisory->asesoria_id);
+
+        // return view('advisory.editStep2', [
+        //                                     'advisory'=>$advisory,
+        //                                     'purpouses'=>$purpouses,
+        //                                     'contactMeans'=>$contactMeans,
+        //                                     'courseTypes'=>$courseTypes,
+        //                                     'docsSent'=>$docsSent
+        //                                     ]);
+
+        //return editStep1($advisory->asesoria_id);
+        return redirect('/editStep1/' . $advisory->asesoria_id);
     }
 
     /**
@@ -226,6 +281,8 @@ class AdvisoryController extends Controller
         $professions = Profession::pluck('nombre', 'profesion_id');
         $englishLev = EnglishLevel::pluck('nombre', 'nivel_ingles_id');
 
+        $experience = $this->getExperience($advisory->estudiante_id);
+
         //return view('advisory.editStep1')->with('advisory', $advisory)->with('student', $student);
         return view('advisory.editStep1', [
                                             'advisory'=>$advisory, 'student'=>$student, 
@@ -234,7 +291,8 @@ class AdvisoryController extends Controller
                                             'countries'=>$countries,
                                             'cities'=>$cities,
                                             'professions'=>$professions,
-                                            'englishLev'=>$englishLev
+                                            'englishLev'=>$englishLev,
+                                            'experience'=>$experience
                                           ]);
     }
 
@@ -336,7 +394,7 @@ class AdvisoryController extends Controller
         $student->numero_documento = $request->input('numDoc');
         //$student->pasaporte = $request->input('secondName');
         $student->estado_civil_id = $request->input('maritalStatus');
-        $student->fecha_nacimiento = date("Y-m-d H:i:s");//$request->input('bornDate');
+        $student->fecha_nacimiento = date("Y-m-d", strtotime( $request->input('bornDate')));
         $student->correo_electronico = $request->input('email');
         $student->celular_whatsapp = $request->input('whatsapp');
         $student->pais_id = $request->input('bornCountry');
@@ -393,10 +451,10 @@ class AdvisoryController extends Controller
         //$advisory->estudiante_id =  $student->estudiante_id;
         //$advisory->asesoria_estado_id = $request->input('maritalStatus'); 
         $advisory->intencion_viaje_id = $request->input('purpose'); 
-        $advisory->fecha_estimada_viaje = $request->input('dateAproxFlight'); 
+        $advisory->fecha_estimada_viaje = date("Y-m-d", strtotime( $request->input('dateAproxFlight')));
         $advisory->metodo_contacto_id = $request->input('contactMean'); 
         $advisory->asesoria_familia = $request->input('famAdvisory') == 'on' ? 1 : 0; 
-        //$advisory->observaciones =
+        $advisory->observaciones = $request->input('observ');
         //$advisory->creacion_fecha = date("Y-m-d H:i:s");
         //$advisory->creacion_usuario_id = 0;
         $advisory->modificacion_fecha = date("Y-m-d H:i:s");

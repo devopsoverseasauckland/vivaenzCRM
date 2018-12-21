@@ -1,9 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <!--<br/>
-    <br/>
-    <br/>-->
+    
     <h3 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted" >
         Nueva Asesoria
     </h3>
@@ -64,7 +62,7 @@
                     <div class="form-inline p-1">
                         {{Form::label('typeDoc', 'Tipo Documento',  ['class' => 'w-50'])}}
                         <div class="col-sm-3">
-                            {{Form::text('typeDoc', '', ['class' => 'form-control form-control-sm', 'placeholder' => '' ])}}
+                            {{Form::select('typeDoc', $docTypes, '', ['class' => 'form-control form-control-sm w-auto', 'placeholder' => '-- Seleccione --' ])}}
                         </div>
                     </div>
                 </div>
@@ -85,8 +83,15 @@
                 <div class="col">
                     <div class="form-inline p-1">
                         {{Form::label('bornDate', 'Fecha Nacimiento',  ['class' => 'w-50'])}}
-                        <div class="col-sm-3">
-                            {{Form::text('bornDate', '', ['class' => 'form-control form-control-sm', 'placeholder' => '' ])}}
+                        <div class="col-sm-5">
+                            
+                            <div class="input-group ">
+                                {{Form::text('bornDate', '', ['class' => 'form-control form-control-sm', 'placeholder' => '' ])}}
+                                <div class="input-group-append">
+                                    <span class="input-group-text"><i class="fa fa-calendar" aria-hidden="true"></i></span>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -95,7 +100,7 @@
                     <div class="form-inline p-1">
                         {{Form::label('maritalStatus', 'Estado Civil',  ['class' => 'w-50'])}}
                         <div class="col-sm-3">
-                            {{Form::text('maritalStatus', '', ['class' => 'form-control form-control-sm', 'placeholder' => '' ])}}
+                            {{Form::select('maritalStatus', $maritalStatus, '', ['class' => 'form-control form-control-sm w-auto', 'placeholder' => '-- Seleccione --' ])}}
                         </div>
                     </div>
                 </div>
@@ -108,7 +113,7 @@
                     <div class="form-inline p-1">
                         {{Form::label('bornCountry', 'Pais Origen',  ['class' => 'w-50'])}}
                         <div class="col-sm-3">
-                            {{Form::text('bornCountry', '', ['class' => 'form-control form-control-sm', 'placeholder' => '' ])}}
+                            {{Form::select('bornCountry', $countries, '', ['class' => 'form-control form-control-sm w-auto', 'placeholder' => '-- Seleccione --' ])}}
                         </div>
                     </div>
                 </div>
@@ -117,29 +122,7 @@
                     <div class="form-inline p-1">
                         {{Form::label('bornCity', 'Ciudad',  ['class' => 'w-50'])}}
                         <div class="col-sm-3">    
-                            {{Form::text('bornCity', '', ['class' => 'form-control form-control-sm', 'placeholder' => '' ])}}
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="form-row pt-2 pl-3">
-            
-                <div class="col">
-                    <div class="form-inline p-1">
-                        {{Form::label('profesion', 'Profesion',  ['class' => 'w-50'])}}
-                        <div class="col-sm-3">
-                            {{Form::text('profesion', '', ['class' => 'form-control form-control-sm', 'placeholder' => '' ])}}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="form-inline p-1">
-                        {{Form::label('profBack', 'Experiencia Laboral',  ['class' => 'w-50'])}}
-                        <div class="col-sm-3">
-                            {{Form::text('profBack', '', ['class' => 'form-control form-control-sm', 'placeholder' => '' ])}}
+                            {{Form::select('bornCity', $cities, '', ['class' => 'form-control form-control-sm w-auto', 'placeholder' => '-- Seleccione --' ])}}
                         </div>
                     </div>
                 </div>
@@ -174,21 +157,75 @@
                     <div class="form-inline p-1">
                         {{Form::label('engLevel', 'Nivel Ingles',  ['class' => 'w-50'])}}
                         <div class="col-sm-3">
-                            {{Form::text('engLevel', '', ['class' => 'form-control form-control-sm', 'placeholder' => '' ])}}
+                            {{Form::select('engLevel', $englishLev, '', ['class' => 'form-control form-control-sm w-auto', 'placeholder' => '-- Seleccione --' ])}}
                         </div>
                     </div>
                 </div>
 
                 <div class="col">
                     <div class="form-inline p-1">
-                        
-                        <div class="col-sm-3">    
-                            
+                        {{Form::label('profesion', 'Profesion',  ['class' => 'w-50'])}}
+                        <div class="col-sm-3">
+                            {{Form::select('profesion', $professions, '', ['class' => 'form-control form-control-sm w-auto', 'placeholder' => '-- Seleccione --' ])}}
+                        </div>
+                    </div>
+
+                    {{-- <div class="form-group">
+                        <label class="control-label">Input addons</label>
+                        <div class="form-group">
+                          <div class="input-group mb-3">
+                            <input type="text" class="form-control" aria-label="Amount (to the nearest dollar)">
+                            <div class="input-group-append">
+                              <span class="input-group-text"><i class="fa fa-calendar" aria-hidden="true"></i></span>
+                            </div>
+                          </div>
+                        </div>
+                      </div> --}}
+
+
+                      {{-- <div class="form-group">
+                            <label class="control-label">Input addons</label>
+                            <div class="form-group">
+                              <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                  <span class="input-group-text">$</span>
+                                </div>
+                                <input type="text" class="form-control" aria-label="Amount (to the nearest dollar)">
+                                <div class="input-group-append">
+                                  <span class="input-group-text"><i class="fa fa-calendar" aria-hidden="true"></i></span>
+                                </div>
+                              </div>
+                            </div>
+                          </div> --}}
+
+
+                </div>
+
+            </div>
+
+
+            {{-- <div class="form-row pt-2 pl-3">
+            
+                <div class="col">
+                    <div class="form-inline pt-3">
+                        {{Form::label('profesion', 'Profesion',  ['class' => 'w-50'])}}
+                        <div class="col-sm-3">
+                            {{Form::select('profesion', $professions, '', ['class' => 'form-control form-control-sm w-auto', 'placeholder' => '-- Seleccione --' ])}}
                         </div>
                     </div>
                 </div>
 
-            </div>
+                <div class="col">
+                    <div class="form-inline p-1">
+                        {{-- {{-- {{Form::label('profBack', 'Experiencia Laboral',  ['class' => 'w-50'])}} 
+                        <div class="col-sm-3">
+                            {{Form::text('profBack', '', ['class' => 'form-control form-control-sm', 'placeholder' => '' ])}}
+                        </div> 
+                    </div>
+                </div>
+
+            </div> --}}
+
     
             <hr class="mb-4">
 <!--
@@ -219,4 +256,11 @@
             {!! Form::close() !!}
         </div>
     </nav>
+@endsection
+@section('postJquery')
+    @parent
+    $("#bornDate").datepicker({
+        changeMonth: true,
+        changeYear: true
+    });
 @endsection

@@ -33,9 +33,18 @@
 
                     <div class="form-inline p-1">
                         {{Form::label('dateAproxFlight', 'Fecha Estimada Viaje',  ['class' => 'w-50'])}}
-                        <div class="col-sm-1">
-                            {{Form::text('dateAproxFlight', $advisory->fecha_estimada_viaje, ['class' => 'form-control form-control-sm', 'placeholder' => '' ])}}
+
+                        <div class="col-sm-6">
+                            
+                            <div class="input-group ">
+                                {{Form::text('dateAproxFlight', $advisory->fecha_estimada_viaje, ['class' => 'form-control form-control-sm', 'placeholder' => '' ])}}
+                                <div class="input-group-append">
+                                    <span class="input-group-text"><i class="fa fa-calendar" aria-hidden="true"></i></span>
+                                </div>
+                            </div>
+
                         </div>
+
                     </div>
 
                     <div class="form-inline p-1">
@@ -50,6 +59,13 @@
                         <div class="col-sm-1">
                             {{Form::checkbox('famAdvisory', $advisory->asesoria_familia, $advisory->asesoria_familia, ['class' => 'form-check-input'])}}
                         </div>                        
+                    </div>
+
+                    <div class="form-inline p-1">
+                        {{Form::label('observ', 'Observaciones',  ['class' => 'w-50'])}}
+                        <div class="col-sm-1">
+                            {{ Form::textarea('observ', $advisory->observaciones, ['class'=>'form-control', 'rows' => 10, 'cols' => 25]) }}
+                        </div>
                     </div>
 
                 </div>
@@ -142,6 +158,11 @@
     $('#dialog').dialog({ autoOpen: false });
     $('#docPlus').click(function() {
         $('#dialog').dialog('open');
+    });
+
+    $("#dateAproxFlight").datepicker({
+        changeMonth: true,
+        changeYear: true
     });
 
     $(document).on('click', '.fa-trash', function()
