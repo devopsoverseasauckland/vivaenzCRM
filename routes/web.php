@@ -55,6 +55,8 @@ Route::match(['put', 'match'], '/finalizar/{id}', 'AdvisoryController@finalizar'
 
 Route::get('combo/institutions', 'ComboController@institutions')->name('combo.institutions');
 
+Route::get('combo/advisories', 'ComboController@advisories')->name('combo.advisories');
+
 Route::post('advisoryInfoSent/registerDocument', 'AdvisoryInfoSentController@registerDocument')->name('advisoryInfoSent.registerDocument');
 
 Route::post('advisoryInfoSent/deleteDocument', 'AdvisoryInfoSentController@deleteDocument')->name('advisoryInfoSent.deleteDocument');

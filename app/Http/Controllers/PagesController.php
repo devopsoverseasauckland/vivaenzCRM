@@ -29,8 +29,12 @@ class PagesController extends Controller
     //trackingManagement
     public function gestionSeguimiento() {
         $title = 'Gestion de seguimiento!';
-        //return view('pages.trackingManagement');
-        return view('pages.trackingManagement')->with('title', $title);
+        
+        $states = AdvisoryState::pluck('descripcion', 'asesoria_estado_id');
+
+        return view('pages.trackingManagement', [
+                'states'=>$states
+            ])->with('title', $title); 
     }
 
     //newAdvisory

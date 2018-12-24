@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Traits\TAdvisory;
 use App\Traits\TAdvisoryInfoSent;
 use App\Traits\TStudentExperience;
 
@@ -20,6 +21,7 @@ use App\ContactMean;
 use App\CourseType;
 use App\CourseTypeInstitution;
 use App\AdvisoryEnrollment;
+use App\AdvisoryState;
 
 use DB;
 
@@ -63,7 +65,15 @@ class AdvisoryController extends Controller
                                 INNER JOIN asesoria_estado ae ON a.asesoria_estado_id = ae.asesoria_estado_id');
         //$advisory = Advisory::all();
         //return Advisory::all();
-        return view('advisory.index')->with('advisories', $advisory);
+
+        $states = AdvisoryState::pluck('nombre', 'asesoria_estado_id');
+
+        return view('advisory.index', [
+                'advisories'=>$advisory,
+                'states'=>$states
+            ]); 
+
+        //return view('advisory.index')->with();
     }
 
     /**
