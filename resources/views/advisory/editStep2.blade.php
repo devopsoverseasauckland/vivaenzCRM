@@ -83,7 +83,7 @@
                             <ul class="list-group">
                                 @if ($docsSent->count() > 0)
                                     @foreach ($docsSent as $doc)
-                                        <li class="list-group-item" id="li{{ $doc->asesoria_informacion_enviada_id }}" >{{ $doc->descripcion }}
+                                        <li class="list-group-item" id="li{{ $doc->asesoria_informacion_enviada_id }}" >{{ $doc->nombre }}
                                             <a href="#" class="pull-right">
                                                 <i id="docTrash{{ $doc->asesoria_informacion_enviada_id }}" class="fa fa-trash" aria-hidden="true" data-doc-id="{{ $doc->asesoria_informacion_enviada_id }}" ></i>
                                             </a>
@@ -233,6 +233,7 @@
                 method: "GET",
                 data: { 
                     val: courseTypeId, 
+                    selIt: 1,
                     _token: _token
                 },
                 success:function(result)

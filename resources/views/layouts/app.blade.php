@@ -24,7 +24,18 @@
 
    <!-- CSRF Token -->
    <meta name="csrf-token" content="{{ csrf_token() }}"> --}}
+    <style>
 
+        .anyClass {
+            height:150px;
+            overflow-y: scroll;
+        }
+
+         .positionable {
+            position: absolute;
+        }
+
+    </style>
 </head>
 <body>
 
@@ -48,7 +59,7 @@
 
                 </div>
 
-                <div class="col-3 mt-5 pt-5" >
+                <div id="dvMessages" class="col-3 mt-5 pt-5" >
 
                     @include('inc.messages')
 

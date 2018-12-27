@@ -69,5 +69,13 @@ Route::post('studentExperience/deleteExperience', 'StudentExperienceController@d
 
 Auth::routes();
 
-//Route::get('/home', 'HomeController@index')->name('home');
+
 Route::get('/advisory', 'AdvisoryController@index');
+
+
+Route::resource('coursetype','CourseTypeController');
+
+Route::post('coursetype/registerInstitution', 'CourseTypeController@registerInstitution')->name('coursetype.registerInstitution');
+
+
+Route::resource('institution','InstitutionController');

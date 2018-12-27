@@ -10,7 +10,7 @@
     <div class="form-group row mt-4">
         <label for="statesFl" class="col-sm-2 col-form-label">Filtrar por</label>
         <div class="col-sm-10">
-                {{Form::select('statesFl', $states, '', ['id' => 'statesFl', 'class' => 'form-control form-control-sm w-auto', 'placeholder' => '-- Seleccione --' ])}}
+            {{Form::select('statesFl', $states, '', ['id' => 'statesFl', 'class' => 'form-control form-control-sm w-auto', 'placeholder' => '-- Seleccione --' ])}}
         </div>
     </div>
 
