@@ -77,5 +77,7 @@ Route::resource('coursetype','CourseTypeController');
 
 Route::post('coursetype/registerInstitution', 'CourseTypeController@registerInstitution')->name('coursetype.registerInstitution');
 
+Route::post('coursetype/deleteInstitution', 'CourseTypeController@deleteInstitution')->name('coursetype.deleteInstitution');
+
 
 Route::resource('institution','InstitutionController');

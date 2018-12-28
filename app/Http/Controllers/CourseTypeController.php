@@ -28,7 +28,7 @@ class CourseTypeController extends Controller
     public function index()
     {
         $courseTypes = CourseType::orderby('descripcion')->paginate(8);
-        $institutions = Institution::pluck('nombre', 'institucion_id');
+        $institutions = Institution::where('activo','1')->orderBy('nombre','asc')->pluck('nombre', 'institucion_id');
 
         return view('coursetype.index', [
             'courseTypes'=>$courseTypes,
@@ -101,10 +101,10 @@ class CourseTypeController extends Controller
     {
         $coursetype = CourseType::find($id);
 
-        if ($coursetype->activo == 1)
-            $coursetype->activo = 0;
-        else 
+        if ($coursetype->activo == 0)
             $coursetype->activo = 1;
+        else 
+            $coursetype->activo = 0;
 
         $coursetype->save();
         return redirect('coursetype')->with('success','Tipo de curso actualizado');
@@ -126,16 +126,46 @@ class CourseTypeController extends Controller
         $courseTypeInstitution->institucion_id = $institutionId;
         $courseTypeInstitution->save();
 
-        $data = $this->getCourseTypeInstitutions($courseTypeId);
+        // $data = $this->getCourseTypeInstitutions($courseTypeId);
 
-        $output = '';
-        foreach($data as $row)
-            {
-                $output .= '<li class="list-group-item" id="li' . $row->institucion_id . '" >' . $row->nombre . '<a href="#" class="pull-right">' . 
-                        '<i id="docTrash' .  $row->institucion_id . '" class="fa fa-trash" ' .
-                        ' aria-hidden="true" ></i></a></li>';
-            }
+        // $output = '';
+        // foreach($data as $row)
+        //     {
+        //         $output .= '<li class="list-group-item" id="li' . $row->institucion_id . '" >' . $row->nombre . '<a href="#" class="pull-right">' . 
+        //                 '<i id="docTrash' .  $row->institucion_id . '" class="fa fa-trash" ' .
+        //                 ' aria-hidden="true" ></i></a></li>';
+        //     }
+
+        $currentPage = 1;$request->get('page');
+
+        $output = $this->getCourseTypeInstitutionsPaginate($courseTypeId, $currentPage);
+
 
         echo $output;
     }
+
+    public function deleteInstitution(Request $request)
+    {
+        $courseTypeId = $request->get('courseTypeId');
+        $institucionId = $request->get('institucionId');
+
+        $deletedRows = CourseTypeInstitution::where('tipo_curso_id', $courseTypeId)->where('institucion_id', $institucionId)->delete();
+
+        // $data = $this->getCourseTypeInstitutions($courseTypeId);
+
+        // $output = '';
+        // foreach($data as $row)
+        //     {
+        //         $output .= '<li class="list-group-item" id="li' . $row->institucion_id . '" >' . $row->nombre . '<a href="#" class="pull-right">' . 
+        //                 '<i id="docTrash' .  $row->institucion_id . '" class="fa fa-trash" ' .
+        //                 ' aria-hidden="true" ></i></a></li>';
+        //     }
+
+        $currentPage = $request->get('page');
+
+        $output = $this->getCourseTypeInstitutionsPaginate($courseTypeId, $currentPage);
+
+        echo $output;
+    }
+
 }

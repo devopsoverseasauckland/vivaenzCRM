@@ -12,7 +12,7 @@
                 <th>ID</th>
                 <th>Nombre</th>
                 {{-- <th>Categoria NZQA</th> --}}
-                <th>Activo</th>
+                <th>Estado</th>
                 <th colspan="2">Accion</th>
             </tr>
         </thead>
@@ -24,18 +24,23 @@
                 <form action="{{action('CourseTypeController@update', $courseType['tipo_curso_id'])}}" method="post">
                     @csrf
                     <td>{{$courseType['tipo_curso_id']}}</td>
-                    <td><input type="text" class="form-control" name="descripcion" value="{{$courseType->descripcion}}"></td>
+                    <td><input type="text" class="form-control form-control-sm" name="descripcion" value="{{$courseType->descripcion}}"></td>
                     {{-- <td><input type="text" class="form-control" name="categoria_nzqa" value="{{$courseType->categoria_nzqa}}"></td> --}}
                     <td>
-                        {{$courseType['activo']}}
+                        {{-- {{$courseType['activo']}} --}}
+                        @if( $courseType->activo == 1 )
+                            Activo
+                        @else
+                            Inactivo
+                        @endif
                         <input name="activo" type="hidden" value="{{$courseType['activo']}}">
                     </td>
                     <td>
-                        <button type="submit" class="btn btn-success" style="margin-left:38px">Guardar</button>
+                        <button type="submit" class="btn btn-success btn-sm" style="margin-left:38px">Guardar</button>
                     </td>
                     <td>
                         <input name="_method" type="hidden" value="PATCH">
-                        <a href="{{action('CourseTypeController@index')}}" class="btn btn-danger">
+                        <a href="{{action('CourseTypeController@index')}}" class="btn btn-danger btn-sm">
                             Cancelar
                         </a>
                     </td>

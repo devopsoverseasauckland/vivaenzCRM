@@ -24,12 +24,15 @@ class InstitutionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        $page = $request->get('page');
+
         $institutions = Institution::orderby('nombre')->paginate(8);
 
         return view('institution.index', [
-            'institutions'=>$institutions
+            'institutions'=>$institutions,
+            'page'=>$page
         ]); 
     }
 
@@ -61,15 +64,18 @@ class InstitutionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Request $request, $id)
     {
         /*
         Paginator::currentPageResolver(function () use ($currentPage) {
             return $currentPage;
         });
         */
+
+        $page = $request->get('page');
+
         $institutions = Institution::orderby('nombre')->paginate(8);
-        return view('institution.edit', compact('institutions', 'id'));
+        return view('institution.edit', compact('institutions', 'id', 'page'));
     }
 
 
@@ -82,11 +88,16 @@ class InstitutionController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $page = $request->get('page');
+
         $institution= Institution::find($id);
         $institution->nombre=$request->get('nombre');
         $institution->categoria_nzqa=$request->get('categoria_nzqa');
         $institution->save();
-        return redirect('institution')->with('success','Institucion actualizada');
+
+        //return redirect('institution')->with('success','Institucion actualizada');
+        //Redirect::route('institution.index', $page);
+        return redirect()->action('InstitutionController@index',['page'=>$page]);
     }
 
 
@@ -100,10 +111,10 @@ class InstitutionController extends Controller
     {
         $institution = Institution::find($id);
 
-        if ($institution->activo == 1)
-            $institution->activo = 0;
-        else 
+        if ($institution->activo == 0)
             $institution->activo = 1;
+        else 
+            $institution->activo = 0;
 
         $institution->save();
         return redirect('institution')->with('success','Institucion actualizada');

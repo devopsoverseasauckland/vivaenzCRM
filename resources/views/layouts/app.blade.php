@@ -23,7 +23,7 @@
  <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">
 
    <!-- CSRF Token -->
-   <meta name="csrf-token" content="{{ csrf_token() }}"> --}}
+   <meta name="csrf-token" content="{{ csrf_token() }}"> 
     <style>
 
         .anyClass {
@@ -35,7 +35,7 @@
             position: absolute;
         }
 
-    </style>
+    </style>--}}
 </head>
 <body>
 

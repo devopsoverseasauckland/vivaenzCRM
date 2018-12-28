@@ -21,7 +21,7 @@
             @foreach($institutions as $institution)
             <tr>
                 @if ($institution->institucion_id == $id)
-                <form action="{{action('InstitutionController@update', $institution['institucion_id'])}}" method="post">
+                <form action="{{action('InstitutionController@update', $institution['institucion_id'])}}?page={{$page}}" method="post">
                     @csrf
                     <td>{{$institution['institucion_id']}}</td>
                     <td><input type="text" class="form-control" name="nombre" value="{{$institution->nombre}}"></td>
@@ -35,7 +35,7 @@
                     </td>
                     <td>
                         <input name="_method" type="hidden" value="PATCH">
-                        <a href="{{action('InstitutionController@index')}}" class="btn btn-danger">
+                        <a href="{{action('InstitutionController@index')}}?page={{$page}}" class="btn btn-danger">
                             Cancelar
                         </a>
                     </td>
@@ -50,7 +50,7 @@
             @endforeach
         </tbody>
     </table>
-    @if (count($institutions) > 0)
-    {{ $institutions->links() }}
-    @endif
+    {{-- @if (count($institutions) > 0)
+    {{ $institutions->links() }} 
+    @endif--}}
 @endsection

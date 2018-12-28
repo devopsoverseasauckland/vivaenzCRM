@@ -11,8 +11,8 @@
             <tr>
                 <th>ID</th>
                 <th>Nombre</th>
-                <th>Activo</th>
                 <th>Instituciones</th>
+                <th>Estado</th>
                 <th colspan="2">Accion</th>
             </tr>
         </thead>
@@ -22,11 +22,23 @@
             <tr>
                 <td>{{$courseType['tipo_curso_id']}}</td>
                 <td>{{$courseType['descripcion']}}</td>
-                <td>{{$courseType['activo']}}</td>
                 <td>
                     <a id="instDetail{{ $courseType['tipo_curso_id'] }}" href="#" class="btn btn-warning btn-sm" data-ct-id="{{ $courseType['tipo_curso_id'] }}" >
                         <i class="fa fa-university"></i>
                     </a>
+                </td>
+                <td>
+                    {{-- {{$courseType['activo']}} --}}
+                    <form action="{{action('CourseTypeController@destroy', $courseType['tipo_curso_id'])}}" method="post">
+                        @csrf
+                        @if( $courseType->activo == 1 )
+                            <input name="_method" type="hidden" value="DELETE">
+                            <button class="btn btn-outline-success btn-sm" type="submit">Activo</button>
+                        @else
+                            <input name="_method" type="hidden" value="DELETE">
+                            <button class="btn btn-outline-danger btn-sm" type="submit">Inactivo</button>
+                        @endif
+                    </form>
                 </td>
                 <td>
                     <a href="{{action('CourseTypeController@edit', $courseType['tipo_curso_id'])}}" class="btn btn-outline-primary btn-sm">
@@ -34,18 +46,8 @@
                     </a>
                 </td>
                 <td>
-                    <form action="{{action('CourseTypeController@destroy', $courseType['tipo_curso_id'])}}" method="post">
-                    @csrf
-                        @if( $courseType->activo == 1 )
-                            <input name="_method" type="hidden" value="DELETE">
-                            <button class="btn btn-outline-danger btn-sm" type="submit">Inactivar</button>
-                        @else
-                            <input name="_method" type="hidden" value="DELETE">
-                            <button class="btn btn-outline-success btn-sm" type="submit">Activar</button>
-                        @endif
-                    </form>
+                    
                 </td>
-                
             </tr>
             @endforeach
             <tr>
@@ -59,7 +61,7 @@
                     <td><input name="activo" type="hidden" value="1"></td>
                     <td></td>
                     <td colspan="2">
-                        <button type="submit" class="btn btn-outline-success btn-sm">Guardar</button>
+                        <button type="submit" class="btn btn-success btn-sm">Guardar</button>
                     </td>
                 {!! Form::close() !!}
                 {{-- </form> --}}
@@ -117,6 +119,28 @@
             data: { 
                 courseTypeId: courseTypeId,
                 institutionId: institutionId, 
+                _token: _token
+            },
+            success:function(result)
+            {
+                $('.list-group').empty();
+                $( result ).appendTo('.list-group');
+            }
+        })
+    });
+
+    $(document).on('click', '.fa-trash', function()
+    {
+        var courseTypeId = $('#courseTypeId').val();
+        var institucionId = $(this).data('inst-id');
+        var _token = $('input[name="_token"]').val();
+
+        $.ajax({
+            url: "{{ route('coursetype.deleteInstitution') }}",
+            method: "POST",
+            data: { 
+                courseTypeId: courseTypeId,
+                institucionId: institucionId,
                 _token: _token
             },
             success:function(result)
