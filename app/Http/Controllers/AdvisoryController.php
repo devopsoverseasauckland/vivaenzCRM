@@ -22,6 +22,8 @@ use App\CourseType;
 use App\CourseTypeInstitution;
 use App\AdvisoryEnrollment;
 use App\AdvisoryState;
+use App\AdvisoryProcess;
+use App\ProcessCheckListItem;
 
 use DB;
 
@@ -30,7 +32,7 @@ class AdvisoryController extends Controller
     use TAdvisoryInfoSent;
     use TStudentExperience;
 
-/**
+    /**
      * Create a new controller instance.
      *
      * @return void
@@ -166,18 +168,32 @@ class AdvisoryController extends Controller
         //$advisory->asesoria_familia =
         //$advisory->observaciones =
         $advisory->creacion_fecha = date("Y-m-d H:i:s");
-        $advisory->creacion_usuario_id = 0;
+        $advisory->creacion_usuario_id = auth()->user()->id;
         $advisory->modificacion_fecha = date("Y-m-d H:i:s");
-        $advisory->modificacion_usuario_id = 0;
+        $advisory->modificacion_usuario_id = auth()->user()->id;
         $advisory->save();
 
         
         $advisoryEnroll = new AdvisoryEnrollment;
         $advisoryEnroll->asesoria_id = $advisory->asesoria_id;
         $advisoryEnroll->modificacion_fecha = date("Y-m-d H:i:s");
-        $advisoryEnroll->modificacion_usuario_id = 0;
+        $advisoryEnroll->modificacion_usuario_id = auth()->user()->id;
         $advisoryEnroll->save();
         
+        $procChkListItems = ProcessCheckListItem::where('activo','1')->orderby('codigo_orden')->get();
+
+        foreach($procChkListItems as $item)
+        {
+            $advisoryProcess = new AdvisoryProcess;
+            $advisoryProcess->asesoria_id = $advisory->asesoria_id;
+            $advisoryProcess->proceso_checklist_item_id = $item->proceso_checklist_item_id;
+            if ($item->codigo == 'RE')
+            {
+                $advisoryProcess->realizado_fecha = $advisory->creacion_fecha;
+                $advisoryProcess->realizad_usuario_id = auth()->user()->id;
+            }
+            $advisoryProcess->save();
+        }
 
         //return redirect('/editStep2')->with('success', 'Informacion estudiante actualizada exitosamente');
         //return view('/editStep2/' . $advisory->asesoria_id)->with('advisory', $advisory);
@@ -216,6 +232,7 @@ class AdvisoryController extends Controller
         switch($state)
         {
             case 1:
+            case 2:
             default:
                 $purpouses = Purpouse::pluck('descripcion', 'intencion_viaje_id');
                 $contactMeans = ContactMean::pluck('descripcion', 'metodo_contacto_id');
@@ -233,23 +250,23 @@ class AdvisoryController extends Controller
                                                   ]);
 
                 break;
-            case 2:
+            case 3:
                 $advisory = Advisory::find($id);
                 $state = $advisory->asesoria_estado_id;
         
-                if ($state == 1)
-                {
-                    $advisory->asesoria_estado_id = 2; 
-                    $advisory->modificacion_fecha = date("Y-m-d H:i:s");
-                    $advisory->modificacion_usuario_id = 0;
-                    $advisory->save();
-                }
+                // if ($state == 1)
+                // {
+                //     $advisory->asesoria_estado_id = 2; 
+                //     $advisory->modificacion_fecha = date("Y-m-d H:i:s");
+                //     $advisory->modificacion_usuario_id = 0;
+                //     $advisory->save();
+                // }
         
                 $advisoryEnroll = DB::table('asesoria_enrollment')->where('asesoria_enrollment.asesoria_id', '=', $id)->distinct()->first();
         
                 //return $advisoryEnroll;
         
-                $progs = $this->getDocuments($id)->pluck('descripcion', 'asesoria_informacion_enviada_id');
+                $progs = $this->getDocuments($id)->pluck('nombre', 'asesoria_informacion_enviada_id');
         
                 //return $progs;
         
@@ -316,6 +333,16 @@ class AdvisoryController extends Controller
     {
         $advisory = Advisory::find($id);
 
+        $state = $advisory->asesoria_estado_id;
+
+        if ($state == 1)
+        {
+            $advisory->asesoria_estado_id = 2; 
+            $advisory->modificacion_fecha = date("Y-m-d H:i:s");
+            $advisory->modificacion_usuario_id = auth()->user()->id;
+            $advisory->save();
+        }
+
         $purpouses = Purpouse::pluck('descripcion', 'intencion_viaje_id');
         $contactMeans = ContactMean::pluck('descripcion', 'metodo_contacto_id');
         
@@ -343,19 +370,30 @@ class AdvisoryController extends Controller
         $advisory = Advisory::find($id);
         $state = $advisory->asesoria_estado_id;
 
-        if ($state == 1)
+        if ($state == 2)
         {
-            $advisory->asesoria_estado_id = 2; 
+            $advisory->asesoria_estado_id = 3; 
             $advisory->modificacion_fecha = date("Y-m-d H:i:s");
-            $advisory->modificacion_usuario_id = 0;
+            $advisory->modificacion_usuario_id = auth()->user()->id;
             $advisory->save();
+
+            $asesoria_proceso_id = DB::table('asesoria_proceso')
+                ->join('proceso_checklist_item', 'proceso_checklist_item.proceso_checklist_item_id', '=', 'asesoria_proceso.proceso_checklist_item_id')
+                ->where('asesoria_proceso.asesoria_id', '=', $id)
+                ->where('proceso_checklist_item.asesoria_estado_id', '=', 3)
+                ->first()->asesoria_proceso_id;
+
+            $advProcess = AdvisoryProcess::find($asesoria_proceso_id);
+            $advProcess->realizado_fecha = date("Y-m-d H:i:s");
+            $advProcess->realizad_usuario_id = auth()->user()->id;
+            $advProcess->save();
         }
 
         $advisoryEnroll = DB::table('asesoria_enrollment')->where('asesoria_enrollment.asesoria_id', '=', $id)->distinct()->first();
 
         //return $advisoryEnroll;
 
-        $progs = $this->getDocuments($id)->pluck('descripcion', 'asesoria_informacion_enviada_id');
+        $progs = $this->getDocuments($id)->pluck('nombre', 'asesoria_informacion_enviada_id');
 
         //return $progs;
 
@@ -520,13 +558,14 @@ class AdvisoryController extends Controller
         $advisoryEnroll->fecha_inicio_homestay = date("Y-m-d", strtotime( $request->input('dateHomestay'))); 
         $advisoryEnroll->save();
 
-        $progs = $this->getDocuments($id)->pluck('descripcion', 'asesoria_informacion_enviada_id');
+        //$advisoryEnroll = DB::table('asesoria_enrollment')->where('asesoria_enrollment.asesoria_id', '=', $advisoryEnroll->asesoria_id)->distinct()->first();
 
-        //return $progs;
+        $progs = $this->getDocuments($advisoryEnroll->asesoria_id)->pluck('nombre', 'asesoria_informacion_enviada_id');
+
 
         return view('advisory.editStep3', [
-            'advisoryEnroll'=>$advisoryEnroll,
-            'progs'=>$progs
+             'advisoryEnroll'=>$advisoryEnroll,
+             'progs'=>$progs->all()
         ]);
     }
 
@@ -535,10 +574,21 @@ class AdvisoryController extends Controller
         $advisory = Advisory::find($id);
         $state = $advisory->asesoria_estado_id;
         
-        if ($state == 2)
+        if ($state == 3)
         {
-            $advisory->asesoria_estado_id = 3; 
+            $advisory->asesoria_estado_id = 4; 
             $advisory->save();    
+
+            $asesoria_proceso_id = DB::table('asesoria_proceso')
+            ->join('proceso_checklist_item', 'proceso_checklist_item.proceso_checklist_item_id', '=', 'asesoria_proceso.proceso_checklist_item_id')
+            ->where('asesoria_proceso.asesoria_id', '=', $id)
+            ->where('proceso_checklist_item.asesoria_estado_id', '=', 4)
+            ->first()->asesoria_proceso_id;
+
+            $advProcess = AdvisoryProcess::find($asesoria_proceso_id);
+            $advProcess->realizado_fecha = date("Y-m-d H:i:s");
+            $advProcess->realizad_usuario_id = auth()->user()->id;
+            $advProcess->save();
         }
 
         return redirect('/advisory');

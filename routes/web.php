@@ -57,6 +57,9 @@ Route::get('combo/institutions', 'ComboController@institutions')->name('combo.in
 
 Route::get('combo/advisories', 'ComboController@advisories')->name('combo.advisories');
 
+Route::get('combo/advisoryProcess', 'ComboController@advisoryProcess')->name('combo.advisoryProcess');
+
+
 Route::post('advisoryInfoSent/registerDocument', 'AdvisoryInfoSentController@registerDocument')->name('advisoryInfoSent.registerDocument');
 
 Route::post('advisoryInfoSent/deleteDocument', 'AdvisoryInfoSentController@deleteDocument')->name('advisoryInfoSent.deleteDocument');
@@ -64,6 +67,8 @@ Route::post('advisoryInfoSent/deleteDocument', 'AdvisoryInfoSentController@delet
 Route::post('studentExperience/registerExperience', 'StudentExperienceController@registerExperience')->name('studentExperience.registerExperience');
 
 Route::post('studentExperience/deleteExperience', 'StudentExperienceController@deleteExperience')->name('studentExperience.deleteExperience');
+
+Route::post('advisoryProcess/registerDate', 'AdvisoryProcessController@registerDate')->name('advisoryProcess.registerDate');
 
 //Route::post('authorization/login', 'AuthorizationController@login')->name('authorization.login');
 

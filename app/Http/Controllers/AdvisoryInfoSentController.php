@@ -47,7 +47,7 @@ class AdvisoryInfoSentController extends Controller
         $output = '';
         foreach($docsSent as $doc)
         {
-            $output .= '<li class="list-group-item" id="li' . $doc->asesoria_informacion_enviada_id . '" >' . $doc->descripcion . '<a href="#" class="pull-right">' . 
+            $output .= '<li class="list-group-item" id="li' . $doc->asesoria_informacion_enviada_id . '" >' . $doc->nombre . '<a href="#" class="pull-right">' . 
                        '<i id="docTrash' .  $doc->asesoria_informacion_enviada_id . '" class="fa fa-trash" ' .
                        ' aria-hidden="true" data-doc-id="' . $doc->asesoria_informacion_enviada_id . '" ></i></a></li>';
         }

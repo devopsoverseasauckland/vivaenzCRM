@@ -155,6 +155,7 @@
 
                 <a class="btn btn-outline-secondary" href="/editStep2/{{$advisoryEnroll->asesoria_id}}" role="button">Asesoria</a>
 
+                {{ csrf_field() }}
                 {{Form::hidden('_method', 'PUT')}}
                 {{Form::submit('Actualizar', ['class' => 'btn btn-outline-primary'])}}
 

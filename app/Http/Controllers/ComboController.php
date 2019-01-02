@@ -98,6 +98,10 @@ class ComboController extends Controller
         echo $output;
     }
 
+    /**
+     * Main query for index advisories filtered by state
+     * 
+     */
     public function advisories(Request $request)
     {
         $advisoryStateId = $request->get('stateId');
@@ -115,12 +119,45 @@ class ComboController extends Controller
         foreach($advisories as $adv)
         {
             $output .= '<tr><td>
-                            <input type="checkbox" />
+                            <a id="instDetail' . $adv->asesoria_id . '" href="#" class="btn btn-warning btn-sm" 
+                                data-pc-id="' . $adv->asesoria_id . '" >
+                                <i class="fa fa-ellipsis-v"></i>
+                            </a>
                             <input type="hidden" value="' . $adv->asesoria_id . '" />
                             <input type="hidden" value="' . $adv->estudiante_id . '" />
                         </td>
                             <td><a href="/advisory/' . $adv->asesoria_id . '">' . $adv->cliente .
                             '</a></td><td>' . $adv->estado . '</td><td></td></tr>';
+        }
+
+        echo $output;
+    }
+
+    public function advisoryProcess(Request $request)
+    {
+        $advisoryId = $request->get('advisoryId');
+
+        $process = DB::table('asesoria_proceso')
+                   ->join('proceso_checklist_item', 'proceso_checklist_item.proceso_checklist_item_id', 'asesoria_proceso.proceso_checklist_item_id')
+                   ->select(DB::raw("asesoria_proceso.asesoria_proceso_id, asesoria_proceso.realizado_fecha, 
+                         proceso_checklist_item.codigo, proceso_checklist_item.nombre, proceso_checklist_item.codigo_orden"))
+                   ->where('asesoria_proceso.asesoria_id', '=', $advisoryId)
+                   ->orderby('proceso_checklist_item.codigo_orden')
+                   ->get();
+
+        $output = '';
+        foreach($process as $item)
+        {
+            $output .= '<tr><td class="bg-light" >
+                            <span class="badge badge-light">' . $item->nombre . '</span>
+                        </td>
+                        <td class="form-inline text-center " >
+                            <small>
+                            <input type="text" id="procStep' . $item->codigo_orden . '" data-pc-id="' . $item->asesoria_proceso_id . '"
+                                data-co-id="' . $item->codigo_orden . '"
+                                value="' . $item->realizado_fecha . '" class="form-control form-control-sm p-0 w-50 text-center"  />
+                            </small>
+                        </td></tr>';
         }
 
         echo $output;
