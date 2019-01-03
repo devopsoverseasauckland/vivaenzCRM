@@ -2,47 +2,62 @@
 
 namespace App\Http\Controllers;
 
+use App\Traits\TAdvisory;
+
 use App\AdvisoryProcess;
 
 use Illuminate\Http\Request;
 
+use App\Advisory;
+
+use DB;
+
 class AdvisoryProcessController extends Controller
 {
+    use TAdvisory;
     public function registerDate(Request $request)
     {
         $advProcessId = $request->get('advProcessId');
         $date = $request->get('date');
         $advisoryId = $request->get('advisoryId');
-        $codOrd = $request->get('codOrd');
-
-        DB::table('asesoria_proceso')
-        ->join('proceso_checklist_item', 'proceso_checklist_item.proceso_checklist_item_id', '=', 'asesoria_proceso.proceso_checklist_item_id')
-        ->select(DB::raw('max(proceso_checklist_item.codigo) as cod_ord_estado_actual'))
-        ->where('asesoria_proceso.asesoria_id', '=', 16)
-        ->where('asesoria_proceso.realizado_fecha',
-        '<>', null)->get();
-
-        $advInfoSent = new AdvisoryInfoSent;
-
-        $advInfoSent->asesoria_id = $advisoryId;
-        $advInfoSent->tipo_curso_id = $courseTypeId;
-        $advInfoSent->institucion_id = $institutionId;
-        $advInfoSent->duracion_curso = $time;
-        $advInfoSent->activo = 1;
-        $advInfoSent->creacion_fecha = date("Y-m-d H:i:s");
-        $advInfoSent->creacion_usuario_id = 0;
-        //$advInfoSent->modificacion_fecha = date("Y-m-d H:i:s");
-        //$advInfoSent->modificacion_usuario_id = 0;
-        $advInfoSent->save();
+        $cod = $request->get('cod');
         
-        $docsSent = $this->getDocuments($advisoryId);
-
-        $output = '';
-        foreach($docsSent as $doc)
+        if ($cod != 'DE' && $cod != 'RE' && $cod != 'SG' && $cod != 'HS' && $cod != 'IV' && $cod != 'NT')
         {
-            $output .= '<li class="list-group-item" id="li' . $doc->asesoria_informacion_enviada_id . '" >' . $doc->descripcion . '<a href="#" class="pull-right">' . 
-                       '<i id="docTrash' .  $doc->asesoria_informacion_enviada_id . '" class="fa fa-trash" ' .
-                       ' aria-hidden="true" data-doc-id="' . $doc->asesoria_informacion_enviada_id . '" ></i></a></li>';
+            $id_nuevo_estado = DB::table('asesoria_proceso')
+            ->join('proceso_checklist_item', 'proceso_checklist_item.proceso_checklist_item_id', '=', 'asesoria_proceso.proceso_checklist_item_id')
+            ->select(DB::raw('min(proceso_checklist_item.asesoria_estado_id) as id_nuevo_estado'))
+            ->where('asesoria_proceso.asesoria_id', '=', $advisoryId)
+            ->where('proceso_checklist_item.codigo', '!=', 'DE')
+            ->where('asesoria_proceso.realizado_fecha', '=',null)
+            ->get()->first()->id_nuevo_estado; // cod orden next step
+
+            $advisory = Advisory::find($advisoryId);
+            $advisory->asesoria_estado_id = $id_nuevo_estado;
+            $advisory->modificacion_fecha = date("Y-m-d H:i:s");
+            $advisory->modificacion_usuario_id = auth()->user()->id;
+            $advisory->save();
+        }
+        
+        $advProcess = AdvisoryProcess::find($advProcessId);
+        $advProcess->realizado_fecha = date("Y-m-d", strtotime($date));
+        $advProcess->realizado_usuario_id = auth()->user()->id;
+        $advProcess->save();
+
+        $advisories = $this->getAdvisories('');
+        $output = '';
+        foreach($advisories as $adv)
+        {
+            $output .= '<tr><td>
+                            <a id="instDetail' . $adv->asesoria_id . '" href="#" class="btn btn-warning btn-sm" 
+                                data-pc-id="' . $adv->asesoria_id . '" >
+                                <i class="fa fa-ellipsis-v"></i>
+                            </a>
+                            <input type="hidden" value="' . $adv->asesoria_id . '" />
+                            <input type="hidden" value="' . $adv->estudiante_id . '" />
+                        </td>
+                            <td><a href="/advisory/' . $adv->asesoria_id . '">' . $adv->cliente .
+                            '</a></td><td>' . $adv->estado . '</td><td></td></tr>';
         }
 
         echo $output;

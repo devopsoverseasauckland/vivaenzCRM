@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Traits\TAdvisory;
 use App\Traits\TCourseTypeInstitution;
 
 use Illuminate\Http\Request;
@@ -98,6 +99,7 @@ class ComboController extends Controller
         echo $output;
     }
 
+    use TAdvisory;
     /**
      * Main query for index advisories filtered by state
      * 
@@ -105,15 +107,16 @@ class ComboController extends Controller
     public function advisories(Request $request)
     {
         $advisoryStateId = $request->get('stateId');
+        $advisories = $this->getAdvisories($advisoryStateId);
 
-        $advisories = DB::table('asesoria')
-        ->join('estudiante', 'estudiante.estudiante_id', '=', 'asesoria.estudiante_id')
-        ->join('asesoria_estado', 'asesoria_estado.asesoria_estado_id', '=', 'asesoria.asesoria_estado_id')
-        ->select(DB::raw("asesoria.asesoria_id, asesoria.estudiante_id, asesoria.asesoria_estado_id,
-                CONCAT(estudiante.primer_nombre, ' ' , estudiante.primer_apellido) AS cliente,
-                asesoria_estado.nombre estado"))
-        ->where('asesoria_estado.asesoria_estado_id', '=', $advisoryStateId)
-        ->where('asesoria_estado.activo', '=', '1')->get();
+        // $advisories = DB::table('asesoria')
+        // ->join('estudiante', 'estudiante.estudiante_id', '=', 'asesoria.estudiante_id')
+        // ->join('asesoria_estado', 'asesoria_estado.asesoria_estado_id', '=', 'asesoria.asesoria_estado_id')
+        // ->select(DB::raw("asesoria.asesoria_id, asesoria.estudiante_id, asesoria.asesoria_estado_id,
+        //         CONCAT(estudiante.primer_nombre, ' ' , estudiante.primer_apellido) AS cliente,
+        //         asesoria_estado.nombre estado"))
+        // ->where('asesoria_estado.asesoria_estado_id', '=', $advisoryStateId)
+        // ->where('asesoria_estado.activo', '=', '1')->get();
 
         $output = '';
         foreach($advisories as $adv)
@@ -153,8 +156,8 @@ class ComboController extends Controller
                         </td>
                         <td class="form-inline text-center " >
                             <small>
-                            <input type="text" id="procStep' . $item->codigo_orden . '" data-pc-id="' . $item->asesoria_proceso_id . '"
-                                data-co-id="' . $item->codigo_orden . '"
+                            <input type="text" id="procStep' . $item->codigo_orden . '" data-proc-id="' . $item->asesoria_proceso_id . '"
+                                data-co-id="' . $item->codigo . '"
                                 value="' . $item->realizado_fecha . '" class="form-control form-control-sm p-0 w-50 text-center"  />
                             </small>
                         </td></tr>';

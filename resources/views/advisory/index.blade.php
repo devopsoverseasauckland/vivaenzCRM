@@ -144,25 +144,28 @@
 
     $(document).on("change", "[id*='procStep']", function()
     {
-        var advProcessId = $(this).data('pc-id');
-        var codOrd = $(this).data('co-id');
+        var advProcessId = $(this).data('proc-id');
         var date = $(this).val();
         var advisoryId = $('#advisoryId').val();
+        var cod = $(this).data('co-id');
         var _token = $('input[name="_token"]').val();
 
         $.ajax({
-            url: "{ route('advisoryProcess.registerDate') }}",
+            url: "{{ route('advisoryProcess.registerDate') }}",
             method: "POST",
             data: { 
                 advProcessId: advProcessId,
                 date: date,
                 advisoryId: advisoryId,
-                codOrd: codOrd,
+                cod: cod,
                 _token: _token
             },
             success:function(result)
             {
-                alert(result);
+                //alert(result);
+                $("#statesFl option:selected").prop("selected", false);
+                $('#tbbody').empty();
+                $( result ).appendTo('#tbbody');
             }
         });
     });

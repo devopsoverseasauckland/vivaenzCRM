@@ -29,6 +29,7 @@ use DB;
 
 class AdvisoryController extends Controller
 {
+    use TAdvisory;
     use TAdvisoryInfoSent;
     use TStudentExperience;
 
@@ -59,19 +60,20 @@ class AdvisoryController extends Controller
      */
     public function index()
     {
-        $advisory = DB::select('SELECT a.asesoria_id, a.estudiante_id, a.asesoria_estado_id,
-                                CONCAT(e.primer_nombre, " ", e.primer_apellido) cliente,
-                                ae.nombre estado
-                                FROM asesoria a
-                                INNER JOIN estudiante e ON a.estudiante_id = e.estudiante_id
-                                INNER JOIN asesoria_estado ae ON a.asesoria_estado_id = ae.asesoria_estado_id');
+        $advisories = $this->getAdvisories('');
+        // $advisory = DB::select('SELECT a.asesoria_id, a.estudiante_id, a.asesoria_estado_id,
+        //                         CONCAT(e.primer_nombre, " ", e.primer_apellido) cliente,
+        //                         ae.nombre estado
+        //                         FROM asesoria a
+        //                         INNER JOIN estudiante e ON a.estudiante_id = e.estudiante_id
+        //                         INNER JOIN asesoria_estado ae ON a.asesoria_estado_id = ae.asesoria_estado_id');
         //$advisory = Advisory::all();
         //return Advisory::all();
 
         $states = AdvisoryState::pluck('nombre', 'asesoria_estado_id');
 
         return view('advisory.index', [
-                'advisories'=>$advisory,
+                'advisories'=>$advisories,
                 'states'=>$states
             ]); 
 
@@ -190,7 +192,7 @@ class AdvisoryController extends Controller
             if ($item->codigo == 'RE')
             {
                 $advisoryProcess->realizado_fecha = $advisory->creacion_fecha;
-                $advisoryProcess->realizad_usuario_id = auth()->user()->id;
+                $advisoryProcess->realizado_usuario_id = auth()->user()->id;
             }
             $advisoryProcess->save();
         }
@@ -385,7 +387,7 @@ class AdvisoryController extends Controller
 
             $advProcess = AdvisoryProcess::find($asesoria_proceso_id);
             $advProcess->realizado_fecha = date("Y-m-d H:i:s");
-            $advProcess->realizad_usuario_id = auth()->user()->id;
+            $advProcess->realizado_usuario_id = auth()->user()->id;
             $advProcess->save();
         }
 
@@ -506,10 +508,22 @@ class AdvisoryController extends Controller
         //$advisory->creacion_fecha = date("Y-m-d H:i:s");
         //$advisory->creacion_usuario_id = 0;
         $advisory->modificacion_fecha = date("Y-m-d H:i:s");
-        $advisory->modificacion_usuario_id = 0;
+        $advisory->modificacion_usuario_id = auth()->user()->id;
         $advisory->save();
 
+        if ($request->input('dateAproxFlight') != '')
+        {
+            $asesoria_proceso_id = DB::table('asesoria_proceso')
+                ->join('proceso_checklist_item', 'proceso_checklist_item.proceso_checklist_item_id', '=', 'asesoria_proceso.proceso_checklist_item_id')
+                ->where('asesoria_proceso.asesoria_id', '=', $id)
+                ->where('proceso_checklist_item.codigo', '=', 'IV')
+                ->first()->asesoria_proceso_id;
 
+            $advProcess = AdvisoryProcess::find($asesoria_proceso_id);
+            $advProcess->realizado_fecha = date("Y-m-d", strtotime( $request->input('dateAproxFlight')));
+            $advProcess->realizado_usuario_id = auth()->user()->id;
+            $advProcess->save();
+        }
 
         $purpouses = Purpouse::pluck('descripcion', 'intencion_viaje_id');
         $contactMeans = ContactMean::pluck('descripcion', 'metodo_contacto_id');
@@ -587,7 +601,7 @@ class AdvisoryController extends Controller
 
             $advProcess = AdvisoryProcess::find($asesoria_proceso_id);
             $advProcess->realizado_fecha = date("Y-m-d H:i:s");
-            $advProcess->realizad_usuario_id = auth()->user()->id;
+            $advProcess->realizado_usuario_id = auth()->user()->id;
             $advProcess->save();
         }
 
