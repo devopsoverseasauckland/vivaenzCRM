@@ -16,9 +16,9 @@ class PagesController extends Controller
         $this->middleware('auth');
     }
 
-    public function login() {
-        return view('pages.login');
-    }
+    // public function login() {
+    //     return view('pages.login');
+    // }
 
     public function index() {
         $title = 'Bienvenido(a) al CRM de Vivaenz';
