@@ -59,6 +59,8 @@ Route::get('combo/advisories', 'ComboController@advisories')->name('combo.adviso
 
 Route::get('combo/advisoryProcess', 'ComboController@advisoryProcess')->name('combo.advisoryProcess');
 
+Route::get('combo/cities', 'ComboController@cities')->name('combo.cities');
+
 
 Route::post('advisoryInfoSent/registerDocument', 'AdvisoryInfoSentController@registerDocument')->name('advisoryInfoSent.registerDocument');
 

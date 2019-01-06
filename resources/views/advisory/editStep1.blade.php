@@ -1,9 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <!--<br/>
-    <br/>
-    <br/>-->
+
     <h3 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted" >
         Nueva Asesoria
     </h3>
@@ -116,7 +114,9 @@
                     <div class="form-inline p-1">
                         {{Form::label('bornCountry', 'Pais Origen',  ['class' => 'w-50'])}}
                         <div class="col-sm-3">
-                            {{Form::select('bornCountry', $countries, $student->pais_id, ['class' => 'form-control form-control-sm w-auto', 'placeholder' => '-- Seleccione --' ])}}
+                            {{Form::select('bornCountry', $countries, $student->pais_id, ['id' => 'bornCountry', 
+                            'class' => 'form-control form-control-sm w-auto dynamic', 
+                            'placeholder' => '-- Seleccione --', 'data-dependent' => 'bornCity' ])}}
                         </div>
                     </div>
                 </div>
@@ -125,7 +125,10 @@
                     <div class="form-inline p-1">
                         {{Form::label('bornCity', 'Ciudad',  ['class' => 'w-50'])}}
                         <div class="col-sm-3">    
-                            {{Form::select('bornCity', $cities, $student->ciudad_id, ['class' => 'form-control form-control-sm w-auto', 'placeholder' => '-- Seleccione --' ])}}
+                            {{-- {{Form::select('bornCity', $cities, $student->ciudad_id, ['class' => 'form-control form-control-sm w-auto', 'placeholder' => '-- Seleccione --' ])}} --}}
+                            <select id="bornCity" name="bornCity" class="form-control form-control-sm w-auto dynamic" >
+                                <option value="" >-- Select --</option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -208,25 +211,12 @@
             </div>
     
             <hr class="mb-4">
-<!--
-            <div class="form-row pt-2 pl-3">
 
-                <div class="col">
-                    <div class="form-inline p-1">
-
-                        <button class="btn btn-outline-success" type="submit">Crear</button>
-                        <button class="btn btn-sm btn-outline-secondary" type="button">Cancelar</button>
-                        
-                    </div>
-                </div>
-
-            </div>
-
-            <button class="btn btn-primary btn-lg btn-block" type="submit">Actualizar</button>
--->
             <div class="form-row pl-3 pb-3">
 
                 {{ Form::hidden('studentId', $student->estudiante_id, array('id' => 'studentId')) }}
+                {{ Form::hidden('countryBId', $student->pais_id, array('id' => 'countryBId')) }}
+                {{ Form::hidden('cityBId', $student->ciudad_id, array('id' => 'cityBId')) }}
 
                 {{ csrf_field() }}
                 {{Form::hidden('_method', 'PUT')}}
@@ -290,7 +280,6 @@
         autoOpen: false,
         width: 350
     });
-    //$( "#dialog" ).dialog( "option", "position", { my: "center top", at: "left bottom" } );
     $('#docPlus').click(function() {
         $('#dialog').dialog('open');
     });
@@ -343,5 +332,41 @@
             }
         })
     });
+
+    $('.dynamic').change(function() {
+        var slDependent = $(this).data('dependent');
+        LoadCities($(this), slDependent, 0);
+    });
+
+    LoadCities($('#countryBId'), 'bornCity', 1);
+    function LoadCities(countryCtrl, slDependent, load)
+    {
+        if (countryCtrl.val() != '')
+        {
+            var bornCountry = countryCtrl.val();
+            var _token = $('input[name="_token"]').val();
+
+            $.ajax({
+                url: "{{ route('combo.cities') }}",
+                method: "GET",
+                data: { 
+                    val: bornCountry, 
+                    selIt: 1,
+                    _token: _token
+                },
+                success:function(result)
+                {
+                    $('#' + slDependent ).empty();
+                    $( result ).appendTo( '#' + slDependent );
+                    
+                    if (load == 1)
+                    {
+                        var cityId = $('#cityBId').val();
+                        $('#' + slDependent + ' option[value="' + cityId + '"]').prop('selected', true);
+                    }
+                }
+            })
+        }
+    }
 
 @endsection

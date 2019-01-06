@@ -90,7 +90,7 @@ class AdvisoryController extends Controller
         $docType = DocumentType::pluck('nombre', 'tipo_documento_id');
         $maritalStatus = MaritalStatus::pluck('nombre', 'estado_civil_id');
         $countries = Country::pluck('nombre', 'pais_id');
-        $cities = City::pluck('nombre', 'ciudad_id');
+        //$cities = City::pluck('nombre', 'ciudad_id');
         $professions = Profession::pluck('nombre', 'profesion_id');
         $englishLev = EnglishLevel::pluck('nombre', 'nivel_ingles_id');
 
@@ -99,7 +99,7 @@ class AdvisoryController extends Controller
                                             'docTypes'=>$docType, 
                                             'maritalStatus'=>$maritalStatus,
                                             'countries'=>$countries,
-                                            'cities'=>$cities,
+                                            //'cities'=>$cities,
                                             'professions'=>$professions,
                                             'englishLev'=>$englishLev
                                        ]);
@@ -306,7 +306,7 @@ class AdvisoryController extends Controller
         $docType = DocumentType::pluck('nombre', 'tipo_documento_id');
         $maritalStatus = MaritalStatus::pluck('nombre', 'estado_civil_id');
         $countries = Country::pluck('nombre', 'pais_id');
-        $cities = City::pluck('nombre', 'ciudad_id');
+        //$cities = City::pluck('nombre', 'ciudad_id');
         $professions = Profession::pluck('nombre', 'profesion_id');
         $englishLev = EnglishLevel::pluck('nombre', 'nivel_ingles_id');
 
@@ -318,7 +318,7 @@ class AdvisoryController extends Controller
                                             'docTypes'=>$docType, 
                                             'maritalStatus'=>$maritalStatus,
                                             'countries'=>$countries,
-                                            'cities'=>$cities,
+                                            //'cities'=>$cities,
                                             'professions'=>$professions,
                                             'englishLev'=>$englishLev,
                                             'experience'=>$experience
@@ -466,9 +466,11 @@ class AdvisoryController extends Controller
         $docType = DocumentType::pluck('nombre', 'tipo_documento_id');
         $maritalStatus = MaritalStatus::pluck('nombre', 'estado_civil_id');
         $countries = Country::pluck('nombre', 'pais_id');
-        $cities = City::pluck('nombre', 'ciudad_id');
+        //$cities = City::pluck('nombre', 'ciudad_id');
         $professions = Profession::pluck('nombre', 'profesion_id');
         $englishLev = EnglishLevel::pluck('nombre', 'nivel_ingles_id');
+
+        $experience = $this->getExperience($advisory->estudiante_id);
 
         //return view('advisory.editStep1')->with('advisory', $advisory)->with('student', $student);
         return view('advisory.editStep1', [
@@ -476,9 +478,10 @@ class AdvisoryController extends Controller
                                             'docTypes'=>$docType, 
                                             'maritalStatus'=>$maritalStatus,
                                             'countries'=>$countries,
-                                            'cities'=>$cities,
+                                            //'cities'=>$cities,
                                             'professions'=>$professions,
                                             'englishLev'=>$englishLev,
+                                            'experience'=>$experience,
                                             'success', 'Student Updated'
                                           ]);
     }
