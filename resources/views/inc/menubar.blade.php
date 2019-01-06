@@ -49,17 +49,25 @@
             </h6>
     
             <ul class="nav flex-column mb-2">
-                <li class="nav-item">
-                    <a class="nav-link" href="/coursetype">
-                    <span data-feather="file-text"></span>
-                    Tipos de cursos
-                    </a>
-                </li>
-
+                
                 <li class="nav-item">
                     <a class="nav-link" href="/institution">
                     <span data-feather="file-text"></span>
                     Instituciones
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="/profession">
+                    <span data-feather="file-text"></span>
+                    Profesiones
+                    </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link" href="/coursetype">
+                    <span data-feather="file-text"></span>
+                    Tipos de cursos
                     </a>
                 </li>
             </ul>

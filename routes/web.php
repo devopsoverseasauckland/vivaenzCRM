@@ -86,3 +86,5 @@ Route::post('coursetype/deleteInstitution', 'CourseTypeController@deleteInstitut
 
 
 Route::resource('institution','InstitutionController');
+
+Route::resource('profession', 'ProfessionController');
