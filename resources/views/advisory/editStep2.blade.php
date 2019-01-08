@@ -57,7 +57,7 @@
                     <div class="form-inline pl-1 pt-3">
                         {{Form::label('famAdvisory', 'Asesoria familia', ['class' => 'w-50'])}}
                         <div class="col-sm-1">
-                            {{Form::checkbox('famAdvisory', $advisory->asesoria_familia, $advisory->asesoria_familia, ['class' => 'form-check-input'])}}
+                            {{Form::checkbox('famAdvisory', $advisory->asesoria_familia, $advisory->asesoria_familia, ['id' => 'famAdvisory', 'class' => 'form-check-input'])}}
                         </div>                        
                     </div>
 
@@ -74,7 +74,7 @@
 
                     <div class="card w-auto">
                         <div class="card-header">
-                            Check list informacion Enviada
+                            Informacion de cursos enviada
                             <a href="#" class="pull-right" >
                                 <i id="docPlus" class="fa fa-plus" aria-hidden="true"></i>
                             </a>
@@ -83,7 +83,9 @@
                             <ul class="list-group">
                                 @if ($docsSent->count() > 0)
                                     @foreach ($docsSent as $doc)
-                                        <li class="list-group-item" id="li{{ $doc->asesoria_informacion_enviada_id }}" >{{ $doc->nombre }}
+                                        <li class="list-group-item" id="li{{ $doc->asesoria_informacion_enviada_id }}" >
+                                            {{ $doc->tipoCurso }} <br/> {{ $doc->institucion }}
+                                            
                                             <a href="#" class="pull-right">
                                                 <i id="docTrash{{ $doc->asesoria_informacion_enviada_id }}" class="fa fa-trash" aria-hidden="true" data-doc-id="{{ $doc->asesoria_informacion_enviada_id }}" ></i>
                                             </a>
@@ -109,6 +111,7 @@
                 <a class="btn btn-outline-secondary" href="/editStep1/{{$advisory->asesoria_id}}" role="button">Estudiante</a>
 
                 {{ Form::hidden('advisoryId', $advisory->asesoria_id, array('id' => 'advisoryId')) }}
+                {{ Form::hidden('famAdvisoryhf', $advisory->asesoria_familia, array('id' => 'famAdvisoryhf')) }}
 
                 {{ csrf_field() }}
                 {{Form::hidden('_method', 'PUT')}}
@@ -127,7 +130,7 @@
     </nav>
 
     <!-- Modal -->
-    <div id="dialog" title="Basic dialog">
+    <div id="dialog" title="Registrar informacion enviada">
 
         <div class="form-row">
             <div class="form-group col-md-8">
@@ -159,11 +162,35 @@
     $('#docPlus').click(function() {
         $('#dialog').dialog('open');
     });
+    $( "#dialog" ).dialog( "option", "position", { my: "left top", at: "left+40 top+40", of: "#dvMessages" } );
 
     $("#dateAproxFlight").datepicker({
         changeMonth: true,
         changeYear: true
     });
+
+    $(document).on('click', '#famAdvisory', function()
+    {
+        val = $(this).prop('checked');
+        if (val)
+        {
+            $('#famAdvisoryhf').val('1');
+        } else 
+        {
+            $('#famAdvisoryhf').val('0');
+        }
+    });
+    loadFamAdvisory($('#famAdvisoryhf').val());
+    function loadFamAdvisory(val)
+    {
+        if (val == '1')
+        {
+            $('#famAdvisory').prop('checked', true);
+        } else 
+        {
+            $('#famAdvisory').prop('checked', false);
+        }
+    }
 
     $(document).on('click', '.fa-trash', function()
     {

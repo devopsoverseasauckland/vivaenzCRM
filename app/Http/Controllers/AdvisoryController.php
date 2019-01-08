@@ -506,7 +506,8 @@ class AdvisoryController extends Controller
         $advisory->intencion_viaje_id = $request->input('purpose'); 
         $advisory->fecha_estimada_viaje = date("Y-m-d", strtotime( $request->input('dateAproxFlight')));
         $advisory->metodo_contacto_id = $request->input('contactMean'); 
-        $advisory->asesoria_familia = $request->input('famAdvisory') == 'on' ? 1 : 0; 
+        //$advisory->asesoria_familia = $request->input('famAdvisory') == 'on' ? 1 : 0; 
+        $advisory->asesoria_familia = $request->input('famAdvisoryhf'); 
         $advisory->observaciones = $request->input('observ');
         //$advisory->creacion_fecha = date("Y-m-d H:i:s");
         //$advisory->creacion_usuario_id = 0;
@@ -526,6 +527,11 @@ class AdvisoryController extends Controller
             $advProcess->realizado_fecha = date("Y-m-d", strtotime( $request->input('dateAproxFlight')));
             $advProcess->realizado_usuario_id = auth()->user()->id;
             $advProcess->save();
+
+            $advisoryEnroll_Id = DB::table('asesoria_enrollment')->where('asesoria_enrollment.asesoria_id', '=', $id)->distinct()->first()->asesoria_enrollment_id;
+            $advisoryEnroll = AdvisoryEnrollment::find($advisoryEnroll_Id);
+            $advisoryEnroll->fecha_llegada = date("Y-m-d", strtotime( $request->input('dateArrive'))); 
+            $advisoryEnroll->save();
         }
 
         $purpouses = Purpouse::pluck('descripcion', 'intencion_viaje_id');
