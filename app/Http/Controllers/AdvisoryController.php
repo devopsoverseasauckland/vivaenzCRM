@@ -87,12 +87,11 @@ class AdvisoryController extends Controller
      */
     public function create()
     {
-        $docType = DocumentType::pluck('nombre', 'tipo_documento_id');
-        $maritalStatus = MaritalStatus::pluck('nombre', 'estado_civil_id');
-        $countries = Country::pluck('nombre', 'pais_id');
-        //$cities = City::pluck('nombre', 'ciudad_id');
-        $professions = Profession::pluck('nombre', 'profesion_id');
-        $englishLev = EnglishLevel::pluck('nombre', 'nivel_ingles_id');
+        $docType = DocumentType::where('activo','1')->orderBy('codigo_orden','asc')->pluck('nombre', 'tipo_documento_id');
+        $maritalStatus = MaritalStatus::where('activo','1')->orderBy('codigo_orden','asc')->pluck('nombre', 'estado_civil_id');
+        $countries = Country::where('activo','1')->orderBy('nombre','asc')->pluck('nombre', 'pais_id');
+        $professions = Profession::where('activo','1')->orderBy('nombre','asc')->pluck('nombre', 'profesion_id');
+        $englishLev = EnglishLevel::where('activo','1')->orderBy('codigo_orden','asc')->pluck('nombre', 'nivel_ingles_id');
 
         //return view('advisory.editStep1')->with('advisory', $advisory)->with('student', $student);
         return view('advisory.create', [
@@ -236,10 +235,10 @@ class AdvisoryController extends Controller
             case 1:
             case 2:
             default:
-                $purpouses = Purpouse::pluck('descripcion', 'intencion_viaje_id');
-                $contactMeans = ContactMean::pluck('descripcion', 'metodo_contacto_id');
+                $purpouses = Purpouse::where('activo','1')->orderBy('codigo_orden','asc')->pluck('descripcion', 'intencion_viaje_id');
+                $contactMeans = ContactMean::where('activo','1')->orderBy('codigo_orden','asc')->pluck('descripcion', 'metodo_contacto_id');
 
-                $courseTypes = CourseType::pluck('descripcion', 'tipo_curso_id');
+                $courseTypes = CourseType::where('activo','1')->orderBy('descripcion','asc')->pluck('descripcion', 'tipo_curso_id');
 
                 $docsSent = $this->getDocuments($id);
 
@@ -303,12 +302,12 @@ class AdvisoryController extends Controller
         $advisory = Advisory::find($id);
         $student = Student::find($advisory->estudiante_id);
 
-        $docType = DocumentType::pluck('nombre', 'tipo_documento_id');
-        $maritalStatus = MaritalStatus::pluck('nombre', 'estado_civil_id');
-        $countries = Country::pluck('nombre', 'pais_id');
+        $docType = DocumentType::where('activo','1')->orderBy('codigo_orden','asc')->pluck('nombre', 'tipo_documento_id');
+        $maritalStatus = MaritalStatus::where('activo','1')->orderBy('codigo_orden','asc')->pluck('nombre', 'estado_civil_id');
+        $countries = Country::where('activo','1')->orderBy('nombre','asc')->pluck('nombre', 'pais_id');
         //$cities = City::pluck('nombre', 'ciudad_id');
-        $professions = Profession::pluck('nombre', 'profesion_id');
-        $englishLev = EnglishLevel::pluck('nombre', 'nivel_ingles_id');
+        $professions = Profession::where('activo','1')->orderBy('nombre','asc')->pluck('nombre', 'profesion_id');
+        $englishLev = EnglishLevel::where('activo','1')->orderBy('codigo_orden','asc')->pluck('nombre', 'nivel_ingles_id');
 
         $experience = $this->getExperience($advisory->estudiante_id);
 
@@ -345,10 +344,10 @@ class AdvisoryController extends Controller
             $advisory->save();
         }
 
-        $purpouses = Purpouse::pluck('descripcion', 'intencion_viaje_id');
-        $contactMeans = ContactMean::pluck('descripcion', 'metodo_contacto_id');
+        $purpouses = Purpouse::where('activo','1')->orderBy('codigo_orden','asc')->pluck('descripcion', 'intencion_viaje_id');
+        $contactMeans = ContactMean::where('activo','1')->orderBy('codigo_orden','asc')->pluck('descripcion', 'metodo_contacto_id');
         
-        $courseTypes = CourseType::pluck('descripcion', 'tipo_curso_id');
+        $courseTypes = CourseType::where('activo','1')->orderBy('descripcion','asc')->pluck('descripcion', 'tipo_curso_id');
 
         $docsSent = $this->getDocuments($id);
 
@@ -463,12 +462,12 @@ class AdvisoryController extends Controller
 
 
 
-        $docType = DocumentType::pluck('nombre', 'tipo_documento_id');
-        $maritalStatus = MaritalStatus::pluck('nombre', 'estado_civil_id');
-        $countries = Country::pluck('nombre', 'pais_id');
+        $docType = DocumentType::where('activo','1')->orderBy('codigo_orden','asc')->pluck('nombre', 'tipo_documento_id');
+        $maritalStatus = MaritalStatus::where('activo','1')->orderBy('codigo_orden','asc')->pluck('nombre', 'estado_civil_id');
+        $countries = Country::where('activo','1')->orderBy('nombre','asc')->pluck('nombre', 'pais_id');
         //$cities = City::pluck('nombre', 'ciudad_id');
-        $professions = Profession::pluck('nombre', 'profesion_id');
-        $englishLev = EnglishLevel::pluck('nombre', 'nivel_ingles_id');
+        $professions = Profession::where('activo','1')->orderBy('nombre','asc')->pluck('nombre', 'profesion_id');
+        $englishLev = EnglishLevel::where('activo','1')->orderBy('codigo_orden','asc')->pluck('nombre', 'nivel_ingles_id');
 
         $experience = $this->getExperience($advisory->estudiante_id);
 
@@ -534,18 +533,18 @@ class AdvisoryController extends Controller
             $advisoryEnroll->save();
         }
 
-        $purpouses = Purpouse::pluck('descripcion', 'intencion_viaje_id');
-        $contactMeans = ContactMean::pluck('descripcion', 'metodo_contacto_id');
+        $purpouses = Purpouse::where('activo','1')->orderBy('codigo_orden','asc')->pluck('descripcion', 'intencion_viaje_id');
+        $contactMeans = ContactMean::where('activo','1')->orderBy('codigo_orden','asc')->pluck('descripcion', 'metodo_contacto_id');
 
-        $courseTypes = CourseType::pluck('descripcion', 'tipo_curso_id');
+        $courseTypes = CourseType::where('activo','1')->orderBy('descripcion','asc')->pluck('descripcion', 'tipo_curso_id');
         //$institutions = CourseTypeInstitution::pluck('descripcion', 'intencion_viaje_id');
                     
-        $infoSent = DB::select('SELECT a.asesoria_id, a.estudiante_id, a.asesoria_estado_id,
-                        CONCAT(e.primer_nombre, " ", e.primer_apellido) cliente,
-                        ae.nombre estado
-                        FROM asesoria a
-                        INNER JOIN estudiante e ON a.estudiante_id = e.estudiante_id
-                        INNER JOIN asesoria_estado ae ON a.asesoria_estado_id = ae.asesoria_estado_id');
+        // $infoSent = DB::select('SELECT a.asesoria_id, a.estudiante_id, a.asesoria_estado_id,
+        //                 CONCAT(e.primer_nombre, " ", e.primer_apellido) cliente,
+        //                 ae.nombre estado
+        //                 FROM asesoria a
+        //                 INNER JOIN estudiante e ON a.estudiante_id = e.estudiante_id
+        //                 INNER JOIN asesoria_estado ae ON a.asesoria_estado_id = ae.asesoria_estado_id');
 
         $docsSent = $this->getDocuments($id);
 

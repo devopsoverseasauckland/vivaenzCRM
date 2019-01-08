@@ -131,7 +131,7 @@
 
                 <div class="col">
                     <div class="form-inline p-1">
-                        {{Form::label('dateFinishClass', 'Fecha Inicio Clases',  ['class' => 'w-50'])}}
+                        {{Form::label('dateFinishClass', 'Fecha Fin Clases',  ['class' => 'w-50'])}}
 
                         <div class="col-sm-6">
                             

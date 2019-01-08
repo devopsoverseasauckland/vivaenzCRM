@@ -14,6 +14,8 @@ trait TCity {
         ->join('ciudad', 'pais.pais_id', '=', 'ciudad.pais_id')
         ->select('ciudad.ciudad_id', 'ciudad.nombre')
         ->where('pais.pais_id', '=', $countryId)
+        ->where('ciudad.activo', '=', '1')
+        ->orderBy('ciudad.nombre','asc')
         ->get();
 
         return $citiesCountry;

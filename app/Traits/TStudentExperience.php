@@ -13,6 +13,7 @@ trait TStudentExperience {
         ->select('estudiante_experiencia.profesion_id', 'profesion.nombre')
         ->where('estudiante_experiencia.estudiante_id', '=', $studentId)
         ->where('profesion.activo', '=', '1')
+        ->orderBy('profesion.nombre','asc')
         ->get();
 
         return $docsSent;

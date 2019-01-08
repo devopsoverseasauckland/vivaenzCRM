@@ -80,6 +80,8 @@ trait TCourseTypeInstitution {
         ->join('institucion', 'tipo_curso_institucion.institucion_id', '=', 'institucion.institucion_id')
         ->select('institucion.institucion_id', 'institucion.nombre')
         ->where('tipo_curso_institucion.tipo_curso_id', '=', $courseTypeId)
+        ->where('institucion.activo', '=', '1')
+        ->orderBy('institucion.nombre','asc')
         ->get();
 
         return $instCourseType;
