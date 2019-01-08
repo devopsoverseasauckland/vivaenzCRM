@@ -64,7 +64,7 @@ class ComboController extends Controller
         {
             $output .= '<tr><td>
                             <a id="instDetail' . $adv->asesoria_id . '" href="#" class="btn btn-warning btn-sm" 
-                                data-pc-id="' . $adv->asesoria_id . '" >
+                                data-pc-id="' . $adv->asesoria_id . '" data-cli-id="' . $adv->cliente . '" >
                                 <i class="fa fa-ellipsis-v"></i>
                             </a>
                             <input type="hidden" value="' . $adv->asesoria_id . '" />

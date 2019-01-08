@@ -29,7 +29,8 @@
                 <tr>
                     <td>
                         {{-- <input type="checkbox" id="check{{ $advisory->asesoria_id }}"  /> --}}
-                        <a id="instDetail{{ $advisory->asesoria_id }}" href="#" class="btn btn-warning btn-sm" data-pc-id="{{ $advisory->asesoria_id }}" >
+                        <a id="instDetail{{ $advisory->asesoria_id }}" href="#" class="btn btn-warning btn-sm" 
+                            data-pc-id="{{ $advisory->asesoria_id }}" data-cli-id="{{ $advisory->cliente }}" >
                             <i class="fa fa-ellipsis-v"></i>
                         </a>
                         <input type="hidden" value="{{ $advisory->asesoria_id }}" />
@@ -117,6 +118,9 @@
         var advisoryId = $(this).data('pc-id');
         var _token = $('input[name="_token"]').val();
         $('#advisoryId').val(advisoryId);
+
+        $('#dialog').dialog('option', 'title', 'Detalle proceso ' + $(this).data('cli-id'));
+
         $.ajax({
             url: "{{ route('combo.advisoryProcess') }}",
             method: "GET",

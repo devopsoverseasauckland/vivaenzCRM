@@ -23,7 +23,8 @@
                 <td>{{$courseType['tipo_curso_id']}}</td>
                 <td>{{$courseType['descripcion']}}</td>
                 <td>
-                    <a id="instDetail{{ $courseType['tipo_curso_id'] }}" href="#" class="btn btn-warning btn-sm" data-ct-id="{{ $courseType['tipo_curso_id'] }}" >
+                    <a id="instDetail{{ $courseType['tipo_curso_id'] }}" href="#" class="btn btn-warning btn-sm" 
+                       data-ct-id="{{ $courseType['tipo_curso_id'] }}" data-ins-id="{{ $courseType['descripcion'] }}" >
                         <i class="fa fa-university"></i>
                     </a>
                 </td>
@@ -157,6 +158,9 @@
         var courseTypeId = $(this).data('ct-id');
         var _token = $('input[name="_token"]').val();
         $('#courseTypeId').val(courseTypeId);
+
+        var institu = $(this).data('ins-id');
+
         $.ajax({
             url: "{{ route('combo.institutions') }}",
             method: "GET",
@@ -167,6 +171,7 @@
             },
             success:function(result)
             {
+                $('#dialog').dialog('option', 'title', '' + institu);
                 $('#dialog').dialog('open');
                 $('.list-group').empty();
                 $( result ).appendTo('.list-group');
