@@ -90,3 +90,18 @@ Route::post('coursetype/deleteInstitution', 'CourseTypeController@deleteInstitut
 Route::resource('institution','InstitutionController');
 
 Route::resource('profession', 'ProfessionController');
+
+
+
+Route::post('studentInsuranceHistory/register', 'StudentInsuranceHistoryController@register')->name('studentInsuranceHist.register');
+
+Route::post('studentInsuranceHistory/update', 'StudentInsuranceHistoryController@update')->name('studentInsuranceHist.update');
+
+Route::get('studentInsuranceHistory/get', 'StudentInsuranceHistoryController@get')->name('studentInsuranceHist.get');
+
+
+Route::post('studentVisaHistory/register', 'StudentVisaHistoryController@register')->name('studentVisaHist.register');
+
+Route::post('studentVisaHistory/update', 'StudentVisaHistoryController@update')->name('studentVisaHist.update');
+
+Route::get('studentVisaHistory/get', 'StudentVisaHistoryController@get')->name('studentVisaHist.get');

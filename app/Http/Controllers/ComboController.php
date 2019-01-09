@@ -64,7 +64,9 @@ class ComboController extends Controller
         {
             $output .= '<tr><td>
                             <a id="instDetail' . $adv->asesoria_id . '" href="#" class="btn btn-warning btn-sm" 
-                                data-pc-id="' . $adv->asesoria_id . '" data-cli-id="' . $adv->cliente . '" >
+                                data-adv-id="' . $adv->asesoria_id . '" data-cli-name="' . $adv->cliente . '" 
+                                data-ins-id="' . $adv->insurance_id . '" data-visa-id="' . $adv->visa_id . '"
+                                data-cli-id="' . $adv->estudiante_id . '">
                                 <i class="fa fa-ellipsis-v"></i>
                             </a>
                             <input type="hidden" value="' . $adv->asesoria_id . '" />
@@ -92,9 +94,22 @@ class ComboController extends Controller
         $output = '';
         foreach($process as $item)
         {
-            $output .= '<tr><td class="bg-light" >
-                            <span class="badge badge-light">' . $item->nombre . '</span>
-                        </td>
+            $output .= '<tr><td class="bg-light" >';
+            
+            switch($item->codigo)
+            {
+                case 'VA':
+                    $output .= '<span id="spVA" class="badge badge-light text-primary">' . $item->nombre . '</span>';
+                    break;
+                case 'SG':
+                    $output .= '<span id="spSG" class="badge badge-light text-primary">' . $item->nombre . '</span>';
+                    break;
+                default:
+                    $output .= '<span class="badge badge-light">' . $item->nombre . '</span>';
+                    break;                    
+            }
+
+            $output .= '</td>
                         <td class="form-inline text-center " >
                             <small>
                             <input type="text" id="procStep' . $item->codigo_orden . '" data-proc-id="' . $item->asesoria_proceso_id . '"

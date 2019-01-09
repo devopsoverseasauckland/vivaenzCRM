@@ -50,7 +50,9 @@ class AdvisoryProcessController extends Controller
         {
             $output .= '<tr><td>
                             <a id="instDetail' . $adv->asesoria_id . '" href="#" class="btn btn-warning btn-sm" 
-                                data-pc-id="' . $adv->asesoria_id . '" data-cli-id="' . $adv->cliente . '" >
+                                data-adv-id="' . $adv->asesoria_id . '" data-cli-name="' . $adv->cliente . '" 
+                                data-ins-id="' . $adv->insurance_id . '" data-visa-id="' . $adv->visa_id . '"
+                                data-cli-id="' . $adv->estudiante_id . '">
                                 <i class="fa fa-ellipsis-v"></i>
                             </a>
                             <input type="hidden" value="' . $adv->asesoria_id . '" />

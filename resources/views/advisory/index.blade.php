@@ -30,7 +30,9 @@
                     <td>
                         {{-- <input type="checkbox" id="check{{ $advisory->asesoria_id }}"  /> --}}
                         <a id="instDetail{{ $advisory->asesoria_id }}" href="#" class="btn btn-warning btn-sm" 
-                            data-pc-id="{{ $advisory->asesoria_id }}" data-cli-id="{{ $advisory->cliente }}" >
+                            data-adv-id="{{ $advisory->asesoria_id }}" data-cli-name="{{ $advisory->cliente }}" 
+                            data-ins-id="{{ $advisory->insurance_id }}" data-visa-id="{{ $advisory->visa_id }}" 
+                            data-cli-id="{{ $advisory->estudiante_id }}" >
                             <i class="fa fa-ellipsis-v"></i>
                         </a>
                         <input type="hidden" value="{{ $advisory->asesoria_id }}" />
@@ -49,6 +51,9 @@
     @endif
 
     {{ Form::hidden('advisoryId', '', array('id' => 'advisoryId')) }}
+    {{ Form::hidden('studentId', '', array('id' => 'studentId')) }}
+    {{ Form::hidden('insuranceId', '', array('id' => 'insuranceId')) }}
+    {{ Form::hidden('visaId', '', array('id' => 'visaId')) }}
 
     <!-- Modal -->
     <div id="dialog" class="container m-1" title="Detalle proceso">
@@ -82,6 +87,53 @@
 
     </div>
 
+    <div id="dialogVA" class="container m-1" title="Detalle Visa">
+
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="courseType" class="col-form-label col-form-label-sm" >Fecha inicio visa</label>
+                <small>
+                    <input type="text" class="form-control" id="dateVisaIni" >
+                </small>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="courseType" class="col-form-label col-form-label-sm" >Fecha fin visa</label>
+                <small>
+                    <input type="text" class="form-control" id="dateVisaFin" >
+                </small>
+            </div>
+        </div>
+
+        <button id="btnUpdateVisa" type="submit" class="btn btn-primary">Actualizar</button>
+        <button id="btnNewVisa" type="submit" class="btn btn-primary">Nuevo Registro</button>
+
+    </div>
+
+    <div id="dialogSG" class="container m-1" title="Detalle Seguro Medico">
+
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="courseType" class="col-form-label col-form-label-sm" >Fecha Inicio</label>
+                <small>
+                    <input type="text" class="form-control" id="dateInsIni" >
+                </small>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="courseType" class="col-form-label col-form-label-sm" >Fecha Fin</label>
+                <small>
+                    <input type="text" class="form-control" id="dateInsFin" >
+                </small>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="policy" class="col-form-label col-form-label-sm" >Poliza No</label>
+            <input type="text" class="form-control" id="policy" >
+        </div>
+        <button id="btnUpdateIns" type="submit" class="btn btn-primary">Actualizar</button>
+        <button id="btnNewIns" type="submit" class="btn btn-primary">Nuevo Registro</button>
+
+    </div>
+
 @endsection
 @section('postJquery')
     @parent
@@ -90,6 +142,16 @@
         width: 350
     });
     $( "#dialog" ).dialog( "option", "position", { my: "left top", at: "left+40 top+40", of: "#dvMessages" } );
+
+    $('#dialogVA').dialog({ 
+        autoOpen: false,
+        width: 350
+    });
+
+    $('#dialogSG').dialog({ 
+        autoOpen: false,
+        width: 350
+    });
 
     $(document).on('change', '#statesFl', function()
     {
@@ -115,11 +177,14 @@
     $(document).on('click', '.btn-warning', function()
     {
         $('#dialog').dialog('close');
-        var advisoryId = $(this).data('pc-id');
+        var advisoryId = $(this).data('adv-id');
         var _token = $('input[name="_token"]').val();
         $('#advisoryId').val(advisoryId);
+        $('#studentId').val($(this).data('cli-id'))
+        $('#insuranceId').val($(this).data('ins-id'));
+        $('#visaId').val($(this).data('visa-id'));
 
-        $('#dialog').dialog('option', 'title', 'Detalle proceso ' + $(this).data('cli-id'));
+        $('#dialog').dialog('option', 'title', $(this).data('cli-name') + ' (Estado Asesoria)');
 
         $.ajax({
             url: "{{ route('combo.advisoryProcess') }}",
@@ -170,6 +235,221 @@
                 $("#statesFl option:selected").prop("selected", false);
                 $('#tbbody').empty();
                 $( result ).appendTo('#tbbody');
+            }
+        });
+    });
+
+    $("[id*='date']").datepicker({
+        changeMonth: true,
+        changeYear: true,
+        showOn: "button",
+        buttonImage: "img/calendar.gif",
+        buttonImageOnly: true,
+        buttonText: "Select date"
+    });
+
+    $(document).on('click', '#spVA', function()
+    {
+        var visaId = $('#visaId').val();
+        if (visaId == '')
+        {
+            $('#btnUpdateVisa').toggleClass( 'disabled', true ); 
+            $('#btnUpdateVisa').prop('disabled', true);
+            $('#btnNewVisa').addClass('btn-primary');
+            $('#btnNewVisa').removeClass('btn-outline-danger');
+        } else 
+        {
+            LoadVisaDetails(visaId);
+            $('#btnUpdateVisa').toggleClass( 'disabled', false ); 
+            $('#btnUpdateVisa').prop('disabled', false);
+            
+            $('#btnNewVisa').removeClass('btn-primary');
+            $('#btnNewVisa').addClass('btn-outline-danger');
+        }
+
+        $('#dialogVA').dialog('open');
+    });
+
+    function LoadVisaDetails(visaId)
+    {
+        $.ajax({
+            url: "{{ route('studentVisaHist.get') }}",
+            method: "GET",
+            data: { 
+                visaId: visaId
+            },
+            success:function(result)
+            {
+                //alert('Actualizado');
+
+                $('#dateVisaIni').val(result.inicio_fecha);
+                $('#dateVisaFin').val(result.fin_fecha);
+            }
+        });
+    }
+
+    $(document).on('click', '#btnUpdateVisa', function()
+    {
+        var advId = $('#advisoryId').val();
+        var visaId = $('#visaId').val();
+        var dateIni = $('#dateVisaIni').val();
+        var dateFin = $('#dateVisaFin').val();
+        var _token = $('input[name="_token"]').val();
+
+        $.ajax({
+            url: "{{ route('studentVisaHist.update') }}",
+            method: "POST",
+            data: {
+                advId: advId, 
+                visaId: visaId,
+                dateIni: dateIni,
+                dateFin: dateFin,
+                _token: _token
+            },
+            success:function(result)
+            {
+                //alert('Actualizado');
+            }
+        });
+    });
+
+    $(document).on('click', '#btnNewVisa', function()
+    {
+        var visaId = $('#visaId').val();
+        var advId = $('#advisoryId').val();
+        var studId = $('#studentId').val();
+        var dateIni = $('#dateVisaIni').val();
+        var dateFin = $('#dateVisaFin').val();
+        var _token = $('input[name="_token"]').val();
+
+        $.ajax({
+            url: "{{ route('studentVisaHist.register') }}",
+            method: "POST",
+            data: { 
+                advId: advId,
+                studId: studId,
+                visaId: visaId,
+                dateIni: dateIni,
+                dateFin: dateFin,
+                _token: _token
+            },
+            success:function(result)
+            {
+                //alert('Actualizado');
+                if (result.estudiante_visa_historial_id > 0)
+                {
+                    $('#visaId').val(result.estudiante_visa_historial_id);
+                    $('#btnUpdateVisa').toggleClass( 'disabled', false ); 
+                    $('#btnUpdateVisa').prop('disabled', false);
+
+                    $('#btnNewVisa').toggleClass('btn-outline-danger');
+                }
+            }
+        });
+    });
+
+    $(document).on('click', '#spSG', function()
+    {
+        var insId = $('#insuranceId').val();
+        if (insId == '')
+        {
+            $('#btnUpdateIns').toggleClass( 'disabled', true ); 
+            $('#btnUpdateIns').prop('disabled', true);
+            $('#btnNewIns').addClass('btn-primary');
+            $('#btnNewIns').removeClass('btn-outline-danger');
+        } else 
+        {
+            LoadInsDetails(insId);
+            $('#btnUpdateIns').toggleClass( 'disabled', false ); 
+            $('#btnUpdateIns').prop('disabled', false);
+            
+            $('#btnNewIns').removeClass('btn-primary');
+            $('#btnNewIns').addClass('btn-outline-danger');
+        }
+
+        $('#dialogSG').dialog('open');
+    });
+
+    function LoadInsDetails(insId)
+    {
+        $.ajax({
+            url: "{{ route('studentInsuranceHist.get') }}",
+            method: "GET",
+            data: { 
+                insId: insId
+            },
+            success:function(result)
+            {
+                //alert('Actualizado');
+
+                $('#dateInsIni').val(result.inicio_fecha);
+                $('#dateInsFin').val(result.fin_fecha);
+                $('#policy').val(result.numero_poliza);
+            }
+        });
+    }
+
+    $(document).on('click', '#btnUpdateIns', function()
+    {
+        var advId = $('#advisoryId').val();
+        var insId = $('#insuranceId').val();
+        var dateIni = $('#dateInsIni').val();
+        var dateFin = $('#dateInsFin').val();
+        var policy = $('#policy').val();
+        var _token = $('input[name="_token"]').val();
+
+        $.ajax({
+            url: "{{ route('studentInsuranceHist.update') }}",
+            method: "POST",
+            data: { 
+                advId: advId,
+                insId: insId,
+                dateIni: dateIni,
+                dateFin: dateFin,
+                policy: policy,
+                _token: _token
+            },
+            success:function(result)
+            {
+                //alert('Actualizado');
+            }
+        });
+    });
+
+    $(document).on('click', '#btnNewIns', function()
+    {
+        var advId = $('#advisoryId').val();
+        var studId = $('#studentId').val();
+        var insId = $('#insuranceId').val();
+        var dateIni = $('#dateInsIni').val();
+        var dateFin = $('#dateInsFin').val();
+        var policy = $('#policy').val();
+        var _token = $('input[name="_token"]').val();
+
+        $.ajax({
+            url: "{{ route('studentInsuranceHist.register') }}",
+            method: "POST",
+            data: { 
+                advId: advId,
+                studId: studId,
+                insId: insId,
+                dateIni: dateIni,
+                dateFin: dateFin,
+                policy: policy,
+                _token: _token
+            },
+            success:function(result)
+            {
+                //alert('Actualizado');
+
+                if (result.estudiante_seguro_historial_id > 0)
+                {
+                    $('#insuranceId').val(result.estudiante_seguro_historial_id);
+                    $('#btnUpdateIns').toggleClass( 'disabled', false ); 
+                    $('#btnUpdateIns').prop('disabled', false);
+
+                    $('#btnNewIns').toggleClass('btn-outline-danger');
+                }
             }
         });
     });
