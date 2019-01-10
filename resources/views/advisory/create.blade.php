@@ -8,8 +8,8 @@
     <nav class="col-md- d-none d-md-block bg-light sidebar shadow pt-2">
         <div class="mx-auto sidebar-sticky">
             
-            {!! Form::open(['action' => 'AdvisoryController@storeStep1', 'method' => 'POST']) !!}
-
+            {!! Form::open(['action' => 'AdvisoryController@storeStep1', 'method' => 'POST', 'autocomplete' => 'off']) !!}
+            
             <img class="img-fluid sidebar-sticky"  src="{{ asset('img/FlowStep1.png') }}" > 
 
             <div class="form-row pt-3 pl-3">

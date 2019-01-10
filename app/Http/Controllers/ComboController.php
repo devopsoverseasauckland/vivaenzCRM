@@ -114,7 +114,7 @@ class ComboController extends Controller
                             <small>
                             <input type="text" id="procStep' . $item->codigo_orden . '" data-proc-id="' . $item->asesoria_proceso_id . '"
                                 data-co-id="' . $item->codigo . '"
-                                value="' . $item->realizado_fecha . '" class="form-control form-control-sm p-0 w-50 text-center"  />
+                                value="' . $item->realizado_fecha . '" class="form-control form-control-sm p-0 w-50 text-center" readonly>
                             </small>
                         </td></tr>';
         }

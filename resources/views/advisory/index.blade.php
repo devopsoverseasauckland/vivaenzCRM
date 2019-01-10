@@ -89,12 +89,41 @@
 
     <div id="dialogVA" class="container m-1" title="Detalle Visa">
 
-        <div class="form-row">
+            <div class="card w-auto">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <tr>
+                            <td class="text-center" scope="row" >Inicio visa</td>
+                            <td class="text-center" scope="row" >Vencimiento visa</td>
+                        </tr>
+                        <tr>
+                            <td >
+                                <div class="form-inline text-center mt-3">
+                                    <small>
+                                        <input type="text" class="form-control form-control-sm p-0 w-50 text-center" id="dateVisaIni" readonly>
+                                    </small>
+                                </div>
+                            </td>
+                            <td  >
+                                <div class="form-inline text-center mt-3">
+                                    <small>
+                                        <input type="text" class="form-control form-control-sm p-0 w-50 text-center" id="dateVisaFin" readonly >
+                                    </small>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+        {{-- <div class="form-row" >
             <div class="form-group col-md-4">
                 <label for="courseType" class="col-form-label col-form-label-sm" >Fecha inicio visa</label>
+                <div class="input-group ">
                 <small>
                     <input type="text" class="form-control" id="dateVisaIni" >
                 </small>
+                </div>
             </div>
             <div class="form-group col-md-4">
                 <label for="courseType" class="col-form-label col-form-label-sm" >Fecha fin visa</label>
@@ -102,16 +131,51 @@
                     <input type="text" class="form-control" id="dateVisaFin" >
                 </small>
             </div>
-        </div>
+        </div> --}}
 
-        <button id="btnUpdateVisa" type="submit" class="btn btn-primary">Actualizar</button>
-        <button id="btnNewVisa" type="submit" class="btn btn-primary">Nuevo Registro</button>
+        <button id="btnUpdateVisa" type="submit" class="btn btn-primary mt-3">Actualizar</button>
+        <button id="btnNewVisa" type="submit" class="btn btn-primary mt-3">Nuevo Registro</button>
 
     </div>
 
     <div id="dialogSG" class="container m-1" title="Detalle Seguro Medico">
 
-        <div class="form-row">
+        <div class="card w-auto">
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <tr>
+                        <td class="text-center" scope="row" >Inicio visa</td>
+                        <td class="text-center" scope="row" >Vencimiento visa</td>
+                    </tr>
+                    <tr>
+                        <td >
+                            <div class="form-inline text-center mt-1 mb-1">
+                                <small>
+                                    <input type="text" class="form-control form-control-sm p-0 w-50 text-center" id="dateInsIni" readonly>
+                                </small>
+                            </div>
+                        </td>
+                        <td  >
+                            <div class="form-inline text-center mt-1 mb-1">
+                                <small>
+                                    <input type="text" class="form-control form-control-sm p-0 w-50 text-center" id="dateInsFin" readonly >
+                                </small>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-center" scope="row" colspan="2" >Poliza No</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" >
+                            <input type="text" class="form-control mt-3" id="policy" >
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        {{-- <div class="form-row">
             <div class="form-group col-md-4">
                 <label for="courseType" class="col-form-label col-form-label-sm" >Fecha Inicio</label>
                 <small>
@@ -128,9 +192,10 @@
         <div class="form-group">
             <label for="policy" class="col-form-label col-form-label-sm" >Poliza No</label>
             <input type="text" class="form-control" id="policy" >
-        </div>
-        <button id="btnUpdateIns" type="submit" class="btn btn-primary">Actualizar</button>
-        <button id="btnNewIns" type="submit" class="btn btn-primary">Nuevo Registro</button>
+        </div> --}}
+
+        <button id="btnUpdateIns" type="submit" class="btn btn-primary mt-3">Actualizar</button>
+        <button id="btnNewIns" type="submit" class="btn btn-primary mt-3">Nuevo Registro</button>
 
     </div>
 
