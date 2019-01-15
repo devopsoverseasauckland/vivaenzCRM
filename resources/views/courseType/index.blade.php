@@ -81,7 +81,7 @@
 
         <div class="form-row">
             <div class="form-group col-md-9">
-                {{Form::select('institutions', $institutions, '', ['id' => 'institutions', 'class' => 'form-control form-control-sm', 'placeholder' => '-- Seleccione --' ])}}
+                {{Form::select('institutions', $institutions, '', ['id' => 'institutions', 'class' => 'form-control form-control-sm' ])}}
             </div>
             <div class="form-group col-md-3">
                 <button id="btnAddInstitution" type="submit" class="btn btn-primary btn-sm">+</button>
@@ -109,6 +109,9 @@
         width: 350
     });
     $( "#dialog" ).dialog( "option", "position", { my: "left top", at: "left+40 top+40", of: "#dvMessages" } );
+    $('#institutions').prepend('<option value="-1" >-- Todas --</option>');
+    $('#institutions').prepend('<option value="" selected="selected">-- Seleccione --</option>');
+    
 
     $('#btnAddInstitution').click(function() {
         var courseTypeId = $('#courseTypeId').val();

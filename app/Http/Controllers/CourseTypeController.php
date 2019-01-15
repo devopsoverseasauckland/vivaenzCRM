@@ -11,6 +11,8 @@ use App\CourseType;
 use App\Institution;
 use App\CourseTypeInstitution;
 
+use DB;
+
 class CourseTypeController extends Controller
 {
     use TCourseTypeInstitution;
@@ -73,7 +75,6 @@ class CourseTypeController extends Controller
         return view('coursetype.edit', compact('coursetypes', 'id'));
     }
 
-
     /**
      * Update the specified resource in storage.
      *
@@ -89,7 +90,6 @@ class CourseTypeController extends Controller
         $coursetype->save();
         return redirect('coursetype')->with('success','Tipo de curso actualizado');
     }
-
 
     /**
      * Remove the specified resource from storage.
@@ -120,11 +120,45 @@ class CourseTypeController extends Controller
         $courseTypeId = $request->get('courseTypeId');
         $institutionId = $request->get('institutionId');
 
-        $courseTypeInstitution = new CourseTypeInstitution;
+        if ($institutionId == '-1')
+        {
+            //$institutions = Institution::where('activo','1')->orderBy('nombre','asc')->pluck('nombre', 'institucion_id');
+            $institutions = DB::table('institucion')
+            ->select('institucion.institucion_id', 'institucion.nombre')
+            ->where('institucion.activo', '=', '1')
+            ->orderby('institucion.nombre')
+            ->get();
 
-        $courseTypeInstitution->tipo_curso_id = $courseTypeId;
-        $courseTypeInstitution->institucion_id = $institutionId;
-        $courseTypeInstitution->save();
+            foreach($institutions as $institution)
+            {
+                $validateInst = DB::table('tipo_curso_institucion')
+                                ->select('tipo_curso_institucion.institucion_id')
+                                ->where('tipo_curso_institucion.institucion_id', '=', $institution->institucion_id)
+                                ->where('tipo_curso_institucion.tipo_curso_id', '=', $courseTypeId)
+                                ->first();
+
+                if ($validateInst == null)
+                {
+                    $courseTypeInstitution = new CourseTypeInstitution;
+
+                    $courseTypeInstitution->tipo_curso_id = $courseTypeId;
+                    $courseTypeInstitution->institucion_id = $institution->institucion_id;
+                    $courseTypeInstitution->save();
+                }
+            }
+        } 
+        else 
+        {
+            $courseTypeInstitution = new CourseTypeInstitution;
+
+            $courseTypeInstitution->tipo_curso_id = $courseTypeId;
+            $courseTypeInstitution->institucion_id = $institutionId;
+            $courseTypeInstitution->save();
+        }
+
+        
+
+        
 
         // $data = $this->getCourseTypeInstitutions($courseTypeId);
 
