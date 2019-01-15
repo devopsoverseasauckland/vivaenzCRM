@@ -149,4 +149,15 @@ class ComboController extends Controller
         echo $output;
     }
 
+    public function citiesPagination(Request $request)
+    {
+        $value = $request->get('val');
+        $currentPage = $request->get('page');
+
+        $output = '';
+        $output = $this->getPagination($value, $currentPage);
+
+        echo $output;
+    }
+
 }

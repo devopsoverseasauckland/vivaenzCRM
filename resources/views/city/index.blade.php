@@ -57,7 +57,6 @@
     LoadCities($('select#countryId option:checked').val());  
     $(document).on('change', '#countryId', function()
     {
-        //$("#countryId").val($('select#countryId option:checked').val());
         LoadCities($('select#countryId option:checked').val());  
     });
     function LoadCities(countryId)
@@ -80,22 +79,59 @@
                 if (countryId != '' && countryId != undefined)
                     $("#trNew").show();
             }
-        })
+        });
+
+        $.ajax({
+            url: "{{ route('combo.citiesPagination') }}",
+            method: "GET",
+            data: { 
+                val: countryId,                
+                _token: _token
+            },
+            success:function(result)
+            {
+                $('#newForm').after( result );
+            }
+        });
     }
-
-    {{-- $('#save').on("click", function(e) {
-        console.log('aaaaa');
-        alert($('select#countryId option:checked').val());
-        $("#countryId").val($('select#countryId option:checked').val());
-        $( "#newForm" ).submit();
-    }); --}}
-
-
-    $('#nombre').focus();
 
     $(document).on("click", "a[class='page-link']", function()
     {
-        //alert($(this).html());
-        $("#page").val($(this).html());
+        var countryId = $('select#countryId option:checked').val();
+        var page = $(this).data('pg-id');
+        var _token = $('input[name="_token"]').val();
+        $.ajax({
+            url: "{{ route('combo.cities') }}" + "?page=" + page,
+            method: "GET",
+            data: { 
+                val: countryId,
+                selIt: 0, 
+                _token: _token
+            },
+            success:function(result)
+            {
+                $("[id*='trCity']").remove();
+                $(result).insertBefore( "#trNew" );
+
+                if (countryId != '' && countryId != undefined)
+                    $("#trNew").show();
+            }
+        });
+
+        $('.pagination').remove();
+        $.ajax({
+            url: "{{ route('combo.citiesPagination') }}" + "?page=" + page,
+            method: "GET",
+            data: { 
+                val: countryId,                
+                _token: _token
+            },
+            success:function(result)
+            {
+                $('#newForm').after( result );
+            }
+        });
     });
+    $('#nombre').focus();
+
 @endsection
