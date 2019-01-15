@@ -49,6 +49,27 @@
             </h6>
     
             <ul class="nav flex-column mb-2">
+
+                <li class="nav-item">
+                    <a class="nav-link" href="/profession">
+                    <span data-feather="file-text"></span>
+                    Profesiones
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="/country">
+                    <span data-feather="file-text"></span>
+                    Paises
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="/city">
+                    <span data-feather="file-text"></span>
+                    Ciudades
+                    </a>
+                </li>
                 
                 <li class="nav-item">
                     <a class="nav-link" href="/institution">
@@ -57,13 +78,6 @@
                     </a>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="/profession">
-                    <span data-feather="file-text"></span>
-                    Profesiones
-                    </a>
-                </li>
-                
                 <li class="nav-item">
                     <a class="nav-link" href="/coursetype">
                     <span data-feather="file-text"></span>

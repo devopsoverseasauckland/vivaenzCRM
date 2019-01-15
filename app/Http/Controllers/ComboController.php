@@ -143,7 +143,7 @@ class ComboController extends Controller
         {
             $currentPage = $request->get('page');
 
-            //$output = $this->getCourseTypeInstitutionsPaginate($value, $currentPage);
+            $output = $this->getCountryCitiesPaginate($value, $currentPage);            
         }
 
         echo $output;

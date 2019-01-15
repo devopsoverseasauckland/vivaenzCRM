@@ -91,6 +91,10 @@ Route::resource('institution','InstitutionController');
 
 Route::resource('profession', 'ProfessionController');
 
+Route::resource('country', 'CountryController');
+
+Route::resource('city', 'CityController');
+
 
 
 Route::post('studentInsuranceHistory/register', 'StudentInsuranceHistoryController@register')->name('studentInsuranceHist.register');
