@@ -2,13 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Traits\TCity;
+use App\Traits\TInstitution;
+
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
 
+use App\City;
+use App\Country;
 use App\Institution;
 
 class InstitutionController extends Controller
 {
+    use TCity;
+    use TInstitution;
+
     /**
      * Create a new controller instance.
      *
@@ -28,10 +36,21 @@ class InstitutionController extends Controller
     {
         $page = $request->get('page');
 
-        $institutions = Institution::orderby('nombre')->paginate(8);
+        $countryId = $request->get('countryId');
+        $cityId = $request->get('cityId');
 
+        $countries = Country::where('activo','1')->orderBy('nombre','asc')->pluck('nombre', 'pais_id');
+
+        $cities = City::where('activo','1')->where('pais_id', $countryId)->orderBy('nombre','asc')->pluck('nombre', 'ciudad_id');
+
+        //$cities = $this->getCountryCities($countryId); // put result into []
+        
         return view('institution.index', [
-            'institutions'=>$institutions,
+            'countries'=>$countries,
+            'countryId'=>$countryId,
+            'cities'=>$cities,
+            'cityId'=>$cityId,
+            //'institutions'=>$institutions,
             'page'=>$page
         ]); 
     }
@@ -51,11 +70,15 @@ class InstitutionController extends Controller
 
         $institution= new Institution;
         $institution->nombre=$request->get('nombre');
+        $institution->ciudad_id=$request->get('cityId');
         $institution->categoria_nzqa=$request->get('categoria_nzqa');
         $institution->activo=$request->get('activo');
         $institution->save();
+
+        $cityId=$request->get('cityId');
         
-        return redirect('institution')->with('success','Institucion creada');
+        //return redirect('institution')->with('success','Institucion creada');
+        return redirect()->action('InstitutionController@index', ['cityId'=>$cityId])->with('success','Institucion creada');
     }
 
     /**
@@ -74,8 +97,12 @@ class InstitutionController extends Controller
 
         $page = $request->get('page');
 
-        $institutions = Institution::orderby('nombre')->paginate(8);
-        return view('institution.edit', compact('institutions', 'id', 'page'));
+        $institution= Institution::find($id);
+        $cityId = $institution->ciudad_id;
+
+        $institutions = Institution::where('ciudad_id', $cityId)->orderby('nombre')->paginate(7);
+
+        return view('institution.edit', compact('institutions', 'id', 'page', 'cityId'));
     }
 
 
@@ -95,9 +122,17 @@ class InstitutionController extends Controller
         $institution->categoria_nzqa=$request->get('categoria_nzqa');
         $institution->save();
 
-        //return redirect('institution')->with('success','Institucion actualizada');
-        //Redirect::route('institution.index', $page);
-        return redirect()->action('InstitutionController@index',['page'=>$page]);
+        $cityId = $institution->ciudad_id;
+
+        $city = City::find($cityId);
+        $countryId = $city->pais_id;
+
+        return redirect()->action('InstitutionController@index',
+            [
+                'page'=>$page, 
+                'countryId'=>$countryId,
+                'cityId'=>$cityId
+            ])->with('success','Institucion actualizada');;
     }
 
 
@@ -107,17 +142,29 @@ class InstitutionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $institution = Institution::find($id);
-
         if ($institution->activo == 0)
             $institution->activo = 1;
         else 
             $institution->activo = 0;
-
         $institution->save();
-        return redirect('institution')->with('success','Institucion actualizada');
+        
+        $cityId = $institution->ciudad_id;
+
+        $city = City::find($cityId);
+        $countryId = $city->pais_id;
+
+        //$countries = Country::where('activo','1')->orderBy('nombre','asc')->pluck('nombre', 'pais_id');
+        //$cities = $this->getCountryCities($countryId);
+
+        //return redirect('institution')->with('success','Institucion actualizada');
+        return redirect()->action('InstitutionController@index', 
+            [
+                 'countryId'=>$countryId,
+                 'cityId'=>$cityId
+            ])->with('success','Institucion actualizada');
     }
 
 }

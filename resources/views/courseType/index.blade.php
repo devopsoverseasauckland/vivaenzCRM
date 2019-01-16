@@ -165,7 +165,7 @@
         var institu = $(this).data('ins-id');
 
         $.ajax({
-            url: "{{ route('combo.institutions') }}",
+            url: "{{ route('combo.courseTypeInstitutions') }}",
             method: "GET",
             data: { 
                 val: courseTypeId,
@@ -188,7 +188,7 @@
         var page = $(this).data('pg-id');
         var _token = $('input[name="_token"]').val();
         $.ajax({
-            url: "{{ route('combo.institutions') }}" + "?page=" + page,
+            url: "{{ route('combo.courseTypeInstitutions') }}" + "?page=" + page,
             method: "GET",
             data: { 
                 val: courseTypeId,

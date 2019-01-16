@@ -4,34 +4,34 @@ namespace App\Traits;
 
 use Illuminate\Pagination\Paginator;
 
-use App\City;
-
 use DB;
 
-trait TCity {
+trait TInstitution {
 
-    public function getCountryCitiesPaginate($countryId, $currentPage)
+    public function getInstitutionsPaginate($cityId, $currentPage)
     {
         Paginator::currentPageResolver(function () use ($currentPage) {
             return $currentPage;
         });
 
-        $data = DB::table('pais')
-        ->join('ciudad', 'pais.pais_id', '=', 'ciudad.pais_id')
-        ->select('ciudad.ciudad_id', 'ciudad.nombre', 'ciudad.activo', 'pais.pais_id')
-        ->where('pais.pais_id', '=', $countryId)
-        ->orderBy('ciudad.nombre','asc')
+        $data = DB::table('institucion')
+        ->join('ciudad', 'institucion.ciudad_id', '=', 'ciudad.ciudad_id')
+        ->select('institucion.institucion_id', 'institucion.nombre', 'institucion.categoria_nzqa', 
+            'institucion.activo', 'ciudad.ciudad_id')
+        ->where('institucion.ciudad_id', '=', $cityId)
+        ->orderBy('institucion.nombre','asc')
         ->paginate(7);
 
         $output = '';
         foreach($data as $row)
         {
-            $output .= '<tr id="trCity' . $row->ciudad_id . '" >
-                            <td>'. $row->ciudad_id . '</td>
+            $output .= '<tr id="trInstitution' . $row->institucion_id . '" >
+                            <td>'. $row->institucion_id . '</td>
                             <td>'. $row->nombre .'</td>
+                            <td>'. $row->categoria_nzqa .'</td>
                             <td>
-                                <form action="' . route('city.destroy', ['id' => $row->ciudad_id]) . '" method="post">
-                                    <input id="countryId" name="countryId" type="hidden" value="' . $row->pais_id . '">
+                                <form action="' . route('institution.destroy', ['id' => $row->institucion_id]) . '" method="post">
+                                    <input id="cityId" name="cityId" type="hidden" value="' . $row->ciudad_id . '">
                                  ' . csrf_field();
 
                                     if( $row->activo == 1 )
@@ -47,7 +47,7 @@ trait TCity {
             $output .=      '   </form>
                             </td>
                             <td>
-                                <a href="' . route('city.edit', ['id' => $row->ciudad_id]) . '?page=' . $currentPage . '" class="btn btn-outline-primary btn-sm">
+                                <a href="' . route('institution.edit', ['id' => $row->institucion_id]) . '?page=' . $currentPage . '" class="btn btn-outline-primary btn-sm">
                                     Modificar
                                 </a>
                             </td>
@@ -60,17 +60,17 @@ trait TCity {
         return $output;
     }
 
-    public function getCitiesPagination($countryId, $currentPage)
+    public function getInstitutionsPagination($cityId, $currentPage)
     {
         Paginator::currentPageResolver(function () use ($currentPage) {
             return $currentPage;
         });
 
-        $data = DB::table('pais')
-        ->join('ciudad', 'pais.pais_id', '=', 'ciudad.pais_id')
-        ->select('ciudad.ciudad_id', 'ciudad.nombre', 'ciudad.activo', 'pais.pais_id')
-        ->where('pais.pais_id', '=', $countryId)
-        ->orderBy('ciudad.nombre','asc')
+        $data = DB::table('institucion')
+        ->join('ciudad', 'institucion.ciudad_id', '=', 'ciudad.ciudad_id')
+        ->select('institucion.institucion_id', 'institucion.nombre', 'institucion.activo', 'ciudad.ciudad_id')
+        ->where('institucion.ciudad_id', '=', $cityId)
+        ->orderBy('institucion.nombre','asc')
         ->paginate(7);
 
         $output = '';        
@@ -120,19 +120,17 @@ trait TCity {
         return $output;
     }
 
-    public function getCountryCities($countryId)
+    public function getInstitutions($cityId)
     {
-        $citiesCountry = DB::table('pais')
-        ->join('ciudad', 'pais.pais_id', '=', 'ciudad.pais_id')
-        ->select('ciudad.ciudad_id', 'ciudad.nombre')
-        ->where('pais.pais_id', '=', $countryId)
-        ->where('ciudad.activo', '=', '1')
-        ->orderBy('ciudad.nombre','asc')
+        $data = DB::table('institucion')
+        ->join('ciudad', 'institucion.ciudad_id', '=', 'ciudad.ciudad_id')
+        ->select('institucion.institucion_id', 'institucion.nombre', 'institucion.categoria_nzqa', 
+            'institucion.activo', 'ciudad.ciudad_id')
+        ->where('institucion.ciudad_id', '=', $cityId)
+        ->orderBy('institucion.nombre','asc')
         ->get();
 
-        //$citiesCountry = City::where('activo','1')->where('pais_id', $countryId)->orderBy('nombre','asc')->pluck('nombre', 'ciudad_id');
-
-        return $citiesCountry;
+        return $data;
     }
 
 }

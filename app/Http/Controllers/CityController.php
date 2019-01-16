@@ -90,7 +90,7 @@ class CityController extends Controller
         $city= City::find($id);
         $countryId = $city->pais_id;
 
-        $cities = City::where('pais_id', $countryId)->orderby('nombre')->paginate(8);
+        $cities = City::where('pais_id', $countryId)->orderby('nombre')->paginate(7);
         //$cities = $this->getCountryCities($countryId);
 
         return view('city.edit', compact('cities', 'id', 'page', 'countryId'));
@@ -116,7 +116,7 @@ class CityController extends Controller
 
         //return redirect('city')->with('success','Institucion actualizada');
         //Redirect::route('city.index', $page);
-        return redirect()->action('CityController@index', ['page'=>$page, 'countryId'=>$countryId]);
+        return redirect()->action('CityController@index', ['page'=>$page, 'countryId'=>$countryId])->with('success','Ciudad actualizada');
     }
 
 
@@ -137,6 +137,6 @@ class CityController extends Controller
     
         $countryId = $city->pais_id;
 
-        return redirect()->action('CityController@index', ['countryId'=>$countryId])->with('success','Ciudad actualizada');;
+        return redirect()->action('CityController@index', ['countryId'=>$countryId])->with('success','Ciudad actualizada');
     }
 }

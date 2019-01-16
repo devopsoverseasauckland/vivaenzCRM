@@ -8,7 +8,7 @@
     
     {!! Form::open(['id' => 'newForm', 'action' => 'CityController@store', 'method' => 'POST']) !!}
 
-    <div class="form-group row mt-4">
+    <div class="form-group row m-4">
         <label for="countryId" class="col-sm-2 col-form-label">Pais</label>
         <div class="col-sm-10">
             {{Form::select('countryId', $countries, $countryId, ['id' => 'countryId', 'class' => 'form-control form-control-sm w-auto', 'placeholder' => '-- Seleccione --' ])}}
@@ -77,10 +77,14 @@
                 $(result).insertBefore( "#trNew" );
 
                 if (countryId != '' && countryId != undefined)
+                {
                     $("#trNew").show();
+                    $('#nombre').focus();
+                }
             }
         });
 
+        $('.pagination').remove();
         $.ajax({
             url: "{{ route('combo.citiesPagination') }}",
             method: "GET",
@@ -114,7 +118,10 @@
                 $(result).insertBefore( "#trNew" );
 
                 if (countryId != '' && countryId != undefined)
+                {
                     $("#trNew").show();
+                    $('#nombre').focus();
+                }
             }
         });
 

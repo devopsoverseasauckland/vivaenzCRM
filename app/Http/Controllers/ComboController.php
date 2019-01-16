@@ -5,16 +5,16 @@ namespace App\Http\Controllers;
 use App\Traits\TAdvisory;
 use App\Traits\TCourseTypeInstitution;
 use App\Traits\TCity;
+use App\Traits\TInstitution;
 
 use Illuminate\Http\Request;
-//use Illuminate\Pagination\Paginator;
 
 use DB;
 
 class ComboController extends Controller
 {
     use TCourseTypeInstitution;
-    public function institutions(Request $request)
+    public function courseTypeInstitutions(Request $request)
     {
         $value = $request->get('val');
         $selIt = $request->get('selIt');
@@ -24,7 +24,7 @@ class ComboController extends Controller
         {
             $data = $this->getCourseTypeInstitutions($value);
 
-            $output = '<option value="">-- Select --</option>';
+            $output = '<option value="">-- Seleccione --</option>';
             foreach($data as $row)
             {
                 $output .= '<option value="' . $row->institucion_id . '">' .
@@ -41,10 +41,6 @@ class ComboController extends Controller
     }
 
     use TAdvisory;
-    /**
-     * Main query for index advisories filtered by state
-     * 
-     */
     public function advisories(Request $request)
     {
         $advisoryStateId = $request->get('stateId');
@@ -133,7 +129,7 @@ class ComboController extends Controller
         {
             $data = $this->getCountryCities($value);
 
-            $output = '<option value="">-- Select --</option>';
+            $output = '<option value="">-- Seleccione --</option>';
             foreach($data as $row)
             {
                 $output .= '<option value="' . $row->ciudad_id . '">' .
@@ -155,7 +151,45 @@ class ComboController extends Controller
         $currentPage = $request->get('page');
 
         $output = '';
-        $output = $this->getPagination($value, $currentPage);
+        $output = $this->getCitiesPagination($value, $currentPage);
+
+        echo $output;
+    }
+
+    use TInstitution;
+    public function institutions(Request $request)
+    {
+        $value = $request->get('val');
+        $selIt = $request->get('selIt');
+
+        $output = '';
+        if ($selIt == 1)
+        {
+            //$data = $this->getCountryCities($value);
+
+            // $output = '<option value="">-- Select --</option>';
+            // foreach($data as $row)
+            // {
+            //     $output .= '<option value="' . $row->ciudad_id . '">' .
+            //             $row->nombre . '</option>';
+            // }
+        } else
+        {
+            $currentPage = $request->get('page');
+
+            $output = $this->getInstitutionsPaginate($value, $currentPage);            
+        }
+
+        echo $output;
+    }
+
+    public function institutionsPagination(Request $request)
+    {
+        $value = $request->get('val');
+        $currentPage = $request->get('page');
+
+        $output = '';
+        $output = $this->getInstitutionsPagination($value, $currentPage);
 
         echo $output;
     }
