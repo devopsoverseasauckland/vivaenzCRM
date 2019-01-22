@@ -60,7 +60,7 @@ class AdvisoryController extends Controller
      */
     public function index()
     {
-        $advisories = $this->getAdvisories('');
+        $advisories = $this->getAdvisories('', '');
         // $advisory = DB::select('SELECT a.asesoria_id, a.estudiante_id, a.asesoria_estado_id,
         //                         CONCAT(e.primer_nombre, " ", e.primer_apellido) cliente,
         //                         ae.nombre estado

@@ -5,14 +5,30 @@
     <h3 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted" >
         Gestion Seguimiento
     </h3>
-    @if(count($advisories) > 0)
 
-    <div class="form-group row m-4">
-        <label for="statesFl" class="col-sm-2 col-form-label">Filtrar por</label>
-        <div class="col-sm-10">
-            {{Form::select('statesFl', $states, '', ['id' => 'statesFl', 'class' => 'form-control form-control-sm w-auto', 'placeholder' => '-- Seleccione --' ])}}
-        </div>
+    <div class="form-row m-4">
+                
+            <div class="col-sm-4">
+                <div class="form-inline">
+                    {{Form::label('statesFl', 'Estado',  ['class' => 'col-sm-2 col-form-label w-50'])}}
+                    <div class="col-sm-6">
+                        {{Form::select('statesFl', $states, '', ['id' => 'statesFl', 'class' => 'form-control form-control-sm w-auto', 'placeholder' => '-- Seleccione --' ])}}
+                    </div>
+                </div>
+            </div>
+    
+            <div class="col">
+                <div class="form-inline">
+                    {{Form::label('studentFl', 'Estudiante',  ['class' => 'col-sm-2 col-form-label w-auto'])}}
+                    <div class="col-sm-10">
+                        {{Form::text('studentFl', '', ['class' => 'form-control form-control-sm w-100', 'placeholder' => 'nombre, apellido... ' ])}}
+                    </div>
+                </div>
+            </div>
+    
     </div>
+
+    @if(count($advisories) > 0)
 
     <div class="table-responsive">
         <table class="table table-striped table-hover table-sm">
@@ -76,15 +92,6 @@
             {{-- </div> --}}
         </div>
 
-        {{-- <div class="form-row">
-            <div class="form-group col-md-9">
-                {{ Form::textarea('observ', '', ['class'=>'form-control', 'rows' => 10, 'cols' => 25]) }}
-            </div>
-            <div class="form-group col-md-3">
-                <button id="btnUpdate" type="submit" class="btn btn-primary btn-sm">+</button>
-            </div>
-        </div> --}}
-
     </div>
 
     <div id="dialogVA" class="container m-1" title="Detalle Visa">
@@ -115,23 +122,6 @@
                     </table>
                 </div>
             </div>
-
-        {{-- <div class="form-row" >
-            <div class="form-group col-md-4">
-                <label for="courseType" class="col-form-label col-form-label-sm" >Fecha inicio visa</label>
-                <div class="input-group ">
-                <small>
-                    <input type="text" class="form-control" id="dateVisaIni" >
-                </small>
-                </div>
-            </div>
-            <div class="form-group col-md-4">
-                <label for="courseType" class="col-form-label col-form-label-sm" >Fecha fin visa</label>
-                <small>
-                    <input type="text" class="form-control" id="dateVisaFin" >
-                </small>
-            </div>
-        </div> --}}
 
         <button id="btnUpdateVisa" type="submit" class="btn btn-primary mt-3">Actualizar</button>
         <button id="btnNewVisa" type="submit" class="btn btn-primary mt-3">Nuevo Registro</button>
@@ -175,25 +165,6 @@
             </div>
         </div>
 
-        {{-- <div class="form-row">
-            <div class="form-group col-md-4">
-                <label for="courseType" class="col-form-label col-form-label-sm" >Fecha Inicio</label>
-                <small>
-                    <input type="text" class="form-control" id="dateInsIni" >
-                </small>
-            </div>
-            <div class="form-group col-md-4">
-                <label for="courseType" class="col-form-label col-form-label-sm" >Fecha Fin</label>
-                <small>
-                    <input type="text" class="form-control" id="dateInsFin" >
-                </small>
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="policy" class="col-form-label col-form-label-sm" >Poliza No</label>
-            <input type="text" class="form-control" id="policy" >
-        </div> --}}
-
         <button id="btnUpdateIns" type="submit" class="btn btn-primary mt-3">Actualizar</button>
         <button id="btnNewIns" type="submit" class="btn btn-primary mt-3">Nuevo Registro</button>
 
@@ -218,9 +189,10 @@
         width: 350
     });
 
-    $(document).on('change', '#statesFl', function()
+    $(document).on('change', '#statesFl,#studentFl', function()
     {
         var stateId = $('select#statesFl option:checked').val();
+        var student = $('#studentFl').val();
         var _token = $('input[name="_token"]').val();
 
         $.ajax({
@@ -228,6 +200,7 @@
             method: "GET",
             data: { 
                 stateId: stateId,
+                student: student,
                 _token: _token
             },
             success:function(result)
@@ -282,6 +255,8 @@
         var date = $(this).val();
         var advisoryId = $('#advisoryId').val();
         var cod = $(this).data('co-id');
+        var stateId = $('select#statesFl option:checked').val();
+        var student = $('#studentFl').val();
         var _token = $('input[name="_token"]').val();
 
         $.ajax({
@@ -292,6 +267,8 @@
                 date: date,
                 advisoryId: advisoryId,
                 cod: cod,
+                stateId: stateId,
+                student: student,
                 _token: _token
             },
             success:function(result)

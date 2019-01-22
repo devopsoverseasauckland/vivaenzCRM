@@ -111,6 +111,7 @@
 
     $(document).on('change', '#cityId', function()
     {
+        $("#trNew").hide();
         LoadInstitutions($('select#cityId option:checked').val());
     });
 

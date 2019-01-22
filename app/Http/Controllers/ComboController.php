@@ -44,16 +44,9 @@ class ComboController extends Controller
     public function advisories(Request $request)
     {
         $advisoryStateId = $request->get('stateId');
-        $advisories = $this->getAdvisories($advisoryStateId);
-
-        // $advisories = DB::table('asesoria')
-        // ->join('estudiante', 'estudiante.estudiante_id', '=', 'asesoria.estudiante_id')
-        // ->join('asesoria_estado', 'asesoria_estado.asesoria_estado_id', '=', 'asesoria.asesoria_estado_id')
-        // ->select(DB::raw("asesoria.asesoria_id, asesoria.estudiante_id, asesoria.asesoria_estado_id,
-        //         CONCAT(estudiante.primer_nombre, ' ' , estudiante.primer_apellido) AS cliente,
-        //         asesoria_estado.nombre estado"))
-        // ->where('asesoria_estado.asesoria_estado_id', '=', $advisoryStateId)
-        // ->where('asesoria_estado.activo', '=', '1')->get();
+        $student = $request->get('student');
+        
+        $advisories = $this->getAdvisories($advisoryStateId, $student);
 
         $output = '';
         foreach($advisories as $adv)

@@ -6,7 +6,7 @@ use DB;
 
 trait TAdvisory {
     
-    public function getAdvisories($advisoryStateId)
+    public function getAdvisories($advisoryStateId, $student)
     {
         if ($advisoryStateId == '' || $advisoryStateId == null)
         {
@@ -28,7 +28,9 @@ trait TAdvisory {
                     asesoria_estado.nombre estado, 
                     IFNULL(estudiante_seguro_historial.estudiante_seguro_historial_id, '') insurance_id,
                     IFNULL(estudiante_visa_historial.estudiante_visa_historial_id, '') visa_id"))
-            ->where('asesoria_estado.activo', '=', '1')->get(); 
+            ->where('asesoria_estado.activo', '=', '1')
+            ->where('estudiante.primer_nombre', 'LIKE', "%{$student}%")
+            ->get(); 
         } else 
         {
             $advisories = DB::table('asesoria')
@@ -50,7 +52,8 @@ trait TAdvisory {
                     IFNULL(estudiante_seguro_historial.estudiante_seguro_historial_id, '') insurance_id,
                     IFNULL(estudiante_visa_historial.estudiante_visa_historial_id, '') visa_id"))
             ->where('asesoria_estado.asesoria_estado_id', '=', $advisoryStateId)
-            ->where('asesoria_estado.activo', '=', '1')->get();
+            ->where('asesoria_estado.activo', '=', '1')
+            ->where('estudiante.primer_nombre', 'LIKE', "%{$student}%")->get();
         }
 
         return $advisories;

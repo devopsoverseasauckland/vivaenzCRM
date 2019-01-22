@@ -44,7 +44,11 @@ class AdvisoryProcessController extends Controller
         $advProcess->realizado_usuario_id = auth()->user()->id;
         $advProcess->save();
 
-        $advisories = $this->getAdvisories('');
+
+        $stateId = $request->get('stateId');
+        $student = $request->get('student');
+
+        $advisories = $this->getAdvisories($stateId, $student);
         $output = '';
         foreach($advisories as $adv)
         {
