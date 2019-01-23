@@ -4,16 +4,29 @@ namespace App\Http\Controllers;
 
 use App\Traits\TAdvisory;
 
-use App\AdvisoryProcess;
+
 
 use Illuminate\Http\Request;
 
 use App\Advisory;
+use App\AdvisoryState;
+use App\AdvisoryProcess;
 
 use DB;
 
 class AdvisoryProcessController extends Controller
 {
+    /*
+        registerDate: storage the given date on the table AdvisoryProcess with the log information, 
+        additionally select if applies the next step for the advisory updating the table Advisory
+        inputs:
+            advProcessId: Id of the register in AdvisoryProcces which will be updated with the date
+            date: Given date wich will be stored on AdvisoryProcess to highlight when the step process was made
+            advisoryId: Id of the Advisory to set the new state (If applies)
+            cod: Cod of the step of the process which will be updated
+            stateId: advisory state which will be used as filter when this method gives the response
+            student: student info which will be used as filter when this method gives the response
+    */
     use TAdvisory;
     public function registerDate(Request $request)
     {
@@ -21,33 +34,48 @@ class AdvisoryProcessController extends Controller
         $date = $request->get('date');
         $advisoryId = $request->get('advisoryId');
         $cod = $request->get('cod');
-        
-        if ($cod != 'DE' && $cod != 'RE' && $cod != 'SG' && $cod != 'HS' && $cod != 'IV' && $cod != 'NT')
-        {
-            $id_nuevo_estado = DB::table('asesoria_proceso')
-            ->join('proceso_checklist_item', 'proceso_checklist_item.proceso_checklist_item_id', '=', 'asesoria_proceso.proceso_checklist_item_id')
-            ->select(DB::raw('min(proceso_checklist_item.asesoria_estado_id) as id_nuevo_estado'))
-            ->where('asesoria_proceso.asesoria_id', '=', $advisoryId)
-            ->where('proceso_checklist_item.codigo', '!=', 'DE')
-            ->where('asesoria_proceso.realizado_fecha', '=',null)
-            ->get()->first()->id_nuevo_estado; // cod orden next step
 
-            $advisory = Advisory::find($advisoryId);
-            $advisory->asesoria_estado_id = $id_nuevo_estado;
-            $advisory->modificacion_fecha = date("Y-m-d H:i:s");
-            $advisory->modificacion_usuario_id = auth()->user()->id;
-            $advisory->save();
+        $advisory = Advisory::find($advisoryId);
+        $advisory_state = AdvisoryState::find($advisory->asesoria_estado_id);
+
+        if ($advisory_state->codigo != 'FI' && $advisory_state->codigo != 'DE')
+        {
+            /// Not all the date registrations generate(or calls of this method) change of state
+            if ($cod != 'DE' && $cod != 'RE' && $cod != 'SG' && $cod != 'HS' && $cod != 'IV' && $cod != 'NT')
+            {
+                // Each process checklist item has an advisory state linked, which is the state the advisory has to receive
+                // when the date will be registered
+                $id_new_state = DB::table('asesoria_proceso')
+                ->join('proceso_checklist_item', 'proceso_checklist_item.proceso_checklist_item_id', '=', 'asesoria_proceso.proceso_checklist_item_id')
+                ->select(DB::raw('min(proceso_checklist_item.asesoria_estado_id) as id_nuevo_estado'))
+                ->where('asesoria_proceso.asesoria_id', '=', $advisoryId)
+                ->where('proceso_checklist_item.codigo', '!=', 'DE')
+                ->where('asesoria_proceso.realizado_fecha', '=',null)
+                ->get()->first()->id_nuevo_estado; // id new state
+
+                if ($id_new_state != null)
+                {
+                    $advisory->asesoria_estado_id = $id_new_state;
+                    $advisory->modificacion_fecha = date("Y-m-d H:i:s");
+                    $advisory->modificacion_usuario_id = auth()->user()->id;
+                    $advisory->save();
+
+                    // implement log for change of state
+                }
+            }
+            
+            // Set the date for the process step accomplished
+            $advProcess = AdvisoryProcess::find($advProcessId);
+            $advProcess->realizado_fecha = date("Y-m-d", strtotime($date));
+            $advProcess->realizado_usuario_id = auth()->user()->id;
+            $advProcess->realizado_fecha_usuario = date("Y-m-d H:i:s");
+            $advProcess->save();
         }
         
-        $advProcess = AdvisoryProcess::find($advProcessId);
-        $advProcess->realizado_fecha = date("Y-m-d", strtotime($date));
-        $advProcess->realizado_usuario_id = auth()->user()->id;
-        $advProcess->save();
-
-
         $stateId = $request->get('stateId');
         $student = $request->get('student');
 
+        // Get the advisories to refresh the information on the screen after the response of this method
         $advisories = $this->getAdvisories($stateId, $student);
         $output = '';
         foreach($advisories as $adv)

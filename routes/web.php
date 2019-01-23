@@ -51,7 +51,7 @@ Route::match(['put', 'match'], '/updateStep2/{id}', 'AdvisoryController@updateSt
 
 Route::match(['put', 'match'], '/updateStep3/{id}', 'AdvisoryController@updateStep3')->name('advisory.updateStep3');
 
-Route::match(['put', 'match'], '/finalizar/{id}', 'AdvisoryController@finalizar')->name('advisory.finalizar');
+Route::match(['put', 'match'], '/finishEnrollment/{id}', 'AdvisoryController@finishEnrollment')->name('advisory.finishEnrollment');
 
 Route::get('combo/courseTypeInstitutions', 'ComboController@courseTypeInstitutions')->name('combo.courseTypeInstitutions');
 

@@ -78,7 +78,14 @@ trait TCourseTypeInstitution {
     {
         $instCourseType = DB::table('tipo_curso_institucion')
         ->join('institucion', 'tipo_curso_institucion.institucion_id', '=', 'institucion.institucion_id')
-        ->select('institucion.institucion_id', 'institucion.nombre')
+        ->join('ciudad', 'ciudad.ciudad_id', '=', 'institucion.ciudad_id')
+        ->select(DB::raw("institucion.institucion_id, 
+            CONCAT(institucion.nombre, 
+                CASE 
+                    WHEN LOCATE(ciudad.nombre, institucion.nombre) > 0 THEN ''
+                    ELSE CONCAT(' (', ciudad.nombre, ')')
+                END 
+            ) AS nombre"))
         ->where('tipo_curso_institucion.tipo_curso_id', '=', $courseTypeId)
         ->where('institucion.activo', '=', '1')
         ->orderBy('institucion.nombre','asc')

@@ -3,7 +3,7 @@
 @section('content')
     
     <h3 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted" >
-        Nueva Asesoria
+        {{ $advStudent }}
     </h3>
     <nav class="col-md- d-none d-md-block bg-light sidebar shadow pt-2">
         <div class="mx-auto sidebar-sticky">
@@ -158,8 +158,9 @@
                 {{ csrf_field() }}
                 {{Form::hidden('_method', 'PUT')}}
                 {{Form::submit('Actualizar', ['class' => 'btn btn-outline-primary'])}}
+                {{ Form::hidden('advStateCod', $advState, array('id' => 'advStateCod')) }}
 
-                {{Form::submit('Montar Visa', [ 'id' => 'finalizar', 'class' => 'btn btn-outline-success', 'onclick' => 'return false;'])}}
+                {{Form::submit('Finalizar Inscripcion', [ 'id' => 'finalizar', 'class' => 'btn btn-outline-success', 'onclick' => 'return false;'])}}
                 
                 <a class="btn btn-outline-secondary" href="/advisory" role="button">Seguimientos</a>
                             
@@ -173,7 +174,8 @@
     @parent
     $("#dateArrive,#dateHomestay,#dateStartClass,#dateFinishClass").datepicker({
         changeMonth: true,
-        changeYear: true
+        changeYear: true,
+        yearRange: "-100:+10"
     });
 
     $('#finalizar').on("click", function(e) {
@@ -183,7 +185,20 @@
             alert('Debe elegir un programa para seguir con el montaje de la visa');
         } else 
         {   
-            $('#step3Form').attr('action', '{{ route('advisory.finalizar', ['id'=>$advisoryEnroll->asesoria_id]) }}').submit();
+            $('#step3Form').attr('action', '{{ route('advisory.finishEnrollment', ['id'=>$advisoryEnroll->asesoria_id]) }}').submit();
         }
     });
+
+    DisableControls();
+    function DisableControls()
+    {
+        var state = $('#advStateCod').val();
+        if(state == 'FI' || state == 'DE')
+        {
+            $('.form-control-sm').prop( "disabled", true );
+            $('.btn-outline-primary, .btn-outline-success').prop( "disabled", true );
+            $('.form-control').prop( "disabled", true );
+            //$('.pull-right').hide();
+        }
+    }
 @endsection

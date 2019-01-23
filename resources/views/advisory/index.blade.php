@@ -12,7 +12,7 @@
                 <div class="form-inline">
                     {{Form::label('statesFl', 'Estado',  ['class' => 'col-sm-2 col-form-label w-50'])}}
                     <div class="col-sm-6">
-                        {{Form::select('statesFl', $states, '', ['id' => 'statesFl', 'class' => 'form-control form-control-sm w-auto', 'placeholder' => '-- Seleccione --' ])}}
+                        {{Form::select('statesFl', $states, '', ['id' => 'statesFl', 'class' => 'form-control form-control-sm w-auto', 'placeholder' => '-- Todas activas --' ])}}
                     </div>
                 </div>
             </div>
@@ -222,7 +222,7 @@
         $('#insuranceId').val($(this).data('ins-id'));
         $('#visaId').val($(this).data('visa-id'));
 
-        $('#dialog').dialog('option', 'title', $(this).data('cli-name') + ' (Estado Asesoria)');
+        $('#dialog').dialog('option', 'title',  'Proceso: ' + $(this).data('cli-name'));
 
         $.ajax({
             url: "{{ route('combo.advisoryProcess') }}",

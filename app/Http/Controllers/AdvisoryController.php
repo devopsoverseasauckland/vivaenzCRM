@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Traits\TAdvisory;
 use App\Traits\TAdvisoryInfoSent;
+use App\Traits\TStudent;
 use App\Traits\TStudentExperience;
 
 use Illuminate\Http\Request;
@@ -31,6 +32,7 @@ class AdvisoryController extends Controller
 {
     use TAdvisory;
     use TAdvisoryInfoSent;
+    use TStudent;
     use TStudentExperience;
 
     /**
@@ -61,14 +63,6 @@ class AdvisoryController extends Controller
     public function index()
     {
         $advisories = $this->getAdvisories('', '');
-        // $advisory = DB::select('SELECT a.asesoria_id, a.estudiante_id, a.asesoria_estado_id,
-        //                         CONCAT(e.primer_nombre, " ", e.primer_apellido) cliente,
-        //                         ae.nombre estado
-        //                         FROM asesoria a
-        //                         INNER JOIN estudiante e ON a.estudiante_id = e.estudiante_id
-        //                         INNER JOIN asesoria_estado ae ON a.asesoria_estado_id = ae.asesoria_estado_id');
-        //$advisory = Advisory::all();
-        //return Advisory::all();
 
         $states = AdvisoryState::pluck('nombre', 'asesoria_estado_id');
 
@@ -149,7 +143,7 @@ class AdvisoryController extends Controller
         $student->numero_documento = $request->input('numDoc');
         //$student->pasaporte = $request->input('secondName');
         $student->estado_civil_id = $request->input('maritalStatus');
-        $student->fecha_nacimiento = date("Y-m-d H:i:s");//$request->input('bornDate');
+        $student->fecha_nacimiento = date("Y-m-d", strtotime( $request->input('bornDate')));
         $student->correo_electronico = $request->input('email');
         $student->celular_whatsapp = $request->input('whatsapp');
         $student->pais_id = $request->input('bornCountry');
@@ -196,26 +190,6 @@ class AdvisoryController extends Controller
             $advisoryProcess->save();
         }
 
-        //return redirect('/editStep2')->with('success', 'Informacion estudiante actualizada exitosamente');
-        //return view('/editStep2/' . $advisory->asesoria_id)->with('advisory', $advisory);
-        //return view('advisory.editStep2')->with('advisory', $advisory);
-
-        // $purpouses = Purpouse::pluck('descripcion', 'intencion_viaje_id');
-        // $contactMeans = ContactMean::pluck('descripcion', 'metodo_contacto_id');
-
-        // $courseTypes = CourseType::pluck('descripcion', 'tipo_curso_id');
-
-        // $docsSent = $this->getDocuments($advisory->asesoria_id);
-
-        // return view('advisory.editStep2', [
-        //                                     'advisory'=>$advisory,
-        //                                     'purpouses'=>$purpouses,
-        //                                     'contactMeans'=>$contactMeans,
-        //                                     'courseTypes'=>$courseTypes,
-        //                                     'docsSent'=>$docsSent
-        //                                     ]);
-
-        //return editStep1($advisory->asesoria_id);
         return redirect('/editStep1/' . $advisory->asesoria_id);
     }
 
@@ -228,7 +202,11 @@ class AdvisoryController extends Controller
     public function show($id)
     {
         $advisory = Advisory::find($id);
+        $advisory_state_code = AdvisoryState::find($advisory->asesoria_estado_id)->codigo;
         $state = $advisory->asesoria_estado_id;
+
+        $student = Student::find($advisory->estudiante_id);
+        $advStudent = $this->resolveFullName($student);
 
         switch($state)
         {
@@ -247,21 +225,15 @@ class AdvisoryController extends Controller
                                                     'purpouses'=>$purpouses,
                                                     'contactMeans'=>$contactMeans,
                                                     'courseTypes'=>$courseTypes,
-                                                    'docsSent'=>$docsSent
+                                                    'docsSent'=>$docsSent,
+                                                    'advState'=>$advisory_state_code,
+                                                    'advStudent'=>$advStudent
                                                   ]);
 
                 break;
             case 3:
                 $advisory = Advisory::find($id);
                 $state = $advisory->asesoria_estado_id;
-        
-                // if ($state == 1)
-                // {
-                //     $advisory->asesoria_estado_id = 2; 
-                //     $advisory->modificacion_fecha = date("Y-m-d H:i:s");
-                //     $advisory->modificacion_usuario_id = 0;
-                //     $advisory->save();
-                // }
         
                 $advisoryEnroll = DB::table('asesoria_enrollment')->where('asesoria_enrollment.asesoria_id', '=', $id)->distinct()->first();
         
@@ -273,7 +245,9 @@ class AdvisoryController extends Controller
         
                 return view('advisory.editStep3', [
                     'advisoryEnroll'=>$advisoryEnroll,
-                    'progs'=>$progs->all()
+                    'progs'=>$progs->all(), 
+                    'advState'=>$advisory_state_code,
+                    'advStudent'=>$advStudent
                 ]);
         
                 break;
@@ -301,6 +275,9 @@ class AdvisoryController extends Controller
     {
         $advisory = Advisory::find($id);
         $student = Student::find($advisory->estudiante_id);
+        $advStudent = $this->resolveFullName($student);
+
+        $advisory_state_code = AdvisoryState::find($advisory->asesoria_estado_id)->codigo;
 
         $docType = DocumentType::where('activo','1')->orderBy('codigo_orden','asc')->pluck('nombre', 'tipo_documento_id');
         $maritalStatus = MaritalStatus::where('activo','1')->orderBy('codigo_orden','asc')->pluck('nombre', 'estado_civil_id');
@@ -320,7 +297,9 @@ class AdvisoryController extends Controller
                                             //'cities'=>$cities,
                                             'professions'=>$professions,
                                             'englishLev'=>$englishLev,
-                                            'experience'=>$experience
+                                            'experience'=>$experience,
+                                            'advState'=>$advisory_state_code,
+                                            'advStudent'=>$advStudent
                                           ]);
     }
 
@@ -333,6 +312,10 @@ class AdvisoryController extends Controller
     public function editStep2($id)
     {
         $advisory = Advisory::find($id);
+        $advisory_state_code = AdvisoryState::find($advisory->asesoria_estado_id)->codigo;
+
+        $student = Student::find($advisory->estudiante_id);
+        $advStudent = $this->resolveFullName($student);
 
         $state = $advisory->asesoria_estado_id;
 
@@ -356,7 +339,9 @@ class AdvisoryController extends Controller
                                             'purpouses'=>$purpouses,
                                             'contactMeans'=>$contactMeans,
                                             'courseTypes'=>$courseTypes,
-                                            'docsSent'=>$docsSent
+                                            'docsSent'=>$docsSent,
+                                            'advState'=>$advisory_state_code,
+                                            'advStudent'=>$advStudent
                                           ]);
     }
 
@@ -369,6 +354,11 @@ class AdvisoryController extends Controller
     public function editStep3($id)
     {
         $advisory = Advisory::find($id);
+        $advisory_state_code = AdvisoryState::find($advisory->asesoria_estado_id)->codigo;
+
+        $student = Student::find($advisory->estudiante_id);
+        $advStudent = $this->resolveFullName($student);
+
         $state = $advisory->asesoria_estado_id;
 
         if ($state == 2)
@@ -400,7 +390,9 @@ class AdvisoryController extends Controller
 
         return view('advisory.editStep3', [
             'advisoryEnroll'=>$advisoryEnroll,
-            'progs'=>$progs->all()
+            'progs'=>$progs->all(),
+            'advState'=>$advisory_state_code,
+            'advStudent'=>$advStudent
         ]);
     }
 
@@ -432,8 +424,10 @@ class AdvisoryController extends Controller
         ]);
 
         $advisory = Advisory::find($id);
+        $advisory_state_code = AdvisoryState::find($advisory->asesoria_estado_id)->codigo;
 
         $student = Student::find($advisory->estudiante_id);
+        $advStudent = $this->resolveFullName($student);
 
         $student->primer_nombre = $request->input('firstName');
         $student->segundo_nombre = $request->input('secondName');
@@ -450,38 +444,29 @@ class AdvisoryController extends Controller
         $student->ciudad_id = $request->input('bornCity');
         $student->profesion_id = $request->input('profesion');
         $student->nivel_ingles_id = $request->input('engLevel');
-        //$student->creacion_fecha = date("Y-m-d H:i:s");
-        //$student->creacion_usuario_id = 0;
         $student->modificacion_fecha = date("Y-m-d H:i:s");
         //$student->modificacion_usuario_id = 0;
         $student->save();
 
-        //return redirect('/editStep2')->with('success', 'Informacion estudiante actualizada exitosamente');
-        //return view('/editStep2/' . $advisory->asesoria_id)->with('advisory', $advisory);
-        //return view('advisory.editStep1')->with('advisory', $advisory)->with('student', $student)->with('success', 'Student Updated');
-
-
-
         $docType = DocumentType::where('activo','1')->orderBy('codigo_orden','asc')->pluck('nombre', 'tipo_documento_id');
         $maritalStatus = MaritalStatus::where('activo','1')->orderBy('codigo_orden','asc')->pluck('nombre', 'estado_civil_id');
         $countries = Country::where('activo','1')->orderBy('nombre','asc')->pluck('nombre', 'pais_id');
-        //$cities = City::pluck('nombre', 'ciudad_id');
         $professions = Profession::where('activo','1')->orderBy('nombre','asc')->pluck('nombre', 'profesion_id');
         $englishLev = EnglishLevel::where('activo','1')->orderBy('codigo_orden','asc')->pluck('nombre', 'nivel_ingles_id');
 
         $experience = $this->getExperience($advisory->estudiante_id);
 
-        //return view('advisory.editStep1')->with('advisory', $advisory)->with('student', $student);
         return view('advisory.editStep1', [
                                             'advisory'=>$advisory, 'student'=>$student, 
                                             'docTypes'=>$docType, 
                                             'maritalStatus'=>$maritalStatus,
                                             'countries'=>$countries,
-                                            //'cities'=>$cities,
                                             'professions'=>$professions,
                                             'englishLev'=>$englishLev,
                                             'experience'=>$experience,
-                                            'success', 'Student Updated'
+                                            'success', 'Student Updated',
+                                            'advState'=>$advisory_state_code,
+                                            'advStudent'=>$advStudent
                                           ]);
     }
 
@@ -499,9 +484,11 @@ class AdvisoryController extends Controller
         ]);
 
         $advisory = Advisory::find($id);
+        $advisory_state_code = AdvisoryState::find($advisory->asesoria_estado_id)->codigo;
 
-        //$advisory->estudiante_id =  $student->estudiante_id;
-        //$advisory->asesoria_estado_id = $request->input('maritalStatus'); 
+        $student = Student::find($advisory->estudiante_id);
+        $advStudent = $this->resolveFullName($student);
+
         $advisory->intencion_viaje_id = $request->input('purpose'); 
         $advisory->fecha_estimada_viaje = date("Y-m-d", strtotime( $request->input('dateAproxFlight')));
         $advisory->metodo_contacto_id = $request->input('contactMean'); 
@@ -537,14 +524,6 @@ class AdvisoryController extends Controller
         $contactMeans = ContactMean::where('activo','1')->orderBy('codigo_orden','asc')->pluck('descripcion', 'metodo_contacto_id');
 
         $courseTypes = CourseType::where('activo','1')->orderBy('descripcion','asc')->pluck('descripcion', 'tipo_curso_id');
-        //$institutions = CourseTypeInstitution::pluck('descripcion', 'intencion_viaje_id');
-                    
-        // $infoSent = DB::select('SELECT a.asesoria_id, a.estudiante_id, a.asesoria_estado_id,
-        //                 CONCAT(e.primer_nombre, " ", e.primer_apellido) cliente,
-        //                 ae.nombre estado
-        //                 FROM asesoria a
-        //                 INNER JOIN estudiante e ON a.estudiante_id = e.estudiante_id
-        //                 INNER JOIN asesoria_estado ae ON a.asesoria_estado_id = ae.asesoria_estado_id');
 
         $docsSent = $this->getDocuments($id);
 
@@ -553,7 +532,9 @@ class AdvisoryController extends Controller
                                             'purpouses'=>$purpouses,
                                             'contactMeans'=>$contactMeans,
                                             'courseTypes'=>$courseTypes,
-                                            'docsSent'=>$docsSent
+                                            'docsSent'=>$docsSent,
+                                            'advState'=>$advisory_state_code,
+                                            'advStudent'=>$advStudent
                                           ]);
     }
 
@@ -566,9 +547,13 @@ class AdvisoryController extends Controller
      */
     public function updateStep3(Request $request, $id)
     {
-        // $this->validate($request, [
-        //     'prog1' => 'required'
-        // ]);
+        $this->validate($request, [
+            'prog1' => 'required',
+            'dateArrive' => 'required',
+            'dateStartClass' => 'required',
+            'dateFinishClass' => 'required',
+            'dateHomestay' => 'required',
+        ]);
 
         $advisoryEnroll = AdvisoryEnrollment::find($id);
         $advisoryEnroll->opcion1_asesoria_informacion_enviada_id = $request->input('prog1'); 
@@ -580,18 +565,24 @@ class AdvisoryController extends Controller
         $advisoryEnroll->fecha_inicio_homestay = date("Y-m-d", strtotime( $request->input('dateHomestay'))); 
         $advisoryEnroll->save();
 
-        //$advisoryEnroll = DB::table('asesoria_enrollment')->where('asesoria_enrollment.asesoria_id', '=', $advisoryEnroll->asesoria_id)->distinct()->first();
+        $advisory = Advisory::find($advisoryEnroll->asesoria_id);
+        $student = Student::find($advisory->estudiante_id);
+        $advStudent = $this->resolveFullName($student);
+
+        $advisory_state_code = $request->input('advStateCod');
 
         $progs = $this->getDocuments($advisoryEnroll->asesoria_id)->pluck('nombre', 'asesoria_informacion_enviada_id');
 
 
         return view('advisory.editStep3', [
              'advisoryEnroll'=>$advisoryEnroll,
-             'progs'=>$progs->all()
+             'progs'=>$progs->all(),
+             'advState'=>$advisory_state_code,
+             'advStudent'=>$advStudent
         ]);
     }
 
-    public function finalizar(Request $request, $id)
+    public function finishEnrollment(Request $request, $id)
     {
         $advisory = Advisory::find($id);
         $state = $advisory->asesoria_estado_id;

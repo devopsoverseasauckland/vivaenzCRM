@@ -3,7 +3,7 @@
 @section('content')
     
     <h3 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted" >
-        Nueva Asesoria
+        {{ $advStudent }}
     </h3>
 
     <nav class="col-md- d-none d-md-block bg-light sidebar shadow pt-2">
@@ -112,6 +112,7 @@
 
                 {{ Form::hidden('advisoryId', $advisory->asesoria_id, array('id' => 'advisoryId')) }}
                 {{ Form::hidden('famAdvisoryhf', $advisory->asesoria_familia, array('id' => 'famAdvisoryhf')) }}
+                {{ Form::hidden('advStateCod', $advState, array('id' => 'advStateCod')) }}
 
                 {{ csrf_field() }}
                 {{Form::hidden('_method', 'PUT')}}
@@ -135,17 +136,17 @@
         <div class="form-row">
             <div class="form-group col-md-8">
                 <label for="courseType" class="col-form-label col-form-label-sm" >Tipo de curso</label>
-                {{Form::select('courseType', $courseTypes, '', ['id' => 'courseType', 'class' => 'form-control dynamic', 
+                {{Form::select('courseType', $courseTypes, '', ['id' => 'courseType', 'class' => 'form-control form-control-sm dynamic', 
                     'placeholder' => '-- Seleccione --', 'data-dependent' => 'institution' ])}}
             </div>
             <div class="form-group col-md-3">
-                <label for="time" class="col-form-label col-form-label-sm" >Tiempo</label>
-                <input type="number" class="form-control" id="time" >
+                <label for="time" class="col-form-label col-form-label-sm" >Meses</label>
+                <input type="number" class="form-control form-control-sm" id="time" min="1" max="128" >
             </div>
         </div>
         <div class="form-group">
             <label for="institution" class="col-form-label col-form-label-sm" >Institucion</label>
-            <select id="institution" name="institution" class="form-control dynamic w-100" >
+            <select id="institution" name="institution" class="form-control form-control-sm w-100" >
                 <option value="" >-- Select --</option>
             </select>
         </div>
@@ -166,7 +167,8 @@
 
     $("#dateAproxFlight").datepicker({
         changeMonth: true,
-        changeYear: true
+        changeYear: true,
+        yearRange: "-100:+10"
     });
 
     $(document).on('click', '#famAdvisory', function()
@@ -271,5 +273,18 @@
             })
         }
     });
+
+    DisableControls();
+    function DisableControls()
+    {
+        var state = $('#advStateCod').val();
+        if(state == 'FI' || state == 'DE')
+        {
+            $('.form-control-sm').prop( "disabled", true );
+            $('.btn-outline-primary').prop( "disabled", true );
+            $('.form-control').prop( "disabled", true );
+            $('.pull-right').hide();
+        }
+    }
 
 @endsection

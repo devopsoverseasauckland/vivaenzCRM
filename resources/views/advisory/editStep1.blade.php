@@ -3,7 +3,7 @@
 @section('content')
 
     <h3 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted" >
-        Nueva Asesoria
+        {{ $advStudent }}
     </h3>
     <nav class="col-md- d-none d-md-block bg-light sidebar shadow pt-2">
         <div class="mx-auto sidebar-sticky">
@@ -217,6 +217,7 @@
                 {{ Form::hidden('studentId', $student->estudiante_id, array('id' => 'studentId')) }}
                 {{ Form::hidden('countryBId', $student->pais_id, array('id' => 'countryBId')) }}
                 {{ Form::hidden('cityBId', $student->ciudad_id, array('id' => 'cityBId')) }}
+                {{ Form::hidden('advStateCod', $advState, array('id' => 'advStateCod')) }}
 
                 {{ csrf_field() }}
                 {{Form::hidden('_method', 'PUT')}}
@@ -236,7 +237,7 @@
     <!-- Modal -->
     <div id="dialog" title="Experiencia laboral">
 
-        <div class="form-row">
+        <div id="dvProfDg" class="form-row">
             <div class="form-group col-md-8">
                 {{-- <label for="courseType" class="col-form-label col-form-label-sm" >Tipo de curso</label> --}}
                 {{-- {{Form::label('profesionExp', 'Profesion',  ['class' => 'w-50'])}} --}}
@@ -286,7 +287,8 @@
 
     $("#bornDate").datepicker({
         changeMonth: true,
-        changeYear: true
+        changeYear: true,
+        yearRange: "-100:+0"
     });
 
     $(document).on('click', '.fa-trash', function()
@@ -369,4 +371,15 @@
         }
     }
 
+    DisableControls();
+    function DisableControls()
+    {
+        var state = $('#advStateCod').val();
+        if(state == 'FI' || state == 'DE')
+        {
+            $('.form-control-sm').prop( "disabled", true );
+            $('.btn-outline-primary').prop( "disabled", true );
+            $('#dvProfDg').hide();
+        }
+    }
 @endsection

@@ -29,6 +29,8 @@ trait TAdvisory {
                     IFNULL(estudiante_seguro_historial.estudiante_seguro_historial_id, '') insurance_id,
                     IFNULL(estudiante_visa_historial.estudiante_visa_historial_id, '') visa_id"))
             ->where('asesoria_estado.activo', '=', '1')
+            ->where('asesoria_estado.codigo', '<>', 'FI')
+            ->where('asesoria_estado.codigo', '<>', 'DE')
             ->where('estudiante.primer_nombre', 'LIKE', "%{$student}%")
             ->get(); 
         } else 

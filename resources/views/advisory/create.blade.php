@@ -184,7 +184,7 @@
 
                 {{Form::submit('Create', ['class' => 'btn btn-outline-success'])}}
                 
-                <button class="btn btn-outline-secondary" type="button">Cancelar</button>
+                <a class="btn btn-outline-secondary" href="/advisory" role="button">Cancelar</a>
                             
             </div>
            
@@ -197,7 +197,8 @@
     @parent
     $("#bornDate").datepicker({
         changeMonth: true,
-        changeYear: true
+        changeYear: true,
+        yearRange: "-100:+0"
     });
 
     $('.dynamic').change(function() {
