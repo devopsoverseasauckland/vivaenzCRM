@@ -67,6 +67,8 @@ Route::get('combo/cities', 'ComboController@cities')->name('combo.cities');
 
 Route::get('combo/citiesPagination', 'ComboController@citiesPagination')->name('combo.citiesPagination');
 
+Route::get('combo/roles', 'ComboController@roles')->name('combo.roles');
+
 
 Route::post('advisoryInfoSent/registerDocument', 'AdvisoryInfoSentController@registerDocument')->name('advisoryInfoSent.registerDocument');
 
@@ -78,7 +80,11 @@ Route::post('studentExperience/deleteExperience', 'StudentExperienceController@d
 
 Route::post('advisoryProcess/registerDate', 'AdvisoryProcessController@registerDate')->name('advisoryProcess.registerDate');
 
-//Route::post('authorization/login', 'AuthorizationController@login')->name('authorization.login');
+Route::get('authorization/getMnAdvisories', 'AuthorizationController@getMnAdvisories')->name('authorization.getMnAdvisories');
+
+Route::get('authorization/getMnReports', 'AuthorizationController@getMnReports')->name('authorization.getMnReports');
+
+Route::get('authorization/getMnConfig', 'AuthorizationController@getMnConfig')->name('authorization.getMnConfig');
 
 Auth::routes();
 

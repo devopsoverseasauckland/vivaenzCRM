@@ -62,7 +62,7 @@
                 <div id="dvMessages" class="col-3 mt-5 pt-5" >
 
                     @include('inc.messages')
-
+                    
                 </div>
 
             </div>
@@ -70,6 +70,9 @@
         </div>
 
     </div>
+
+    
+
     <!--<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>-->
     <script>
         jQuery(document).ready(function() {
@@ -94,16 +97,55 @@
             };
             $.datepicker.setDefaults($.datepicker.regional['es']);
 
+            //$('#sp').html('{{ Auth::user()->name }}');
+
+            LoadMenu();
+            function LoadMenu()
+            {
+                var _token = $('input[name="_token"]').val();
+                console.log('loading menu...');
+                $.ajax({
+                    url: "{{ route('authorization.getMnAdvisories') }}",
+                    method: "GET",
+                    data: { 
+                        _token: _token
+                    },
+                    success:function(result)
+                    {
+                        $('#mnAdvisories').empty();
+                        $( result ).appendTo('#mnAdvisories');
+                    }
+                });
+
+                $.ajax({
+                    url: "{{ route('authorization.getMnReports') }}",
+                    method: "GET",
+                    data: { 
+                        _token: _token
+                    },
+                    success:function(result)
+                    {
+                        $('#mnReports').empty();
+                        $( result ).appendTo('#mnReports');
+                    }
+                });
+
+                $.ajax({
+                    url: "{{ route('authorization.getMnConfig') }}",
+                    method: "GET",
+                    data: { 
+                        _token: _token
+                    },
+                    success:function(result)
+                    {
+                        $('#mnConfig').empty();
+                        $( result ).appendTo('#mnConfig');
+                    }
+                });
+            }
+
             @yield('postJquery');
         });
     </script>
-
-    {{-- <div id="app">
-        
-
-        <main class="py-4">
-            @yield('content')
-        </main>
-    </div> --}}
 </body>
 </html>

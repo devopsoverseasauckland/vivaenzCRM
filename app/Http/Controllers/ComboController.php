@@ -187,4 +187,22 @@ class ComboController extends Controller
         echo $output;
     }
 
+    public function roles(Request $request)
+    {
+        $data = DB::table('rol')
+        ->select('rol.rol_id', 'rol.nombre')
+        ->where('rol.activo', '=', '1')
+        ->orderBy('rol.nombre','asc')
+        ->get();
+
+        $output = '<option value="">-- Seleccione --</option>';
+        foreach($data as $row)
+        {
+            $output .= '<option value="' . $row->rol_id . '">' .
+                    $row->nombre . '</option>';
+        }
+
+        echo $output;
+    }
+
 }
