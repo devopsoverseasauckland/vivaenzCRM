@@ -123,8 +123,8 @@
                     <div class="form-inline p-1">
                         {{Form::label('bornCity', 'Ciudad',  ['class' => 'w-50'])}}
                         <div class="col-sm-3">    
-                            {{-- {{Form::select('bornCity', $cities, '', ['class' => 'form-control form-control-sm w-auto', 'placeholder' => '-- Seleccione --' ])}} --}}
-                            <select id="bornCity" name="bornCity" class="form-control form-control-sm w-auto dynamic" >
+                            {{ Form::hidden('cityBId', '', array('id' => 'cityBId')) }}
+                            <select id="bornCity" name="bornCity" class="form-control form-control-sm w-auto" >
                                 <option value="" >-- Select --</option>
                             </select>
                         </div>
@@ -202,7 +202,10 @@
     });
 
     $('.dynamic').change(function() {
-        if ($(this).val() != '')
+        var slDependent = $(this).data('dependent');
+        LoadCities($(this), slDependent, 0);
+
+        {{-- if ($(this).val() != '')
         {
             var bornCountry = $(this).val();
             var slDependent = $(this).data('dependent');
@@ -222,6 +225,43 @@
                     $( result ).appendTo( '#' + slDependent );
                 }
             })
-        }
+        } --}}
     });
+
+    LoadCities($('#bornCountry'), 'bornCity', 1);
+    function LoadCities(countryCtrl, slDependent, load)
+    {
+        if (countryCtrl.val() != '')
+        {
+            var bornCountry = countryCtrl.val();
+            var _token = $('input[name="_token"]').val();
+
+            $.ajax({
+                url: "{{ route('combo.cities') }}",
+                method: "GET",
+                data: { 
+                    val: bornCountry, 
+                    selIt: 1,
+                    _token: _token
+                },
+                success:function(result)
+                {
+                    $('#' + slDependent ).empty();
+                    $( result ).appendTo( '#' + slDependent );
+                    
+                    if (load == 1)
+                    {
+                        var cityId = $('#cityBId').val();
+                        $('#' + slDependent + ' option[value="' + cityId + '"]').prop('selected', true);
+                    }
+                }
+            })
+        }
+    }
+
+    $('#bornCity').change(function() {
+        $('#cityBId').val($(this).val());
+    });
+    
+
 @endsection
