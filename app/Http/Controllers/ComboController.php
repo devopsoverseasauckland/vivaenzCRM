@@ -111,6 +111,47 @@ class ComboController extends Controller
         echo $output;
     }
 
+    public function advisoriesTracking(Request $request)
+    {
+        $advisoryStateId = $request->get('stateId');
+        $student = $request->get('student');
+        $invoiced = $request->get('invoiced');
+        $arrived = $request->get('arrived');
+        $upcomingTrack = $request->get('upcomingTrack');
+
+
+        // $from = date("Y-m-d");
+        // $to = date('Y-m-d', strtotime($from . ' + 15 days'));
+
+        // return $to;
+
+        
+        $advisories = $this->getAdvisoriesTracking($advisoryStateId, $student, $invoiced, $arrived, $upcomingTrack);
+
+        $output = '';
+        foreach($advisories as $adv)
+        {
+            $output .= '<tr>
+                            <td>
+                                ' . $adv->asesoria_id . '
+                                <input type="hidden" value="' . $adv->asesoria_id . '" />
+                                <input type="hidden" value="' . $adv->estudiante_id . '" />
+                            </td>
+                            <td><a href="/advisory/' . $adv->asesoria_id . '">' . $adv->cliente .
+                            '</a></td><td>' . $adv->estado . '</td>
+                            <td>' . $adv->advisory_date . '</td>
+                            <td>' . $adv->adv_next_tracking . '</td>
+                            <td>' . $adv->adv_invoice_date . '</td>
+                            <td>' . $adv->arrival_date . '</td>
+                            <td>' . $adv->visa_exp_date . '</td>
+                            <td>' . $adv->insur_exp_date . '</td>
+                            <td></td>
+                        </tr>';
+        }
+
+        echo $output;
+    }
+
     use TCity;
     public function cities(Request $request)
     {

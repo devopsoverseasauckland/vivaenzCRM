@@ -19,17 +19,19 @@ Route::get('/', function () {
 
 //Route::get('/index', 'PagesController@index');
 
-Route::get('/gestionSeguimiento', 'PagesController@gestionSeguimiento');
+//Route::get('/gestionSeguimiento', 'PagesController@gestionSeguimiento');
 
 //Route::get('/nuevaAsesoria', 'PagesController@nuevaAsesoria');
 
-Route::get('/reporteSeguimiento', 'PagesController@reporteSeguimiento');
+//Route::get('/reporteSeguimiento', 'PagesController@reporteSeguimiento');
+
+Route::post('advisory/storeStep1', 'AdvisoryController@storeStep1');
 
 Route::resource('advisory', 'AdvisoryController');
 
 Route::post('advisory/storeStep1', 'AdvisoryController@storeStep1');
 
-//sRoute::post('advisory/storeStep2', 'AdvisoryController@storeStep2');
+//Route::post('advisory/storeStep2', 'AdvisoryController@storeStep2');
 
 //Route::post('advisory/storeStep3', 'AdvisoryController@storeStep3');
 
@@ -53,6 +55,12 @@ Route::match(['put', 'match'], '/updateStep3/{id}', 'AdvisoryController@updateSt
 
 Route::match(['put', 'match'], '/finishEnrollment/{id}', 'AdvisoryController@finishEnrollment')->name('advisory.finishEnrollment');
 
+
+
+Route::get('report/tracking', 'ReportController@tracking');
+
+
+
 Route::get('combo/courseTypeInstitutions', 'ComboController@courseTypeInstitutions')->name('combo.courseTypeInstitutions');
 
 Route::get('combo/institutions', 'ComboController@institutions')->name('combo.institutions');
@@ -62,6 +70,9 @@ Route::get('combo/institutionsPagination', 'ComboController@institutionsPaginati
 Route::get('combo/advisories', 'ComboController@advisories')->name('combo.advisories');
 
 Route::get('combo/advisoryProcess', 'ComboController@advisoryProcess')->name('combo.advisoryProcess');
+
+Route::get('combo/advisoriesTracking', 'ComboController@advisoriesTracking')->name('combo.advisoriesTracking');
+
 
 Route::get('combo/cities', 'ComboController@cities')->name('combo.cities');
 

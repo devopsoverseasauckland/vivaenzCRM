@@ -54,7 +54,7 @@ class AuthorizationController extends Controller
             case "GM":
             case "AD":
                 $menu = ' <li class="nav-item">
-                    <a class="nav-link" href="/reporteSeguimiento" >
+                    <a class="nav-link" href="/report/tracking" >
                         <span data-feather="file-text"></span>
                         Reporte seguimiento
                     </a>
@@ -124,7 +124,7 @@ class AuthorizationController extends Controller
             case "AD":
                 $newUser = route('register');
 
-                $menu = $menu . ' <li class="nav-item">
+                $menu = $menu . '<li class="nav-item">
                     <a class="nav-link" href="' . $newUser . '" >
                         <span data-feather="file-text"></span>
                         Crear usuario
