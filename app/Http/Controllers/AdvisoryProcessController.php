@@ -72,29 +72,31 @@ class AdvisoryProcessController extends Controller
             $advProcess->save();
         }
         
+        $page = $request->get('page');
         $stateId = $request->get('stateId');
         $student = $request->get('student');
 
         // Get the advisories to refresh the information on the screen after the response of this method
-        $advisories = $this->getAdvisories($stateId, $student);
-        $output = '';
-        foreach($advisories as $adv)
-        {
-            $output .= '<tr><td>
-                            <a id="instDetail' . $adv->asesoria_id . '" href="#" class="btn btn-warning btn-sm" 
-                                data-adv-id="' . $adv->asesoria_id . '" data-cli-name="' . $adv->cliente . '" 
-                                data-ins-id="' . $adv->insurance_id . '" data-visa-id="' . $adv->visa_id . '"
-                                data-cli-id="' . $adv->estudiante_id . '">
-                                <i class="fa fa-ellipsis-v"></i>
-                            </a>
-                            <input type="hidden" value="' . $adv->asesoria_id . '" />
-                            <input type="hidden" value="' . $adv->estudiante_id . '" />
-                        </td>
-                            <td><a href="/advisory/' . $adv->asesoria_id . '">' . $adv->cliente .
-                            '</a></td><td>' . $adv->estado . '</td><td></td></tr>';
-        }
+        $advisories = $this->getAdvisoriesPaginate($stateId, $student, $page);
+        // $output = '';
+        // foreach($advisories as $adv)
+        // {
+        //     $output .= '<tr><td>
+        //                     <a id="instDetail' . $adv->asesoria_id . '" href="#" class="btn btn-warning btn-sm" 
+        //                         data-adv-id="' . $adv->asesoria_id . '" data-cli-name="' . $adv->cliente . '" 
+        //                         data-ins-id="' . $adv->insurance_id . '" data-visa-id="' . $adv->visa_id . '"
+        //                         data-cli-id="' . $adv->estudiante_id . '">
+        //                         <i class="fa fa-ellipsis-v"></i>
+        //                     </a>
+        //                     <input type="hidden" value="' . $adv->asesoria_id . '" />
+        //                     <input type="hidden" value="' . $adv->estudiante_id . '" />
+        //                 </td>
+        //                     <td><a href="/advisory/' . $adv->asesoria_id . '">' . $adv->cliente .
+        //                     '</a></td><td>' . $adv->estado . '</td><td></td></tr>';
+        // }
 
-        echo $output;
+        // echo $output;
+        echo $advisories;
     }
 
 }

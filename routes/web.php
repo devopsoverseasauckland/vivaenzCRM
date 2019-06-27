@@ -69,9 +69,14 @@ Route::get('combo/institutionsPagination', 'ComboController@institutionsPaginati
 
 Route::get('combo/advisories', 'ComboController@advisories')->name('combo.advisories');
 
+Route::get('combo/advisoriesPagination', 'ComboController@advisoriesPagination')->name('combo.advisoriesPagination');
+
 Route::get('combo/advisoryProcess', 'ComboController@advisoryProcess')->name('combo.advisoryProcess');
 
 Route::get('combo/advisoriesTracking', 'ComboController@advisoriesTracking')->name('combo.advisoriesTracking');
+
+Route::get('combo/advisoriesTrackingPagination', 'ComboController@advisoriesTrackingPagination')->name('combo.advisoriesTrackingPagination');
+
 
 
 Route::get('combo/cities', 'ComboController@cities')->name('combo.cities');

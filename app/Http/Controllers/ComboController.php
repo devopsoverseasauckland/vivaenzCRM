@@ -43,27 +43,23 @@ class ComboController extends Controller
     use TAdvisory;
     public function advisories(Request $request)
     {
+        $page = $request->get('page');
         $advisoryStateId = $request->get('stateId');
         $student = $request->get('student');
         
-        $advisories = $this->getAdvisories($advisoryStateId, $student);
+        $advisories = $this->getAdvisoriesPaginate($advisoryStateId, $student, $page);
+
+        echo $advisories;
+    }
+
+    public function advisoriesPagination(Request $request)
+    {
+        $page = $request->get('page');
+        $advisoryStateId = $request->get('stateId');
+        $student = $request->get('student');
 
         $output = '';
-        foreach($advisories as $adv)
-        {
-            $output .= '<tr><td>
-                            <a id="instDetail' . $adv->asesoria_id . '" href="#" class="btn btn-warning btn-sm" 
-                                data-adv-id="' . $adv->asesoria_id . '" data-cli-name="' . $adv->cliente . '" 
-                                data-ins-id="' . $adv->insurance_id . '" data-visa-id="' . $adv->visa_id . '"
-                                data-cli-id="' . $adv->estudiante_id . '">
-                                <i class="fa fa-ellipsis-v"></i>
-                            </a>
-                            <input type="hidden" value="' . $adv->asesoria_id . '" />
-                            <input type="hidden" value="' . $adv->estudiante_id . '" />
-                        </td>
-                            <td><a href="/advisory/' . $adv->asesoria_id . '">' . $adv->cliente .
-                            '</a></td><td>' . $adv->estado . '</td><td></td></tr>';
-        }
+        $output = $this->getAdvisoriesPagination($advisoryStateId, $student, $page);
 
         echo $output;
     }
@@ -113,43 +109,32 @@ class ComboController extends Controller
 
     public function advisoriesTracking(Request $request)
     {
+        $page = $request->get('page');
+
         $advisoryStateId = $request->get('stateId');
         $student = $request->get('student');
         $invoiced = $request->get('invoiced');
         $arrived = $request->get('arrived');
         $upcomingTrack = $request->get('upcomingTrack');
-
-
-        // $from = date("Y-m-d");
-        // $to = date('Y-m-d', strtotime($from . ' + 15 days'));
-
-        // return $to;
-
         
-        $advisories = $this->getAdvisoriesTracking($advisoryStateId, $student, $invoiced, $arrived, $upcomingTrack);
+        $advisories = $this->getAdvisoriesTrackingPaginate($advisoryStateId, $student, $invoiced, $arrived, $upcomingTrack, $page);
 
-        $output = '';
-        foreach($advisories as $adv)
-        {
-            $output .= '<tr>
-                            <td>
-                                ' . $adv->asesoria_id . '
-                                <input type="hidden" value="' . $adv->asesoria_id . '" />
-                                <input type="hidden" value="' . $adv->estudiante_id . '" />
-                            </td>
-                            <td><a href="/advisory/' . $adv->asesoria_id . '">' . $adv->cliente .
-                            '</a></td><td>' . $adv->estado . '</td>
-                            <td>' . $adv->advisory_date . '</td>
-                            <td>' . $adv->adv_next_tracking . '</td>
-                            <td>' . $adv->adv_invoice_date . '</td>
-                            <td>' . $adv->arrival_date . '</td>
-                            <td>' . $adv->visa_exp_date . '</td>
-                            <td>' . $adv->insur_exp_date . '</td>
-                            <td></td>
-                        </tr>';
-        }
+        echo $advisories;
+    }
 
-        echo $output;
+    public function advisoriesTrackingPagination(Request $request)
+    {
+        $page = $request->get('page');
+
+        $advisoryStateId = $request->get('stateId');
+        $student = $request->get('student');
+        $invoiced = $request->get('invoiced');
+        $arrived = $request->get('arrived');
+        $upcomingTrack = $request->get('upcomingTrack');
+        
+        $advisories = $this->getAdvisoriesTrackingPagination($advisoryStateId, $student, $invoiced, $arrived, $upcomingTrack, $page);
+
+        echo $advisories;
     }
 
     use TCity;

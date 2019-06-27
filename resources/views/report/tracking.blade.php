@@ -95,6 +95,10 @@
             </tbody>
         </table>
     </div>
+    @if (count($advisories) > 0)
+    {{ $advisories->links() }}
+    @endif
+    <input id="page" name="page" type="hidden" value="1">
     @else
     <p>No existen asesorias</p>
     @endif
@@ -133,7 +137,7 @@
                 invoiced: invoiced, 
                 arrived: arrived, 
                 upcomingTrack: upcomingTrack,
-                _token: _token,
+                _token: _token
             },
             success:function(result)
             {
@@ -141,7 +145,26 @@
                 $('#tbbody').empty();
                 $( result ).appendTo('#tbbody');
             }
-        })
+        });
+
+        $('.pagination').remove();
+        $.ajax({
+            url: "{{ route('combo.advisoriesTrackingPagination') }}",
+            method: "GET",
+            data: { 
+                stateId: stateId,
+                student: student,
+                invoiced: invoiced, 
+                arrived: arrived, 
+                upcomingTrack: upcomingTrack,
+                _token: _token,
+            },
+            success:function(result)
+            {
+                $('#tbAdvisories').after( result );
+                
+            }
+        });
     }
 
     $(document).on('change', '#statesFl,#studentFl', function()
@@ -152,6 +175,57 @@
     $(document).on('click', '.form-check-input', function()
     {
         loadGrid();
+    });
+
+
+    /*****/
+    $(document).on("click", "a[class='page-link']", function()
+    {
+        var stateId = $('select#statesFl option:checked').val();
+        var student = $('#studentFl').val();
+        var _token = $('input[name="_token"]').val();
+        invoiced = getValueCheck('noInvoic');
+        arrived = getValueCheck('proxTrav');
+        upcomingTrack = getValueCheck('proxSeg');
+        var page = $(this).data('pg-id');
+
+        $.ajax({
+            url: "{{ route('combo.advisoriesTracking') }}" + "?page=" + page,
+            method: "GET",
+            data: { 
+                stateId: stateId,
+                student: student,
+                invoiced: invoiced, 
+                arrived: arrived, 
+                upcomingTrack: upcomingTrack,
+                _token: _token
+            },
+            success:function(result)
+            {
+                //$('li').remove('#li' + result);
+                $('#tbbody').empty();
+                $( result ).appendTo('#tbbody');
+            }
+        });
+
+        $('.pagination').remove();
+        $.ajax({
+            url: "{{ route('combo.advisoriesTrackingPagination') }}" + "?page=" + page,
+            method: "GET",
+            data: { 
+                stateId: stateId,
+                student: student,
+                invoiced: invoiced, 
+                arrived: arrived, 
+                upcomingTrack: upcomingTrack,
+                _token: _token,
+            },
+            success:function(result)
+            {
+                $('#tbAdvisories').after( result );
+                
+            }
+        });
     });
 
 @endsection

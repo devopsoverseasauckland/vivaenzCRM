@@ -30,7 +30,7 @@
 
     @if(count($advisories) > 0)
 
-    <div class="table-responsive">
+    <div id="tbAdvisories" class="table-responsive">
         <table class="table table-striped table-hover table-sm">
             <thead>
             <tr>
@@ -62,6 +62,10 @@
             </tbody>
         </table>
     </div>
+    @if (count($advisories) > 0)
+    {{ $advisories->links() }}
+    @endif
+    <input id="page" name="page" type="hidden" value="1">
     @else
     <p>No existen asesorias</p>
     @endif
@@ -94,7 +98,7 @@
 
     </div>
 
-    <div id="dialogVA" class="container m-1" title="Detalle Visa">
+    <div id="dialogVA" class="container m-1" title="Detalle Visa" >
 
             <div class="card w-auto">
                 <div class="table-responsive">
@@ -128,7 +132,7 @@
 
     </div>
 
-    <div id="dialogSG" class="container m-1" title="Detalle Seguro Medico">
+    <div id="dialogSG" class="container m-1" title="Detalle Seguro Medico" >
 
         <div class="card w-auto">
             <div class="table-responsive">
@@ -209,9 +213,67 @@
                 $('#tbbody').empty();
                 $( result ).appendTo('#tbbody');
             }
-        })
+        });
+
+        $('.pagination').remove();
+        $.ajax({
+            url: "{{ route('combo.advisoriesPagination') }}",
+            method: "GET",
+            data: { 
+                stateId: stateId,
+                student: student,                
+                _token: _token
+            },
+            success:function(result)
+            {
+                $('#tbAdvisories').after( result );
+                
+            }
+        });
     });
 
+    $(document).on("click", "a[class='page-link']", function()
+    {
+        var stateId = $('select#statesFl option:checked').val();
+        var student = $('#studentFl').val();
+        var page = $(this).data('pg-id');
+        var _token = $('input[name="_token"]').val();
+
+        $.ajax({
+            url: "{{ route('combo.advisories') }}" + "?page=" + page,
+            method: "GET",
+            data: { 
+                stateId: stateId,
+                student: student,
+                _token: _token
+            },
+            success:function(result)
+            {
+                //$('li').remove('#li' + result);
+                $('#tbbody').empty();
+                $( result ).appendTo('#tbbody');
+            }
+        })
+
+        $('.pagination').remove();
+        $.ajax({
+            url: "{{ route('combo.advisoriesPagination') }}" + "?page=" + page,
+            method: "GET",
+            data: { 
+                stateId: stateId,
+                student: student,                
+                _token: _token
+            },
+            success:function(result)
+            {
+                $('#tbAdvisories').after( result );
+            }
+        });
+    });
+
+    
+
+    /*****/
     $(document).on('click', '.btn-warning', function()
     {
         $('#dialog').dialog('close');
