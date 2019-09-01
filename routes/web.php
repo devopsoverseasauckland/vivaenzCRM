@@ -78,12 +78,15 @@ Route::get('combo/advisoriesTracking', 'ComboController@advisoriesTracking')->na
 Route::get('combo/advisoriesTrackingPagination', 'ComboController@advisoriesTrackingPagination')->name('combo.advisoriesTrackingPagination');
 
 
+Route::get('combo/countries', 'ComboController@countries')->name('combo.countries');
 
 Route::get('combo/cities', 'ComboController@cities')->name('combo.cities');
 
 Route::get('combo/citiesPagination', 'ComboController@citiesPagination')->name('combo.citiesPagination');
 
 Route::get('combo/roles', 'ComboController@roles')->name('combo.roles');
+
+Route::get('combo/professions', 'ComboController@professions')->name('combo.professions');
 
 
 Route::post('advisoryInfoSent/registerDocument', 'AdvisoryInfoSentController@registerDocument')->name('advisoryInfoSent.registerDocument');
@@ -119,9 +122,16 @@ Route::resource('institution','InstitutionController');
 
 Route::resource('profession', 'ProfessionController');
 
+Route::post('profession/store', 'ProfessionController@store')->name('profession.store');
+
 Route::resource('country', 'CountryController');
 
+Route::post('country/store', 'CountryController@store')->name('country.store');
+
 Route::resource('city', 'CityController');
+
+Route::post('city/store', 'CityController@store')->name('city.store');
+
 
 
 
@@ -137,3 +147,9 @@ Route::post('studentVisaHistory/register', 'StudentVisaHistoryController@registe
 Route::post('studentVisaHistory/update', 'StudentVisaHistoryController@update')->name('studentVisaHist.update');
 
 Route::get('studentVisaHistory/get', 'StudentVisaHistoryController@get')->name('studentVisaHist.get');
+
+
+
+Route::get('studentAdvComment/get', 'StudentAdvCommentController@get')->name('studentAdvComment.get');
+
+Route::post('studentAdvComment/update', 'StudentAdvCommentController@update')->name('studentAdvComment.update');

@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Advisory;
 use App\AdvisoryState;
 use App\AdvisoryProcess;
+use App\ProcessCheckListItem;
 
 use DB;
 
@@ -41,17 +42,23 @@ class AdvisoryProcessController extends Controller
         if ($advisory_state->codigo != 'FI' && $advisory_state->codigo != 'DE')
         {
             /// Not all the date registrations generate(or calls of this method) change of state
-            if ($cod != 'DE' && $cod != 'RE' && $cod != 'SG' && $cod != 'HS' && $cod != 'IV' && $cod != 'NT')
+            if ($cod != 'DE' && $cod != 'RE' && $cod != 'SG' && $cod != 'HS' && $cod != 'IV' && $cod != 'NT' && $cod != 'FA')
             {
                 // Each process checklist item has an advisory state linked, which is the state the advisory has to receive
                 // when the date will be registered
-                $id_new_state = DB::table('asesoria_proceso')
+                $cod_ord_new_state = DB::table('asesoria_proceso')
                 ->join('proceso_checklist_item', 'proceso_checklist_item.proceso_checklist_item_id', '=', 'asesoria_proceso.proceso_checklist_item_id')
-                ->select(DB::raw('min(proceso_checklist_item.asesoria_estado_id) as id_nuevo_estado'))
+                ->select(DB::raw('min(proceso_checklist_item.codigo_orden) as cod_ord_nuevo_estado'))
                 ->where('asesoria_proceso.asesoria_id', '=', $advisoryId)
                 ->where('proceso_checklist_item.codigo', '!=', 'DE')
-                ->where('asesoria_proceso.realizado_fecha', '=',null)
-                ->get()->first()->id_nuevo_estado; // id new state
+                ->whereNull('asesoria_proceso.realizado_fecha')
+                ->get()->first()->cod_ord_nuevo_estado; // id new state
+
+
+                $id_new_state = DB::table('proceso_checklist_item')
+                    ->where('proceso_checklist_item.codigo_orden', '=', $cod_ord_new_state)
+                    ->select(DB::raw('proceso_checklist_item.asesoria_estado_id'))
+                    ->get()->first()->asesoria_estado_id;
 
                 if ($id_new_state != null)
                 {

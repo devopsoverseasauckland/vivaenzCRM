@@ -37,6 +37,7 @@
                 <th></th>
                 <th>Estudiante</th>
                 <th>Estado</th>
+                <th>Prox Seguimiento</th>
                 <th>Notas</th>
             </tr>
             </thead>
@@ -55,8 +56,20 @@
                         <input type="hidden" value="{{ $advisory->estudiante_id }}" />
                     </td>
                     <td><a href="/advisory/{{$advisory->asesoria_id}}">{{ $advisory->cliente }}</a></td>
-                    <td>{{ $advisory->estado  }}</td>
-                    <td></td>
+                    <td>{{ $advisory->estado }}</td>
+                    <td class="form-inline text-left" >
+                        <small>
+                            <input type="text" id="proxTrack{{ $advisory->asesoria_id }}" 
+                                data-adv-id="{{ $advisory->asesoria_id }}" value="{{ $advisory->realizado_fecha }}" 
+                                class="form-control form-control-sm p-0 w-50 text-center" >
+                        </small>
+                    </td>
+                    <td>
+                        <a id="advComments{{ $advisory->asesoria_id }}" href="#" class="btn btn-sm" 
+                            data-adv-id="{{ $advisory->asesoria_id }}" data-cli-name="{{ $advisory->cliente }}"  >
+                            <i class="fa fa-comment" aria-hidden="true"></i>
+                        </a>
+                    </td>
                 </tr>
         @endforeach
             </tbody>
@@ -174,6 +187,26 @@
 
     </div>
 
+    <div id="dialogCM" class="container m-1" title="Comentarios de la asesoria" >
+
+        <div class="card w-auto">
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <tr>
+                        <td colspan="2" >
+                            <textarea id="txaComments" rows="4" cols="50">
+                            </textarea>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <button id="btnUpdateComment" type="submit" class="btn btn-primary mt-3">Actualizar</button>
+        {{-- <button id="btnNewIns" type="submit" class="btn btn-primary mt-3">Nuevo Registro</button> --}}
+
+    </div>
+
 @endsection
 @section('postJquery')
     @parent
@@ -181,7 +214,7 @@
         autoOpen: false,
         width: 350
     });
-    $( "#dialog" ).dialog( "option", "position", { my: "left top", at: "left+40 top+40", of: "#dvMessages" } );
+    $('#dialog').dialog( "option", "position", { my: "left top", at: "left+40 top+40", of: "#dvMessages" } );
 
     $('#dialogVA').dialog({ 
         autoOpen: false,
@@ -191,6 +224,11 @@
     $('#dialogSG').dialog({ 
         autoOpen: false,
         width: 350
+    });
+
+    $('#dialogCM').dialog({
+        autoOpen: false,
+        width: 450
     });
 
     $(document).on('change', '#statesFl,#studentFl', function()
@@ -271,7 +309,31 @@
         });
     });
 
-    
+    // Get Comments
+    $(document).on("click", "a[id*='advComments']", function()
+    {
+        $('#dialogCM').dialog('close');
+        var advisoryId = $(this).data('adv-id');
+        var _token = $('input[name="_token"]').val();
+        $('#advisoryId').val(advisoryId);
+
+        $('#dialogCM').dialog('option', 'title',  'Comentarios asesoria: ' + $(this).data('cli-name'));
+
+        $.ajax({
+            url: "{{ route('studentAdvComment.get') }}",
+            method: "GET",
+            data: { 
+                advId: advisoryId,
+                _token: _token
+            },
+            success:function(result)
+            {
+                $('#txaComments').val(result);
+                $('#dialogCM').dialog('open');
+            }
+        });
+
+    });
 
     /*****/
     $(document).on('click', '.btn-warning', function()
@@ -339,11 +401,15 @@
                 $("#statesFl option:selected").prop("selected", false);
                 $('#tbbody').empty();
                 $( result ).appendTo('#tbbody');
+            },
+            error:function(jqXHR, exception)
+            {
+                alert('El proceso no pudo ser actualizado correctamente. Intentelo de nuevo o comuniquese con el administrador del sistema.');
             }
         });
     });
 
-    $("[id*='date']").datepicker({
+    $("[id*='date'],[id*='proxTrack']").datepicker({
         changeMonth: true,
         changeYear: true,
         showOn: "button",
@@ -448,6 +514,28 @@
 
                     $('#btnNewVisa').toggleClass('btn-outline-danger');
                 }
+            }
+        });
+    });
+
+    $(document).on('click', '#btnUpdateComment', function()
+    {
+        var advId = $('#advisoryId').val();
+        var comments = $('#txaComments').val();
+        var _token = $('input[name="_token"]').val();
+
+        $.ajax({
+            url: "{{ route('studentAdvComment.update') }}",
+            method: "POST",
+            data: { 
+                advId: advId,
+                comm: comments,
+                _token: _token
+            },
+            success:function(result)
+            {
+                //alert('Actualizado');
+                $('#dialogCM').dialog('close');
             }
         });
     });

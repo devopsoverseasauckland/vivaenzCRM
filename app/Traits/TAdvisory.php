@@ -15,6 +15,12 @@ trait TAdvisory {
             $advisories = DB::table('asesoria')
             ->join('estudiante', 'estudiante.estudiante_id', '=', 'asesoria.estudiante_id')
             ->join('asesoria_estado', 'asesoria_estado.asesoria_estado_id', '=', 'asesoria.asesoria_estado_id')
+            ->join('asesoria_proceso', 'asesoria_proceso.asesoria_id', '=', 'asesoria.asesoria_id')
+            ->join('proceso_checklist_item', function($join) 
+            {
+                $join->on('proceso_checklist_item.proceso_checklist_item_id', '=', 'asesoria_proceso.proceso_checklist_item_id');
+                $join->on('proceso_checklist_item.codigo', '=', DB::raw("'NT'"));
+            })
             ->leftjoin('estudiante_seguro_historial', function($join)
             {
                 $join->on('estudiante_seguro_historial.asesoria_id', '=', 'asesoria.asesoria_id');
@@ -29,7 +35,8 @@ trait TAdvisory {
                     CONCAT(estudiante.primer_nombre, ' ' , estudiante.primer_apellido) AS cliente,
                     asesoria_estado.nombre estado, 
                     IFNULL(estudiante_seguro_historial.estudiante_seguro_historial_id, '') insurance_id,
-                    IFNULL(estudiante_visa_historial.estudiante_visa_historial_id, '') visa_id"))
+                    IFNULL(estudiante_visa_historial.estudiante_visa_historial_id, '') visa_id, 
+                    asesoria_proceso.realizado_fecha"))
             ->where('asesoria_estado.activo', '=', '1')
             ->where('asesoria_estado.codigo', '<>', 'FI')
             ->where('asesoria_estado.codigo', '<>', 'DE')
@@ -40,6 +47,12 @@ trait TAdvisory {
             $advisories = DB::table('asesoria')
             ->join('estudiante', 'estudiante.estudiante_id', '=', 'asesoria.estudiante_id')
             ->join('asesoria_estado', 'asesoria_estado.asesoria_estado_id', '=', 'asesoria.asesoria_estado_id')
+            ->join('asesoria_proceso', 'asesoria_proceso.asesoria_id', '=', 'asesoria.asesoria_id')
+            ->join('proceso_checklist_item', function($join) 
+            {
+                $join->on('proceso_checklist_item.proceso_checklist_item_id', '=', 'asesoria_proceso.proceso_checklist_item_id');
+                $join->on('proceso_checklist_item.codigo', '=', DB::raw("'NT'"));
+            })
             ->leftjoin('estudiante_seguro_historial', function($join)
             {
                 $join->on('estudiante_seguro_historial.asesoria_id', '=', 'asesoria.asesoria_id');
@@ -54,7 +67,8 @@ trait TAdvisory {
                     CONCAT(estudiante.primer_nombre, ' ' , estudiante.primer_apellido) AS cliente,
                     asesoria_estado.nombre estado,
                     IFNULL(estudiante_seguro_historial.estudiante_seguro_historial_id, '') insurance_id,
-                    IFNULL(estudiante_visa_historial.estudiante_visa_historial_id, '') visa_id"))
+                    IFNULL(estudiante_visa_historial.estudiante_visa_historial_id, '') visa_id, 
+                    asesoria_proceso.realizado_fecha"))
             ->where('asesoria_estado.asesoria_estado_id', '=', $advisoryStateId)
             ->where('asesoria_estado.activo', '=', '1')
             ->where('estudiante.primer_nombre', 'LIKE', "%{$student}%")
@@ -75,6 +89,12 @@ trait TAdvisory {
             $advisories = DB::table('asesoria')
             ->join('estudiante', 'estudiante.estudiante_id', '=', 'asesoria.estudiante_id')
             ->join('asesoria_estado', 'asesoria_estado.asesoria_estado_id', '=', 'asesoria.asesoria_estado_id')
+            ->join('asesoria_proceso', 'asesoria_proceso.asesoria_id', '=', 'asesoria.asesoria_id')
+            ->join('proceso_checklist_item', function($join) 
+            {
+                $join->on('proceso_checklist_item.proceso_checklist_item_id', '=', 'asesoria_proceso.proceso_checklist_item_id');
+                $join->on('proceso_checklist_item.codigo', '=', DB::raw("'NT'"));
+            })
             ->leftjoin('estudiante_seguro_historial', function($join)
             {
                 $join->on('estudiante_seguro_historial.asesoria_id', '=', 'asesoria.asesoria_id');
@@ -100,6 +120,12 @@ trait TAdvisory {
             $advisories = DB::table('asesoria')
             ->join('estudiante', 'estudiante.estudiante_id', '=', 'asesoria.estudiante_id')
             ->join('asesoria_estado', 'asesoria_estado.asesoria_estado_id', '=', 'asesoria.asesoria_estado_id')
+            ->join('asesoria_proceso', 'asesoria_proceso.asesoria_id', '=', 'asesoria.asesoria_id')
+            ->join('proceso_checklist_item', function($join) 
+            {
+                $join->on('proceso_checklist_item.proceso_checklist_item_id', '=', 'asesoria_proceso.proceso_checklist_item_id');
+                $join->on('proceso_checklist_item.codigo', '=', DB::raw("'NT'"));
+            })
             ->leftjoin('estudiante_seguro_historial', function($join)
             {
                 $join->on('estudiante_seguro_historial.asesoria_id', '=', 'asesoria.asesoria_id');
@@ -152,6 +178,12 @@ trait TAdvisory {
             $data = DB::table('asesoria')
             ->join('estudiante', 'estudiante.estudiante_id', '=', 'asesoria.estudiante_id')
             ->join('asesoria_estado', 'asesoria_estado.asesoria_estado_id', '=', 'asesoria.asesoria_estado_id')
+            ->join('asesoria_proceso', 'asesoria_proceso.asesoria_id', '=', 'asesoria.asesoria_id')
+            ->join('proceso_checklist_item', function($join) 
+            {
+                $join->on('proceso_checklist_item.proceso_checklist_item_id', '=', 'asesoria_proceso.proceso_checklist_item_id');
+                $join->on('proceso_checklist_item.codigo', '=', DB::raw("'NT'"));
+            })
             ->leftjoin('estudiante_seguro_historial', function($join)
             {
                 $join->on('estudiante_seguro_historial.asesoria_id', '=', 'asesoria.asesoria_id');
@@ -177,6 +209,12 @@ trait TAdvisory {
             $data = DB::table('asesoria')
             ->join('estudiante', 'estudiante.estudiante_id', '=', 'asesoria.estudiante_id')
             ->join('asesoria_estado', 'asesoria_estado.asesoria_estado_id', '=', 'asesoria.asesoria_estado_id')
+            ->join('asesoria_proceso', 'asesoria_proceso.asesoria_id', '=', 'asesoria.asesoria_id')
+            ->join('proceso_checklist_item', function($join) 
+            {
+                $join->on('proceso_checklist_item.proceso_checklist_item_id', '=', 'asesoria_proceso.proceso_checklist_item_id');
+                $join->on('proceso_checklist_item.codigo', '=', DB::raw("'NT'"));
+            })
             ->leftjoin('estudiante_seguro_historial', function($join)
             {
                 $join->on('estudiante_seguro_historial.asesoria_id', '=', 'asesoria.asesoria_id');
@@ -446,10 +484,10 @@ trait TAdvisory {
 
         if ($advisoryStateId == '' || $advisoryStateId == null)
         {
-            $advisoriesTrack = $advisories->paginate(11);
+            return $advisories->paginate(11);
         } else 
         {
-            $advisoriesTrack = $advisories->where('asesoria_estado.asesoria_estado_id', '=', $advisoryStateId)->paginate(11);
+            return $advisories->where('asesoria_estado.asesoria_estado_id', '=', $advisoryStateId)->paginate(11);
         }
 
         $output = '';
@@ -476,4 +514,12 @@ trait TAdvisory {
         return $output;
     }
 
+
+    public function getComments($advisoryId)
+    {
+        $advComments = DB::table('asesoria')->where('asesoria.asesoria_id', '=', $advisoryId)
+            ->select(DB::raw("asesoria.observaciones"))->get()->first()->observaciones;
+
+        return $advComments;
+    }
 }

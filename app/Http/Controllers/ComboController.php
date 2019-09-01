@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Traits\TAdvisory;
 use App\Traits\TCourseTypeInstitution;
+use App\Traits\TCountry;
 use App\Traits\TCity;
 use App\Traits\TInstitution;
+use App\Traits\TProfession;
 
 use Illuminate\Http\Request;
 
@@ -132,9 +134,26 @@ class ComboController extends Controller
         $arrived = $request->get('arrived');
         $upcomingTrack = $request->get('upcomingTrack');
         
-        $advisories = $this->getAdvisoriesTrackingPagination($advisoryStateId, $student, $invoiced, $arrived, $upcomingTrack, $page);
+        $advisories = $this->getAdvisoriesTrackingPagination($advisoryStateId, $student, $invoiced, $arrived, $upcomingTrack, $page); // falta implementar
 
         echo $advisories;
+    }
+
+    use TCountry;
+    public function countries(Request $request)
+    {
+        $output = '';
+        
+        $data = $this->getCountries();
+
+        $output = '<option value="">-- Seleccione --</option>';
+        foreach($data as $row)
+        {
+            $output .= '<option value="' . $row->pais_id . '">' .
+                    $row->nombre . '</option>';
+        }
+        
+        echo $output;
     }
 
     use TCity;
@@ -172,6 +191,23 @@ class ComboController extends Controller
         $output = '';
         $output = $this->getCitiesPagination($value, $currentPage);
 
+        echo $output;
+    }
+
+    use TProfession;
+    public function professions(Request $request)
+    {
+        $output = '';
+        
+        $data = $this->getProfessions();
+
+        $output = '<option value="">-- Seleccione --</option>';
+        foreach($data as $row)
+        {
+            $output .= '<option value="' . $row->profesion_id . '">' .
+                    $row->nombre . '</option>';
+        }
+        
         echo $output;
     }
 

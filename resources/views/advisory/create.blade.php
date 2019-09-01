@@ -10,7 +10,11 @@
             
             {!! Form::open(['action' => 'AdvisoryController@storeStep1', 'method' => 'POST', 'autocomplete' => 'off']) !!}
             
-            <img class="img-fluid sidebar-sticky"  src="{{ asset('img/FlowStep1.png') }}" > 
+            <img class="img-fluid sidebar-sticky"  src="{{ asset('img/FlowStep1.png') }}" >
+
+            <map name="mapname">
+                <area shape="rect" shape="rect" coords="48,341,294,275" href="http://www.example.com/">
+            </map>
 
             <div class="form-row pt-3 pl-3">
                 
@@ -112,6 +116,9 @@
                 <div class="col">
                     <div class="form-inline p-1">
                         {{Form::label('bornCountry', 'Pais Origen',  ['class' => 'w-50'])}}
+                        <a href="#" class="pull-right" >
+                            <i id="addCountry" class="fa fa-plus" aria-hidden="true"></i>
+                        </a>
                         <div class="col-sm-3">
                             {{Form::select('bornCountry', $countries, '', ['id' => 'bornCountry', 'class' => 'form-control form-control-sm w-auto dynamic', 
                             'placeholder' => '-- Seleccione --', 'data-dependent' => 'bornCity' ])}}
@@ -122,6 +129,9 @@
                 <div class="col">
                     <div class="form-inline p-1">
                         {{Form::label('bornCity', 'Ciudad',  ['class' => 'w-50'])}}
+                        <a href="#" class="pull-right" >
+                            <i id="addCity" class="fa fa-plus" aria-hidden="true"></i>
+                        </a>
                         <div class="col-sm-3">    
                             {{ Form::hidden('cityBId', '', array('id' => 'cityBId')) }}
                             <select id="bornCity" name="bornCity" class="form-control form-control-sm w-auto" >
@@ -146,7 +156,7 @@
 
                 <div class="col">
                     <div class="form-inline p-1">
-                        {{Form::label('whatsapp', 'Whatsapp',  ['class' => 'w-50'])}}
+                        {{Form::label('whatsapp', 'Telefono/Whatsapp',  ['class' => 'w-50'])}}
                         <div class="col-sm-3">    
                             {{Form::text('whatsapp', '', ['class' => 'form-control form-control-sm', 'placeholder' => '' ])}}
                         </div>
@@ -169,6 +179,9 @@
                 <div class="col">
                     <div class="form-inline p-1">
                         {{Form::label('profesion', 'Profesion',  ['class' => 'w-50'])}}
+                        <a href="#" class="pull-right" >
+                            <i id="addProf" class="fa fa-plus" aria-hidden="true"></i>
+                        </a>
                         <div class="col-sm-3">
                             {{Form::select('profesion', $professions, '', ['class' => 'form-control form-control-sm w-auto', 'placeholder' => '-- Seleccione --' ])}}
                         </div>
@@ -192,6 +205,23 @@
             {!! Form::close() !!}
         </div>
     </nav>
+
+    <!-- Modal -->
+    <div id="addDialog" title="">
+
+        <div class="form-row">
+
+            <div class="form-group col-md-8">
+                <label id="lbItem" for="courseType" class="col-form-label col-form-label-sm" >Nombre</label>
+                <input class="form-control form-control-sm" id="descripcion" >
+            </div>
+
+        </div>
+        <input id="type" name="type" type="hidden" value="">
+        <button id="btnAddItem" type="submit" class="btn btn-primary">Agregar</button>
+
+    </div>
+
 @endsection
 @section('postJquery')
     @parent
@@ -263,5 +293,126 @@
         $('#cityBId').val($(this).val());
     });
     
+    $('#addDialog').dialog({ autoOpen: false });
+    $( "#addDialog" ).dialog( "option", "position", { my: "left top", at: "left+40 top+40", of: "#dvMessages" } );
+
+    $('#addCountry').click(function() {
+        //$('#lbItem').innerHtml('');
+        $('#descripcion').val('');
+        $('#type').val('CO');
+        $('#addDialog').dialog('option', 'title',  'Agregar Pais');
+        $('#addDialog').dialog('open');
+    });
+
+    $('#addCity').click(function() {
+        var country = $('select#bornCountry option:checked').val();
+        if (country == "")
+        {
+            alert("Seleccione el pais al que pertenece la ciudad antes de agregarla");
+        } else {
+            $('#descripcion').val('');
+            $('#type').val('CI');
+            $('#addDialog').dialog('option', 'title',  'Agregar Ciudad');
+            $('#addDialog').dialog('open');
+        }
+    });
+    
+    $('#addProf').click(function() {
+        $('#descripcion').val('');
+        $('#type').val('PR');
+        $('#addDialog').dialog('option', 'title',  'Agregar Profesion');
+        $('#addDialog').dialog('open');
+    });
+
+    $('#btnAddItem').click(function() {
+        var type = $('#type').val();
+        var description = $('#descripcion').val();
+        var _token = $('input[name="_token"]').val();
+        var route = '';
+        var inputData = {};
+        var slc = '';
+
+        switch(type)
+        {
+            case 'CO':
+                slc = 'bornCountry';
+                route = "{{ route('country.store') }}";
+                inputData = { 
+                        nombre: description,
+                        activo: 1,
+                        _token: _token
+                    };
+                break;
+            case 'CI':
+                slc = 'bornCity';
+                countryId = $('select#bornCountry option:checked').val();
+                route = "{{ route('city.store') }}";
+                inputData = { 
+                    nombre: description,
+                    countryId: countryId,
+                    activo: 1,
+                    _token: _token
+                };
+                break;
+            case 'PR':
+                slc = 'profesion';
+                route = "{{ route('profession.store') }}";
+                inputData = { 
+                    nombre: description,
+                    activo: 1,
+                    _token: _token
+                };
+                break;
+            default:
+                break;
+        }
+        
+        $.ajax({
+            url: route,
+            method: "POST",
+            data: inputData,
+            success:function(result)
+            {
+                switch(type)
+                {
+                    case 'CO':
+                        route = "{{ route('combo.countries') }}";
+                        inputData = { 
+                            _token: _token
+                        };
+                        break;
+                    case 'CI':
+                        countryId = $('select#bornCountry option:checked').val();
+                        route = "{{ route('combo.cities') }}";
+                        inputData = { 
+                            val: countryId, 
+                            selIt: 1,
+                            _token: _token
+                        };
+                        break;
+                    case 'PR':
+                        route = "{{ route('combo.professions') }}";
+                        inputData = { 
+                            _token: _token
+                        };
+                        break;
+                    default:
+                        break;
+                }
+
+                $.ajax({
+                    url: route,
+                    method: "GET",
+                    data: inputData,
+                    success: function(result)
+                    {
+                        $('#' + slc ).empty();
+                        $( result ).appendTo( '#' + slc );
+                    }
+                })
+            }
+        });
+
+    });
 
 @endsection

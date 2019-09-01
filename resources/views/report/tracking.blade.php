@@ -147,8 +147,8 @@
             }
         });
 
-        $('.pagination').remove();
-        $.ajax({
+         $('.pagination').remove();
+        {{--$.ajax({
             url: "{{ route('combo.advisoriesTrackingPagination') }}",
             method: "GET",
             data: { 
@@ -164,7 +164,7 @@
                 $('#tbAdvisories').after( result );
                 
             }
-        });
+        }); --}}
     }
 
     $(document).on('change', '#statesFl,#studentFl', function()

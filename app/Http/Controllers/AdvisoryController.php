@@ -110,17 +110,17 @@ class AdvisoryController extends Controller
         $this->validate($request, [
             'firstName' => 'required',
             'flastName' => 'required',
-            'typeDoc' => 'required',
-            'numDoc' => 'required',
+            //'typeDoc' => 'required',
+            //'numDoc' => 'required',
             //bornDate
-            'bornCountry' => 'required',
-            'bornCity' => 'required',
-            'profesion' => 'required',
+            //'bornCountry' => 'required',
+            //'bornCity' => 'required',
+            //'profesion' => 'required',
             //'profBack' => 'required',
-            'maritalStatus' => 'required',
+            //'maritalStatus' => 'required',
             'email' => 'required',
-            'whatsapp' => 'required',
-            'engLevel' => 'required'
+            'whatsapp' => 'required'
+            //'engLevel' => 'required'
         ]);
 
         $student = new Student;
@@ -410,7 +410,8 @@ class AdvisoryController extends Controller
         $this->validate($request, [
             'firstName' => 'required',
             'flastName' => 'required',
-            'numDoc' => 'required'
+            'email' => 'required',
+            'whatsapp' => 'required'
         ]);
 
         $advisory = Advisory::find($id);
@@ -579,13 +580,13 @@ class AdvisoryController extends Controller
         
         if ($state == 3)
         {
-            $advisory->asesoria_estado_id = 4; 
+            $advisory->asesoria_estado_id = 5; // Documents visa
             $advisory->save();    
 
             $asesoria_proceso_id = DB::table('asesoria_proceso')
             ->join('proceso_checklist_item', 'proceso_checklist_item.proceso_checklist_item_id', '=', 'asesoria_proceso.proceso_checklist_item_id')
             ->where('asesoria_proceso.asesoria_id', '=', $id)
-            ->where('proceso_checklist_item.asesoria_estado_id', '=', 4)
+            ->where('proceso_checklist_item.asesoria_estado_id', '=', 5) 
             ->first()->asesoria_proceso_id;
 
             $advProcess = AdvisoryProcess::find($asesoria_proceso_id);
