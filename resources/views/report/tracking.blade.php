@@ -57,7 +57,7 @@
 
 @if(count($advisories) > 0)
 
-    <div class="table-responsive">
+    <div id="tbAdvisories" class="table-responsive">
         <table class="table table-striped table-hover table-sm">
             <thead>
             <tr>
@@ -89,7 +89,12 @@
                     <td>{{ $advisory->arrival_date }}</td>
                     <td>{{ $advisory->visa_exp_date }}</td>
                     <td>{{ $advisory->insur_exp_date }}</td>
-                    <td></td>
+                    <td>
+                        <a id="advComments{{ $advisory->asesoria_id }}" href="#" class="btn btn-sm" 
+                            data-adv-id="{{ $advisory->asesoria_id }}" data-cli-name="{{ $advisory->cliente }}"  >
+                            <i class="fa fa-comment" aria-hidden="true"></i>
+                        </a>
+                    </td>
                 </tr>
         @endforeach
             </tbody>
@@ -103,9 +108,36 @@
     <p>No existen asesorias</p>
     @endif
 
+    {{ Form::hidden('advisoryId', '', array('id' => 'advisoryId')) }}
+
+    <div id="dialogCM" class="container m-1" title="Comentarios de la asesoria" >
+
+        <div class="card w-auto">
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <tr>
+                        <td colspan="2" >
+                            <textarea id="txaComments" rows="4" cols="50">
+                            </textarea>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <button id="btnUpdateComment" type="submit" class="btn btn-primary mt-3">Actualizar</button>
+        {{-- <button id="btnNewIns" type="submit" class="btn btn-primary mt-3">Nuevo Registro</button> --}}
+
+    </div>
+
 @endsection
 @section('postJquery')
     @parent
+
+    $('#dialogCM').dialog({
+        autoOpen: false,
+        width: 450
+    });
 
     function getValueCheck(obj)
     {
@@ -127,9 +159,10 @@
         invoiced = getValueCheck('noInvoic');
         arrived = getValueCheck('proxTrav');
         upcomingTrack = getValueCheck('proxSeg');
+        var page = 1;// $(this).data('pg-id');
 
         $.ajax({
-            url: "{{ route('combo.advisoriesTracking') }}",
+            url: "{{ route('combo.advisoriesTrackingPaginate') }}",
             method: "GET",
             data: { 
                 stateId: stateId,
@@ -147,9 +180,10 @@
             }
         });
 
-         $('.pagination').remove();
-        {{--$.ajax({
-            url: "{{ route('combo.advisoriesTrackingPagination') }}",
+        $('.pagination').remove();
+
+        $.ajax({
+            url: "{{ route('combo.advisoriesTrackingPagination') }}" + "?page=" + page,
             method: "GET",
             data: { 
                 stateId: stateId,
@@ -164,7 +198,7 @@
                 $('#tbAdvisories').after( result );
                 
             }
-        }); --}}
+        });
     }
 
     $(document).on('change', '#statesFl,#studentFl', function()
@@ -190,7 +224,7 @@
         var page = $(this).data('pg-id');
 
         $.ajax({
-            url: "{{ route('combo.advisoriesTracking') }}" + "?page=" + page,
+            url: "{{ route('combo.advisoriesTrackingPaginate') }}" + "?page=" + page,
             method: "GET",
             data: { 
                 stateId: stateId,
@@ -227,5 +261,54 @@
             }
         });
     });
+
+    // Get Comments
+    $(document).on("click", "a[id*='advComments']", function()
+    {
+        $('#dialogCM').dialog('close');
+        var advisoryId = $(this).data('adv-id');
+        var _token = $('input[name="_token"]').val();
+        $('#advisoryId').val(advisoryId);
+
+        $('#dialogCM').dialog('option', 'title',  'Comentarios asesoria: ' + $(this).data('cli-name'));
+
+        $.ajax({
+            url: "{{ route('studentAdvComment.get') }}",
+            method: "GET",
+            data: { 
+                advId: advisoryId,
+                _token: _token
+            },
+            success:function(result)
+            {
+                $('#txaComments').val(result);
+                $('#dialogCM').dialog('open');
+            }
+        });
+
+    });
+
+    $(document).on('click', '#btnUpdateComment', function()
+    {
+        var advId = $('#advisoryId').val();
+        var comments = $('#txaComments').val();
+        var _token = $('input[name="_token"]').val();
+
+        $.ajax({
+            url: "{{ route('studentAdvComment.update') }}",
+            method: "POST",
+            data: { 
+                advId: advId,
+                comm: comments,
+                _token: _token
+            },
+            success:function(result)
+            {
+                //alert('Actualizado');
+                $('#dialogCM').dialog('close');
+            }
+        });
+    });
+
 
 @endsection

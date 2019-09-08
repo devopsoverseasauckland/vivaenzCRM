@@ -109,7 +109,22 @@ class ComboController extends Controller
         echo $output;
     }
 
-    public function advisoriesTracking(Request $request)
+    // public function advisoriesTracking(Request $request)
+    // {
+    //     $page = $request->get('page');
+
+    //     $advisoryStateId = $request->get('stateId');
+    //     $student = $request->get('student');
+    //     $invoiced = $request->get('invoiced');
+    //     $arrived = $request->get('arrived');
+    //     $upcomingTrack = $request->get('upcomingTrack');
+        
+    //     $advisories = $this->getAdvisoriesTrackingPaginate($advisoryStateId, $student, $invoiced, $arrived, $upcomingTrack, $page);
+
+    //     echo $advisories;
+    // }
+
+    public function advisoriesTrackingPaginate(Request $request)
     {
         $page = $request->get('page');
 
@@ -134,7 +149,7 @@ class ComboController extends Controller
         $arrived = $request->get('arrived');
         $upcomingTrack = $request->get('upcomingTrack');
         
-        $advisories = $this->getAdvisoriesTrackingPagination($advisoryStateId, $student, $invoiced, $arrived, $upcomingTrack, $page); // falta implementar
+        $advisories = $this->getAdvisoriesTrackingPagination($advisoryStateId, $student, $invoiced, $arrived, $upcomingTrack, $page); 
 
         echo $advisories;
     }

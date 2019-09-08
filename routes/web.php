@@ -73,9 +73,14 @@ Route::get('combo/advisoriesPagination', 'ComboController@advisoriesPagination')
 
 Route::get('combo/advisoryProcess', 'ComboController@advisoryProcess')->name('combo.advisoryProcess');
 
+
+
 Route::get('combo/advisoriesTracking', 'ComboController@advisoriesTracking')->name('combo.advisoriesTracking');
 
+Route::get('combo/advisoriesTrackingPaginate', 'ComboController@advisoriesTrackingPaginate')->name('combo.advisoriesTrackingPaginate');
+
 Route::get('combo/advisoriesTrackingPagination', 'ComboController@advisoriesTrackingPagination')->name('combo.advisoriesTrackingPagination');
+
 
 
 Route::get('combo/countries', 'ComboController@countries')->name('combo.countries');

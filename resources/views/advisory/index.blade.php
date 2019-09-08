@@ -61,7 +61,9 @@
                         <small>
                             <input type="text" id="proxTrack{{ $advisory->asesoria_id }}" 
                                 data-adv-id="{{ $advisory->asesoria_id }}" value="{{ $advisory->realizado_fecha }}" 
-                                class="form-control form-control-sm p-0 w-50 text-center" >
+                                data-adv-advproc="{{ $advisory->asesoria_proceso_id }}" 
+                                data-co-id="{{ $advisory->proceso_checklist_item_id }}"
+                                class="form-control form-control-sm p-0 w-50 text-center" readonly>
                         </small>
                     </td>
                     <td>
@@ -383,6 +385,24 @@
         var student = $('#studentFl').val();
         var _token = $('input[name="_token"]').val();
 
+        registerDateProcess(advProcessId, date, advisoryId, cod, stateId, student, _token);        
+    });
+
+    $(document).on("change", "[id*='proxTrack']", function()
+    {
+        var advProcessId = $(this).data('adv-advproc'); 
+        var date = $(this).val();
+        var advisoryId = $(this).data('adv-id');
+        var cod = $(this).data('co-id'); 
+        var stateId = $('select#statesFl option:checked').val();
+        var student = $('#studentFl').val();
+        var _token = $('input[name="_token"]').val();
+
+        registerDateProcess(advProcessId, date, advisoryId, cod, stateId, student, _token);        
+    });
+
+    function registerDateProcess(advProcessId, date, advisoryId, cod, stateId, student, _token)
+    {
         $.ajax({
             url: "{{ route('advisoryProcess.registerDate') }}",
             method: "POST",
@@ -407,7 +427,9 @@
                 alert('El proceso no pudo ser actualizado correctamente. Intentelo de nuevo o comuniquese con el administrador del sistema.');
             }
         });
-    });
+    }
+
+
 
     $("[id*='date'],[id*='proxTrack']").datepicker({
         changeMonth: true,
