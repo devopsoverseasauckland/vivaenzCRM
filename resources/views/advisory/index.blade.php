@@ -62,7 +62,7 @@
                             <input type="text" id="proxTrack{{ $advisory->asesoria_id }}" 
                                 data-adv-id="{{ $advisory->asesoria_id }}" value="{{ $advisory->realizado_fecha }}" 
                                 data-adv-advproc="{{ $advisory->asesoria_proceso_id }}" 
-                                data-co-id="{{ $advisory->proceso_checklist_item_id }}"
+                                data-co-id="{{ $advisory->codigo }}"
                                 class="form-control form-control-sm p-0 w-50 text-center" readonly>
                         </small>
                     </td>
@@ -212,6 +212,10 @@
 @endsection
 @section('postJquery')
     @parent
+    $( document ).ready(function() {
+        loadDatePickersGrid();
+    });
+
     $('#dialog').dialog({ 
         autoOpen: false,
         width: 350
@@ -252,6 +256,7 @@
                 //$('li').remove('#li' + result);
                 $('#tbbody').empty();
                 $( result ).appendTo('#tbbody');
+                loadDatePickersGrid();
             }
         });
 
@@ -267,7 +272,6 @@
             success:function(result)
             {
                 $('#tbAdvisories').after( result );
-                
             }
         });
     });
@@ -292,6 +296,7 @@
                 //$('li').remove('#li' + result);
                 $('#tbbody').empty();
                 $( result ).appendTo('#tbbody');
+                loadDatePickersGrid();
             }
         })
 
@@ -421,6 +426,7 @@
                 $("#statesFl option:selected").prop("selected", false);
                 $('#tbbody').empty();
                 $( result ).appendTo('#tbbody');
+                loadDatePickersGrid();
             },
             error:function(jqXHR, exception)
             {
@@ -428,17 +434,17 @@
             }
         });
     }
-
-
-
-    $("[id*='date'],[id*='proxTrack']").datepicker({
-        changeMonth: true,
-        changeYear: true,
-        showOn: "button",
-        buttonImage: "img/calendar.gif",
-        buttonImageOnly: true,
-        buttonText: "Select date"
-    });
+    
+    function loadDatePickersGrid() {
+        $("[id*='date'],[id*='proxTrack']").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonImage: "img/calendar.gif",
+            buttonImageOnly: true,
+            buttonText: "Select date"
+        });
+    }
 
     $(document).on('click', '#spVA', function()
     {

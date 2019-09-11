@@ -8,7 +8,7 @@ use DB;
 
 trait TAdvisory {
     
-    public function getAdvisories($advisoryStateId, $student)
+    public function getAdvisories($advisoryStateId, $student, $userId)
     {
         if ($advisoryStateId == '' || $advisoryStateId == null)
         {
@@ -37,11 +37,13 @@ trait TAdvisory {
                     IFNULL(estudiante_seguro_historial.estudiante_seguro_historial_id, '') insurance_id,
                     IFNULL(estudiante_visa_historial.estudiante_visa_historial_id, '') visa_id, 
                     asesoria_proceso.realizado_fecha, asesoria_proceso.asesoria_proceso_id,
-                    proceso_checklist_item.proceso_checklist_item_id"))
+                    proceso_checklist_item.proceso_checklist_item_id,
+                    proceso_checklist_item.codigo"))
             ->where('asesoria_estado.activo', '=', '1')
             ->where('asesoria_estado.codigo', '<>', 'FI')
             ->where('asesoria_estado.codigo', '<>', 'DE')
             ->where('estudiante.primer_nombre', 'LIKE', "%{$student}%")
+            ->where('asesoria.creacion_usuario_id', '=', DB::raw("CASE WHEN {$userId} IS NULL THEN asesoria.creacion_usuario_id ELSE {$userId} END"))
             ->paginate(11);
         } else 
         {
@@ -70,17 +72,19 @@ trait TAdvisory {
                     IFNULL(estudiante_seguro_historial.estudiante_seguro_historial_id, '') insurance_id,
                     IFNULL(estudiante_visa_historial.estudiante_visa_historial_id, '') visa_id, 
                     asesoria_proceso.realizado_fecha, asesoria_proceso.asesoria_proceso_id, 
-                    proceso_checklist_item.proceso_checklist_item_id"))
+                    proceso_checklist_item.proceso_checklist_item_id,
+                    proceso_checklist_item.codigo"))
             ->where('asesoria_estado.asesoria_estado_id', '=', $advisoryStateId)
             ->where('asesoria_estado.activo', '=', '1')
             ->where('estudiante.primer_nombre', 'LIKE', "%{$student}%")
+            ->where('asesoria.creacion_usuario_id', '=', DB::raw("CASE WHEN {$userId} IS NULL THEN asesoria.creacion_usuario_id ELSE {$userId} END"))
             ->paginate(11);
         }
 
         return $advisories;
     }
 
-    public function getAdvisoriesPaginate($advisoryStateId, $student, $currentPage)
+    public function getAdvisoriesPaginate($advisoryStateId, $student, $userId, $currentPage)
     {
         Paginator::currentPageResolver(function () use ($currentPage) {
             return $currentPage;
@@ -113,11 +117,13 @@ trait TAdvisory {
                     IFNULL(estudiante_seguro_historial.estudiante_seguro_historial_id, '') insurance_id,
                     IFNULL(estudiante_visa_historial.estudiante_visa_historial_id, '') visa_id, 
                     asesoria_proceso.realizado_fecha, asesoria_proceso.asesoria_proceso_id,
-                    proceso_checklist_item.proceso_checklist_item_id"))
+                    proceso_checklist_item.proceso_checklist_item_id,
+                    proceso_checklist_item.codigo"))
             ->where('asesoria_estado.activo', '=', '1')
             ->where('asesoria_estado.codigo', '<>', 'FI')
             ->where('asesoria_estado.codigo', '<>', 'DE')
             ->where('estudiante.primer_nombre', 'LIKE', "%{$student}%")
+            ->where('asesoria.creacion_usuario_id', '=', DB::raw("CASE WHEN {$userId} IS NULL THEN asesoria.creacion_usuario_id ELSE {$userId} END"))
             ->paginate(11);
         } else 
         {
@@ -146,10 +152,12 @@ trait TAdvisory {
                     IFNULL(estudiante_seguro_historial.estudiante_seguro_historial_id, '') insurance_id,
                     IFNULL(estudiante_visa_historial.estudiante_visa_historial_id, '') visa_id, 
                     asesoria_proceso.realizado_fecha, asesoria_proceso.asesoria_proceso_id,
-                    proceso_checklist_item.proceso_checklist_item_id"))
+                    proceso_checklist_item.proceso_checklist_item_id,
+                    proceso_checklist_item.codigo"))
             ->where('asesoria_estado.asesoria_estado_id', '=', $advisoryStateId)
             ->where('asesoria_estado.activo', '=', '1')
             ->where('estudiante.primer_nombre', 'LIKE', "%{$student}%")
+            ->where('asesoria.creacion_usuario_id', '=', DB::raw("CASE WHEN {$userId} IS NULL THEN asesoria.creacion_usuario_id ELSE {$userId} END"))
             ->paginate(11);
         }
 
@@ -173,7 +181,7 @@ trait TAdvisory {
                                     <input type="text" id="proxTrack' . $adv->asesoria_id . '" 
                                         data-adv-id="' . $adv->asesoria_id . '" value="' . $adv->realizado_fecha . '" 
                                         data-adv-advproc="' . $adv->asesoria_proceso_id . '" 
-                                        data-co-id="' . $adv->proceso_checklist_item_id . '" 
+                                        data-co-id="' . $adv->codigo . '" 
                                         class="form-control form-control-sm p-0 w-50 text-center" readonly>
                                 </small>
                             </td>
@@ -189,7 +197,7 @@ trait TAdvisory {
         return $output;
     }
 
-    public function getAdvisoriesPagination($advisoryStateId, $student, $currentPage)
+    public function getAdvisoriesPagination($advisoryStateId, $student, $userId, $currentPage)
     {
         Paginator::currentPageResolver(function () use ($currentPage) {
             return $currentPage;
@@ -222,11 +230,13 @@ trait TAdvisory {
                     IFNULL(estudiante_seguro_historial.estudiante_seguro_historial_id, '') insurance_id,
                     IFNULL(estudiante_visa_historial.estudiante_visa_historial_id, '') visa_id,
                     asesoria_proceso.realizado_fecha, asesoria_proceso.asesoria_proceso_id, 
-                    proceso_checklist_item.proceso_checklist_item_id"))
+                    proceso_checklist_item.proceso_checklist_item_id,
+                    proceso_checklist_item.codigo"))
             ->where('asesoria_estado.activo', '=', '1')
             ->where('asesoria_estado.codigo', '<>', 'FI')
             ->where('asesoria_estado.codigo', '<>', 'DE')
             ->where('estudiante.primer_nombre', 'LIKE', "%{$student}%")
+            ->where('asesoria.creacion_usuario_id', '=', DB::raw("CASE WHEN {$userId} IS NULL THEN asesoria.creacion_usuario_id ELSE {$userId} END"))
             ->paginate(11);
         } else 
         {
@@ -255,10 +265,12 @@ trait TAdvisory {
                     IFNULL(estudiante_seguro_historial.estudiante_seguro_historial_id, '') insurance_id,
                     IFNULL(estudiante_visa_historial.estudiante_visa_historial_id, '') visa_id, 
                     asesoria_proceso.realizado_fecha, asesoria_proceso.asesoria_proceso_id, 
-                    proceso_checklist_item.proceso_checklist_item_id"))
+                    proceso_checklist_item.proceso_checklist_item_id,
+                    proceso_checklist_item.codigo"))
             ->where('asesoria_estado.asesoria_estado_id', '=', $advisoryStateId)
             ->where('asesoria_estado.activo', '=', '1')
             ->where('estudiante.primer_nombre', 'LIKE', "%{$student}%")
+            ->where('asesoria.creacion_usuario_id', '=', DB::raw("CASE WHEN {$userId} IS NULL THEN asesoria.creacion_usuario_id ELSE {$userId} END"))
             ->paginate(11);
         }
 

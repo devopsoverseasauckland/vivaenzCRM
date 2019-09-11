@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Traits\TAdvisory;
 use App\Traits\TAdvisoryInfoSent;
+use App\Traits\TAuthorization;
 use App\Traits\TStudent;
 use App\Traits\TStudentExperience;
+
 
 use Illuminate\Http\Request;
 
@@ -32,8 +34,10 @@ class AdvisoryController extends Controller
 {
     use TAdvisory;
     use TAdvisoryInfoSent;
+    use TAuthorization;
     use TStudent;
     use TStudentExperience;
+    
 
     /**
      * Create a new controller instance.
@@ -52,7 +56,9 @@ class AdvisoryController extends Controller
      */
     public function index()
     {
-        $advisories = $this->getAdvisories('', '');
+        $userId = $this->getUserFilter();
+
+        $advisories = $this->getAdvisories('', '', $userId);
 
         $states = AdvisoryState::pluck('nombre', 'asesoria_estado_id');
 
@@ -60,8 +66,6 @@ class AdvisoryController extends Controller
                 'advisories'=>$advisories,
                 'states'=>$states
             ]); 
-
-        //return view('advisory.index')->with();
     }
 
     /**
@@ -180,7 +184,13 @@ class AdvisoryController extends Controller
             $advisoryProcess->save();
         }
 
-        return redirect('/editStep1/' . $advisory->asesoria_id);
+        $redirection = $request->input('redirect');
+        if ($redirection == '1') {
+            return redirect('/editStep2/' . $advisory->asesoria_id);
+        }
+        else {
+            return redirect('/editStep1/' . $advisory->asesoria_id);
+        }
     }
 
     /**
@@ -267,28 +277,30 @@ class AdvisoryController extends Controller
         $student = Student::find($advisory->estudiante_id);
         $advStudent = $this->resolveFullName($student);
 
-        $advisory_state_code = AdvisoryState::find($advisory->asesoria_estado_id)->codigo;
+        $advState = AdvisoryState::find($advisory->asesoria_estado_id);
+
+        $advisory_state_code = $advState->codigo;
+        $advisory_state_code_ord = $advState->codigo_orden;
 
         $docType = DocumentType::where('activo','1')->orderBy('codigo_orden','asc')->pluck('nombre', 'tipo_documento_id');
         $maritalStatus = MaritalStatus::where('activo','1')->orderBy('codigo_orden','asc')->pluck('nombre', 'estado_civil_id');
         $countries = Country::where('activo','1')->orderBy('nombre','asc')->pluck('nombre', 'pais_id');
-        //$cities = City::pluck('nombre', 'ciudad_id');
         $professions = Profession::where('activo','1')->orderBy('nombre','asc')->pluck('nombre', 'profesion_id');
         $englishLev = EnglishLevel::where('activo','1')->orderBy('codigo_orden','asc')->pluck('nombre', 'nivel_ingles_id');
 
         $experience = $this->getExperience($advisory->estudiante_id);
 
-        //return view('advisory.editStep1')->with('advisory', $advisory)->with('student', $student);
+        
         return view('advisory.editStep1', [
                                             'advisory'=>$advisory, 'student'=>$student, 
                                             'docTypes'=>$docType, 
                                             'maritalStatus'=>$maritalStatus,
                                             'countries'=>$countries,
-                                            //'cities'=>$cities,
                                             'professions'=>$professions,
                                             'englishLev'=>$englishLev,
                                             'experience'=>$experience,
                                             'advState'=>$advisory_state_code,
+                                            'advStateCodOrd'=>$advisory_state_code_ord,
                                             'advStudent'=>$advStudent
                                           ]);
     }

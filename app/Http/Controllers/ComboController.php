@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Traits\TAdvisory;
+use App\Traits\TAuthorization;
 use App\Traits\TCourseTypeInstitution;
 use App\Traits\TCountry;
 use App\Traits\TCity;
@@ -15,6 +16,8 @@ use DB;
 
 class ComboController extends Controller
 {
+    use TAuthorization;
+
     use TCourseTypeInstitution;
     public function courseTypeInstitutions(Request $request)
     {
@@ -48,8 +51,10 @@ class ComboController extends Controller
         $page = $request->get('page');
         $advisoryStateId = $request->get('stateId');
         $student = $request->get('student');
+
+        $userId = $this->getUserFilter();
         
-        $advisories = $this->getAdvisoriesPaginate($advisoryStateId, $student, $page);
+        $advisories = $this->getAdvisoriesPaginate($advisoryStateId, $student, $userId, $page);
 
         echo $advisories;
     }
@@ -60,8 +65,10 @@ class ComboController extends Controller
         $advisoryStateId = $request->get('stateId');
         $student = $request->get('student');
 
+        $userId = $this->getUserFilter();
+
         $output = '';
-        $output = $this->getAdvisoriesPagination($advisoryStateId, $student, $page);
+        $output = $this->getAdvisoriesPagination($advisoryStateId, $student, $userId, $page);
 
         echo $output;
     }

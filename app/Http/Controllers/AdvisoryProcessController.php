@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Traits\TAdvisory;
-
+use App\Traits\TAuthorization;
 
 
 use Illuminate\Http\Request;
@@ -29,6 +29,8 @@ class AdvisoryProcessController extends Controller
             student: student info which will be used as filter when this method gives the response
     */
     use TAdvisory;
+    use TAuthorization;
+
     public function registerDate(Request $request)
     {
         $advProcessId = $request->get('advProcessId');
@@ -83,8 +85,10 @@ class AdvisoryProcessController extends Controller
         $stateId = $request->get('stateId');
         $student = $request->get('student');
 
+        $userId = $this->getUserFilter();
+
         // Get the advisories to refresh the information on the screen after the response of this method
-        $advisories = $this->getAdvisoriesPaginate($stateId, $student, $page);
+        $advisories = $this->getAdvisoriesPaginate($stateId, $student, $userId, $page);
         // $output = '';
         // foreach($advisories as $adv)
         // {
