@@ -10,10 +10,11 @@
             
             {!! Form::open(['action' => 'AdvisoryController@storeStep1', 'method' => 'POST', 'autocomplete' => 'off']) !!}
             
-            <img class="img-fluid sidebar-sticky"  src="{{ asset('img/FlowStep1.png') }}" >
+            <img class="img-fluid sidebar-sticky"  src="{{ asset('img/FlowStep1.png') }}" usemap="#processmap" >
 
-            <map name="mapname">
-                <area shape="rect" shape="rect" coords="48,341,294,275" href="http://www.example.com/">
+            <map name="processmap">
+                <area id="advisoryStep" shape="rect" shape="rect" coords="350,0,560,40" >
+                <area id="enrollmentStep" shape="rect" shape="rect" coords="600,0,950,40" >
             </map>
 
             <div class="form-row pt-3 pl-3">
@@ -195,7 +196,9 @@
 
             <div class="form-row pl-3 pb-3">
 
-                {{Form::submit('Create', ['class' => 'btn btn-outline-success'])}}
+                {{ Form::hidden('redirect', '0', array('id' => 'redirect')) }}
+
+                {{ Form::submit('Create', ['class' => 'btn btn-outline-success']) }}
                 
                 <a class="btn btn-outline-secondary" href="/advisory" role="button">Cancelar</a>
                             
@@ -413,6 +416,16 @@
             }
         });
 
+    });
+
+    $('#advisoryStep').click(function() {
+        $('#redirect').val('1');
+        $link = $('.btn-outline-success');
+        $link[0].click();
+    });
+
+    $('#enrollmentStep').click(function() {
+        alert('Debe diligenciar los datos del estudiante y de la asesoria antes de acceder a la inscripcion ');
     });
 
 @endsection

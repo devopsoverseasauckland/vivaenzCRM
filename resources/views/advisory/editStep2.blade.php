@@ -11,7 +11,12 @@
             
             {!! Form::open(['id' => 'step2Form', 'action' => ['AdvisoryController@updateStep2', $advisory->asesoria_id], 'method' => 'POST']) !!}
 
-            <img class="img-fluid sidebar-sticky"  src="{{ asset('img/FlowStep2.png') }}" > 
+            <img class="img-fluid sidebar-sticky"  src="{{ asset('img/FlowStep2.png') }}" usemap="#processmap" > 
+
+            <map name="processmap">
+                <area id="studentStep" shape="rect" shape="rect" coords="0,0,300,40" > 
+                <area id="enrollmentStep" shape="rect" shape="rect" coords="600,0,950,40" >
+            </map>
 
             <div class="row" >
 
@@ -286,5 +291,21 @@
             $('.pull-right').hide();
         }
     }
+
+    $('#studentStep').click(function() {
+        if (confirm('Desea guardar los cambios antes de abandonar esta seccion?'))
+        {
+            $link = $('.btn-outline-secondary');
+            $link[0].click();
+        } 
+    });
+
+    $('#enrollmentStep').click(function() {
+        if (confirm('Desea guardar los cambios antes de abandonar esta seccion?'))
+        {
+            $link = $('.btn-outline-success');
+            $link[0].click();
+        } 
+    });
 
 @endsection

@@ -10,7 +10,12 @@
             
             {!! Form::open(['id' => 'step3Form', 'action' => ['AdvisoryController@updateStep3', $advisoryEnroll->asesoria_enrollment_id], 'method' => 'POST']) !!}
 
-            <img class="img-fluid sidebar-sticky"  src="{{ asset('img/FlowStep3.png') }}" > 
+            <img class="img-fluid sidebar-sticky"  src="{{ asset('img/FlowStep3.png') }}" usemap="#processmap" > 
+
+            <map name="processmap">
+                <area id="studentStep" shape="rect" shape="rect" coords="0,0,300,40" > 
+                <area id="advisoryStep" shape="rect" shape="rect" coords="350,0,560,40" >
+            </map>
 
             <div class="form-row pt-2 pl-3">
                 
@@ -153,6 +158,10 @@
 
             <div class="form-row pl-3 pb-3">
 
+                <div style="display: none" >
+                    <a id="studentlnk" href="/editStep1/{{$advisoryEnroll->asesoria_id}}" role="button">Estudiante</a>
+                </div>
+
                 <a class="btn btn-outline-secondary" href="/editStep2/{{$advisoryEnroll->asesoria_id}}" role="button">Asesoria</a>
 
                 {{ csrf_field() }}
@@ -201,4 +210,21 @@
             //$('.pull-right').hide();
         }
     }
+
+    $('#studentStep').click(function() {
+        if (confirm('Desea guardar los cambios antes de abandonar esta seccion?'))
+        {
+            $link = $('#studentlnk');
+            $link[0].click();
+        }
+    });
+
+    $('#advisoryStep').click(function() {
+        if (confirm('Desea guardar los cambios antes de abandonar esta seccion?'))
+        {
+            $link = $('.btn-outline-secondary');
+            $link[0].click();
+        } 
+    });
+
 @endsection

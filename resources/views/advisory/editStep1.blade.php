@@ -10,11 +10,12 @@
             
             {!! Form::open(['action' => ['AdvisoryController@updateStep1', $advisory->asesoria_id], 'method' => 'POST']) !!}
 
-            <img class="img-fluid sidebar-sticky" src="{{ asset('img/FlowStep1.png') }}"  >
+            <img class="img-fluid sidebar-sticky" src="{{ asset('img/FlowStep1.png') }}" usemap="#processmap" >
 
-            {{-- <map name="mapname">usemap="#mapname"
-                <area shape="rect" shape="rect" coords="900,15,15,15" href="/editStep2/{{$advisory->asesoria_id}}}" >
-            </map> --}}
+            <map name="processmap">
+                <area id="advisoryStep" shape="rect" shape="rect" coords="350,0,560,40" >
+                <area id="enrollmentStep" shape="rect" shape="rect" coords="600,0,950,40" >
+            </map>
 
             <div class="form-row pt-3 pl-3">
                 
@@ -231,14 +232,20 @@
                 {{ Form::hidden('countryBId', $student->pais_id, array('id' => 'countryBId')) }}
                 {{ Form::hidden('cityBId', $student->ciudad_id, array('id' => 'cityBId')) }}
                 {{ Form::hidden('advStateCod', $advState, array('id' => 'advStateCod')) }}
+                {{ Form::hidden('advStateCodOrd', $advStateCodOrd, array('id' => 'advStateCodOrd')) }}
+                {{ Form::hidden('redirect', '', array('id' => 'redirect')) }}
 
                 {{ csrf_field() }}
                 {{Form::hidden('_method', 'PUT')}}
                 {{Form::submit('Actualizar', ['class' => 'btn btn-outline-primary'])}}
                 
-                <a class="btn btn-outline-success" href="/editStep2/{{$advisory->asesoria_id}}}" role="button">Asesoria</a>
+                <a class="btn btn-outline-success" href="/editStep2/{{$advisory->asesoria_id}}" role="button">Asesoria</a>
 
                 <a class="btn btn-outline-secondary" href="/advisory" role="button">Seguimientos</a>
+
+                <div style="display: none" >
+                    <a id="enrollmentlnk" href="/editStep3/{{$advisory->asesoria_id}}" role="button">Enrollment</a>
+                </div>
                             
             </div>
            
@@ -309,6 +316,7 @@
         autoOpen: false,
         width: 350
     });
+
     $('#docPlus').click(function() {
         $('#dialog').dialog('open');
     });
@@ -531,6 +539,26 @@
             }
         });
 
+    });
+
+    $('#advisoryStep').click(function() {
+        if (confirm('Va a abandonar esta seccion sin guardar los cambios, desea continuar?'))
+        {
+            $link = $('.btn-outline-success');
+            $link[0].click();
+        } 
+    });
+
+    $('#enrollmentStep').click(function() {
+        $advStateCodeOrd = $('#advStateCodOrd').val();
+        if (parseInt($('#advStateCodOrd').val()) >=30)
+        {
+            $link = $('#enrollmentlnk');
+            $link[0].click();
+        } else 
+        {
+            alert('Debe diligenciar los datos del estudiante y de la asesoria antes de acceder a la inscripcion ');
+        }
     });
 
 @endsection
