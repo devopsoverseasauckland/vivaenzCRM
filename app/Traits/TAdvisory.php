@@ -157,17 +157,33 @@ trait TAdvisory {
         foreach($advisories as $adv)
         {
             $output .= '<tr><td>
-                            <a id="instDetail' . $adv->asesoria_id . '" href="#" class="btn btn-warning btn-sm" 
-                                data-adv-id="' . $adv->asesoria_id . '" data-cli-name="' . $adv->cliente . '" 
-                                data-ins-id="' . $adv->insurance_id . '" data-visa-id="' . $adv->visa_id . '"
-                                data-cli-id="' . $adv->estudiante_id . '">
-                                <i class="fa fa-ellipsis-v"></i>
-                            </a>
-                            <input type="hidden" value="' . $adv->asesoria_id . '" />
-                            <input type="hidden" value="' . $adv->estudiante_id . '" />
-                        </td>
-                            <td><a href="/advisory/' . $adv->asesoria_id . '">' . $adv->cliente .
-                            '</a></td><td>' . $adv->estado . '</td><td></td></tr>';
+                                <a id="instDetail' . $adv->asesoria_id . '" href="#" class="btn btn-warning btn-sm" 
+                                    data-adv-id="' . $adv->asesoria_id . '" data-cli-name="' . $adv->cliente . '" 
+                                    data-ins-id="' . $adv->insurance_id . '" data-visa-id="' . $adv->visa_id . '"
+                                    data-cli-id="' . $adv->estudiante_id . '">
+                                    <i class="fa fa-ellipsis-v"></i>
+                                </a>
+                                <input type="hidden" value="' . $adv->asesoria_id . '" />
+                                <input type="hidden" value="' . $adv->estudiante_id . '" />
+                            </td>
+                                <td><a href="/advisory/' . $adv->asesoria_id . '">' . $adv->cliente . '</a></td>
+                                <td>' . $adv->estado . '</td>
+                                <td class="form-inline text-left" >
+                                <small>
+                                    <input type="text" id="proxTrack' . $adv->asesoria_id . '" 
+                                        data-adv-id="' . $adv->asesoria_id . '" value="' . $adv->realizado_fecha . '" 
+                                        data-adv-advproc="' . $adv->asesoria_proceso_id . '" 
+                                        data-co-id="' . $adv->proceso_checklist_item_id . '" 
+                                        class="form-control form-control-sm p-0 w-50 text-center" readonly>
+                                </small>
+                            </td>
+                            <td>
+                                <a id="advComments' . $adv->asesoria_id . '" href="#" class="btn btn-sm" 
+                                    data-adv-id="' . $adv->asesoria_id . '" data-cli-name="' . $adv->cliente . '" >
+                                    <i class="fa fa-comment" aria-hidden="true"></i>
+                                </a>
+                            </td>
+                        </tr>';
         }
 
         return $output;
