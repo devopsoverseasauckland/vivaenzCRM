@@ -51,10 +51,12 @@ class ComboController extends Controller
         $page = $request->get('page');
         $advisoryStateId = $request->get('stateId');
         $student = $request->get('student');
+        $ord = $request->get('ord');
+        $ordBy = $request->get('ordBy');
 
         $userId = $this->getUserFilter();
         
-        $advisories = $this->getAdvisoriesPaginate($advisoryStateId, $student, $userId, $page);
+        $advisories = $this->getAdvisoriesPaginate($advisoryStateId, $student, $userId, $page, $ord, $ordBy);
 
         echo $advisories;
     }
@@ -64,11 +66,13 @@ class ComboController extends Controller
         $page = $request->get('page');
         $advisoryStateId = $request->get('stateId');
         $student = $request->get('student');
+        $ord = $request->get('ord');
+        $ordBy = $request->get('ordBy');
 
         $userId = $this->getUserFilter();
 
         $output = '';
-        $output = $this->getAdvisoriesPagination($advisoryStateId, $student, $userId, $page);
+        $output = $this->getAdvisoriesPagination($advisoryStateId, $student, $userId, $page, $ord, $ordBy);
 
         echo $output;
     }

@@ -43,8 +43,7 @@ trait TAdvisory {
             ->where('asesoria_estado.codigo', '<>', 'FI')
             ->where('asesoria_estado.codigo', '<>', 'DE')
             ->where('estudiante.primer_nombre', 'LIKE', "%{$student}%")
-            ->where('asesoria.creacion_usuario_id', '=', DB::raw("CASE WHEN {$userId} IS NULL THEN asesoria.creacion_usuario_id ELSE {$userId} END"))
-            ->paginate(11);
+            ->where('asesoria.creacion_usuario_id', '=', DB::raw("CASE WHEN {$userId} IS NULL THEN asesoria.creacion_usuario_id ELSE {$userId} END"));
         } else 
         {
             $advisories = DB::table('asesoria')
@@ -77,14 +76,13 @@ trait TAdvisory {
             ->where('asesoria_estado.asesoria_estado_id', '=', $advisoryStateId)
             ->where('asesoria_estado.activo', '=', '1')
             ->where('estudiante.primer_nombre', 'LIKE', "%{$student}%")
-            ->where('asesoria.creacion_usuario_id', '=', DB::raw("CASE WHEN {$userId} IS NULL THEN asesoria.creacion_usuario_id ELSE {$userId} END"))
-            ->paginate(11);
+            ->where('asesoria.creacion_usuario_id', '=', DB::raw("CASE WHEN {$userId} IS NULL THEN asesoria.creacion_usuario_id ELSE {$userId} END"));
         }
 
-        return $advisories;
+        return $advisories->orderBy('realizado_fecha', 'asc')->paginate(11);
     }
 
-    public function getAdvisoriesPaginate($advisoryStateId, $student, $userId, $currentPage)
+    public function getAdvisoriesPaginate($advisoryStateId, $student, $userId, $currentPage, $ord, $ordBy)
     {
         Paginator::currentPageResolver(function () use ($currentPage) {
             return $currentPage;
@@ -123,8 +121,8 @@ trait TAdvisory {
             ->where('asesoria_estado.codigo', '<>', 'FI')
             ->where('asesoria_estado.codigo', '<>', 'DE')
             ->where('estudiante.primer_nombre', 'LIKE', "%{$student}%")
-            ->where('asesoria.creacion_usuario_id', '=', DB::raw("CASE WHEN {$userId} IS NULL THEN asesoria.creacion_usuario_id ELSE {$userId} END"))
-            ->paginate(11);
+            ->where('asesoria.creacion_usuario_id', '=', DB::raw("CASE WHEN {$userId} IS NULL THEN asesoria.creacion_usuario_id ELSE {$userId} END"));
+            //->paginate(11);
         } else 
         {
             $advisories = DB::table('asesoria')
@@ -157,9 +155,23 @@ trait TAdvisory {
             ->where('asesoria_estado.asesoria_estado_id', '=', $advisoryStateId)
             ->where('asesoria_estado.activo', '=', '1')
             ->where('estudiante.primer_nombre', 'LIKE', "%{$student}%")
-            ->where('asesoria.creacion_usuario_id', '=', DB::raw("CASE WHEN {$userId} IS NULL THEN asesoria.creacion_usuario_id ELSE {$userId} END"))
-            ->paginate(11);
+            ->where('asesoria.creacion_usuario_id', '=', DB::raw("CASE WHEN {$userId} IS NULL THEN asesoria.creacion_usuario_id ELSE {$userId} END"));
+            //->paginate(11);
         }
+
+        switch($ord)
+        {
+            case "Stud":
+                $ordCol = "cliente";
+                break;
+            case "Track":
+                $ordCol = "realizado_fecha";
+                break;
+            default:
+                break;
+        }
+
+        $advisories = $advisories->orderBy($ordCol, $ordBy)->paginate(11);
 
         $output = '';
         foreach($advisories as $adv)
@@ -197,7 +209,7 @@ trait TAdvisory {
         return $output;
     }
 
-    public function getAdvisoriesPagination($advisoryStateId, $student, $userId, $currentPage)
+    public function getAdvisoriesPagination($advisoryStateId, $student, $userId, $currentPage, $ord, $ordBy)
     {
         Paginator::currentPageResolver(function () use ($currentPage) {
             return $currentPage;
@@ -236,8 +248,7 @@ trait TAdvisory {
             ->where('asesoria_estado.codigo', '<>', 'FI')
             ->where('asesoria_estado.codigo', '<>', 'DE')
             ->where('estudiante.primer_nombre', 'LIKE', "%{$student}%")
-            ->where('asesoria.creacion_usuario_id', '=', DB::raw("CASE WHEN {$userId} IS NULL THEN asesoria.creacion_usuario_id ELSE {$userId} END"))
-            ->paginate(11);
+            ->where('asesoria.creacion_usuario_id', '=', DB::raw("CASE WHEN {$userId} IS NULL THEN asesoria.creacion_usuario_id ELSE {$userId} END"));
         } else 
         {
             $data = DB::table('asesoria')
@@ -270,9 +281,22 @@ trait TAdvisory {
             ->where('asesoria_estado.asesoria_estado_id', '=', $advisoryStateId)
             ->where('asesoria_estado.activo', '=', '1')
             ->where('estudiante.primer_nombre', 'LIKE', "%{$student}%")
-            ->where('asesoria.creacion_usuario_id', '=', DB::raw("CASE WHEN {$userId} IS NULL THEN asesoria.creacion_usuario_id ELSE {$userId} END"))
-            ->paginate(11);
+            ->where('asesoria.creacion_usuario_id', '=', DB::raw("CASE WHEN {$userId} IS NULL THEN asesoria.creacion_usuario_id ELSE {$userId} END"));
         }
+
+        switch($ord)
+        {
+            case "Stud":
+                $ordCol = "cliente";
+                break;
+            case "Track":
+                $ordCol = "realizado_fecha";
+                break;
+            default:
+                break;
+        }
+
+        $data = $data->orderBy($ordCol, $ordBy)->paginate(11);
 
         $output = '';        
 

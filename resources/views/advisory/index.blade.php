@@ -7,24 +7,24 @@
     </h3>
 
     <div class="form-row m-4">
-                
-            <div class="col-sm-4">
-                <div class="form-inline">
-                    {{Form::label('statesFl', 'Estado',  ['class' => 'col-sm-2 col-form-label w-50'])}}
-                    <div class="col-sm-6">
-                        {{Form::select('statesFl', $states, '', ['id' => 'statesFl', 'class' => 'form-control form-control-sm w-auto', 'placeholder' => '-- Todas activas --' ])}}
-                    </div>
-                </div>
-            </div>
     
-            <div class="col">
-                <div class="form-inline">
-                    {{Form::label('studentFl', 'Estudiante',  ['class' => 'col-sm-2 col-form-label w-auto'])}}
-                    <div class="col-sm-10">
-                        {{Form::text('studentFl', '', ['class' => 'form-control form-control-sm w-100', 'placeholder' => 'nombre, apellido... ' ])}}
-                    </div>
+        <div class="col-sm-4">
+            <div class="form-inline">
+                {{Form::label('statesFl', 'Estado',  ['class' => 'col-sm-2 col-form-label w-50'])}}
+                <div class="col-sm-6">
+                    {{Form::select('statesFl', $states, '', ['id' => 'statesFl', 'class' => 'form-control form-control-sm w-auto', 'placeholder' => '-- Todas activas --' ])}}
                 </div>
             </div>
+        </div>
+
+        <div class="col">
+            <div class="form-inline">
+                {{Form::label('studentFl', 'Estudiante',  ['class' => 'col-sm-2 col-form-label w-auto'])}}
+                <div class="col-sm-10">
+                    {{Form::text('studentFl', '', ['class' => 'form-control form-control-sm w-100', 'placeholder' => 'nombre, apellido... ' ])}}
+                </div>
+            </div>
+        </div>
     
     </div>
 
@@ -35,9 +35,15 @@
             <thead>
             <tr>
                 <th></th>
-                <th>Estudiante</th>
+                <th>
+                    <a id="ordStud" href="#" data-ord-id="Stud" >Estudiante</a>
+                    <i id="ordIconStud" class="" aria-hidden="true"></i>
+                </th>
                 <th>Estado</th>
-                <th>Prox Seguimiento</th>
+                <th>
+                    <a id="ordTrack" href="#" data-ord-id="Track" >Prox Seguimiento</a>
+                    <i id="ordIconTrack" class="fa fa-sort-asc" aria-hidden="true"></i>
+                </th>
                 <th>Notas</th>
             </tr>
             </thead>
@@ -89,6 +95,9 @@
     {{ Form::hidden('studentId', '', array('id' => 'studentId')) }}
     {{ Form::hidden('insuranceId', '', array('id' => 'insuranceId')) }}
     {{ Form::hidden('visaId', '', array('id' => 'visaId')) }}
+    {{ Form::hidden('order', 'Track', array('id' => 'order')) }}
+    {{ Form::hidden('orderBy', 'desc', array('id' => 'orderBy')) }}
+    
 
     <!-- Modal -->
     <div id="dialog" class="container m-1" title="Detalle proceso">
@@ -276,8 +285,107 @@
         });
     });
 
+    function initializeOrderingBy(ord)
+    {
+        if (ord != $('#order').val())
+        {
+            $('#orderBy').val('asc');
+
+            // Set Icon order by
+            switch (ord)
+            {
+                case 'Stud':
+                    $('#ordIconStud').addClass('fa fa-sort-asc');
+                    $('#ordIconTrack').attr('class', '');
+                    break;
+                case 'Track':
+                    $('#ordIconStud').attr('class', '');
+                    $('#ordIconTrack').addClass('fa fa-sort-asc');
+                    break;
+            }
+        } else {
+            // Set Icon order by
+            switch (ord)
+            {
+                case 'Stud':
+                    $('#ordIconStud').toggleClass('fa fa-sort-asc');
+                    $('#ordIconStud').toggleClass('fa fa-sort-desc');
+                    break;
+                case 'Track':
+                    $('#ordIconTrack').toggleClass('fa fa-sort-asc');
+                    $('#ordIconTrack').toggleClass('fa fa-sort-desc');
+                    break;
+            }   
+        }
+        $('#order').val(ord);
+    }
+
+    $(document).on("click", "#ordStud,#ordTrack", function()
+    {
+        var ord = $(this).data('ord-id');
+        initializeOrderingBy(ord);
+
+        // Set Next ordering by
+        var ordBy = $('#orderBy').val();
+        if (ordBy == 'asc')
+        {
+            $('#orderBy').val('desc');
+        }
+        else 
+        {
+            $('#orderBy').val('asc');
+        }
+        
+        var stateId = $('select#statesFl option:checked').val();
+        var student = $('#studentFl').val();
+        var _token = $('input[name="_token"]').val();
+
+        $.ajax({
+            url: "{{ route('combo.advisories') }}",
+            method: "GET",
+            data: { 
+                stateId: stateId,
+                student: student,
+                ord: ord,
+                ordBy: ordBy,
+                _token: _token
+            },
+            success:function(result)
+            {
+                //$('li').remove('#li' + result);
+                $('#tbbody').empty();
+                $( result ).appendTo('#tbbody');
+                loadDatePickersGrid();
+            }
+        });
+
+        $('.pagination').remove();
+        $.ajax({
+            url: "{{ route('combo.advisoriesPagination') }}",
+            method: "GET",
+            data: { 
+                stateId: stateId,
+                student: student,
+                ord: ord,
+                ordBy: ordBy,              
+                _token: _token
+            },
+            success:function(result)
+            {
+                $('#tbAdvisories').after( result );
+            }
+        });
+    });
+
     $(document).on("click", "a[class='page-link']", function()
     {
+        var ord = $('#order').val();
+        var ordBy = $('#orderBy').val();
+        if (ordBy == 'asc')
+            ordBy = 'desc';
+        else 
+            ordBy = 'asc';
+
         var stateId = $('select#statesFl option:checked').val();
         var student = $('#studentFl').val();
         var page = $(this).data('pg-id');
@@ -289,6 +397,8 @@
             data: { 
                 stateId: stateId,
                 student: student,
+                ord: ord,
+                ordBy: ordBy,  
                 _token: _token
             },
             success:function(result)
@@ -306,7 +416,9 @@
             method: "GET",
             data: { 
                 stateId: stateId,
-                student: student,                
+                student: student,  
+                ord: ord,
+                ordBy: ordBy,                
                 _token: _token
             },
             success:function(result)
