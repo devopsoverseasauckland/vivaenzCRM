@@ -53,7 +53,7 @@
 
                 @include('inc.navbar')
 
-                <div class="col-8 mt-2 pt-5" >
+                <div class="col-9 mt-2 pt-5" >
 
                     @yield('content')
 

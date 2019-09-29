@@ -127,69 +127,78 @@ class AdvisoryController extends Controller
             //'engLevel' => 'required'
         ]);
 
-        $student = new Student;
+        try {
 
-        $student->primer_nombre = $request->input('firstName');
-        $student->segundo_nombre = $request->input('secondName');
-        $student->primer_apellido = $request->input('flastName');
-        $student->segundo_apellido = $request->input('slastName');
-        $student->tipo_documento_id = $request->input('typeDoc');
-        $student->numero_documento = $request->input('numDoc');
-        //$student->pasaporte = $request->input('secondName');
-        $student->estado_civil_id = $request->input('maritalStatus');
-        $student->fecha_nacimiento = date("Y-m-d", strtotime( $request->input('bornDate')));
-        $student->correo_electronico = $request->input('email');
-        $student->celular_whatsapp = $request->input('whatsapp');
-        $student->pais_id = $request->input('bornCountry');
-        $student->ciudad_id = $request->input('bornCity');
-        $student->profesion_id = $request->input('profesion');
-        $student->nivel_ingles_id = $request->input('engLevel');
-        $student->save();
+            $student = new Student;
+
+            $student->primer_nombre = $request->input('firstName');
+            $student->segundo_nombre = $request->input('secondName');
+            $student->primer_apellido = $request->input('flastName');
+            $student->segundo_apellido = $request->input('slastName');
+            $student->tipo_documento_id = $request->input('typeDoc');
+            $student->numero_documento = $request->input('numDoc');
+            //$student->pasaporte = $request->input('secondName');
+            $student->estado_civil_id = $request->input('maritalStatus');
+            $student->fecha_nacimiento = date("Y-m-d", strtotime( $request->input('bornDate')));
+            $student->correo_electronico = $request->input('email');
+            $student->celular_whatsapp = $request->input('whatsapp');
+            $student->pais_id = $request->input('bornCountry');
+            $student->ciudad_id = $request->input('bornCity');
+            $student->profesion_id = $request->input('profesion');
+            $student->nivel_ingles_id = $request->input('engLevel');
+            $student->save();
 
 
-        $advisory = new Advisory;
-        
-        $advisory->estudiante_id =  $student->estudiante_id;
-        $advisory->asesoria_estado_id = 1; // how to define constants
-        //$advisory->intencion_viaje_id =
-        //$advisory->fecha_estimada_viaje =
-        //$advisory->metodo_contacto_id =
-        //$advisory->asesoria_familia =
-        //$advisory->observaciones =
-        $advisory->creacion_fecha = date("Y-m-d H:i:s");
-        $advisory->creacion_usuario_id = auth()->user()->id;
-        $advisory->modificacion_fecha = date("Y-m-d H:i:s");
-        $advisory->modificacion_usuario_id = auth()->user()->id;
-        $advisory->save();
+            $advisory = new Advisory;
+            
+            $advisory->estudiante_id =  $student->estudiante_id;
+            $advisory->asesoria_estado_id = 1; // how to define constants
+            //$advisory->intencion_viaje_id =
+            //$advisory->fecha_estimada_viaje =
+            //$advisory->metodo_contacto_id =
+            //$advisory->asesoria_familia =
+            //$advisory->observaciones =
+            $advisory->creacion_fecha = date("Y-m-d H:i:s");
+            $advisory->creacion_usuario_id = auth()->user()->id;
+            $advisory->modificacion_fecha = date("Y-m-d H:i:s");
+            $advisory->modificacion_usuario_id = auth()->user()->id;
+            $advisory->save();
 
-        
-        $advisoryEnroll = new AdvisoryEnrollment;
-        $advisoryEnroll->asesoria_id = $advisory->asesoria_id;
-        $advisoryEnroll->modificacion_fecha = date("Y-m-d H:i:s");
-        $advisoryEnroll->modificacion_usuario_id = auth()->user()->id;
-        $advisoryEnroll->save();
-        
-        $procChkListItems = ProcessCheckListItem::where('activo','1')->orderby('codigo_orden')->get();
+            
+            $advisoryEnroll = new AdvisoryEnrollment;
+            $advisoryEnroll->asesoria_id = $advisory->asesoria_id;
+            $advisoryEnroll->modificacion_fecha = date("Y-m-d H:i:s");
+            $advisoryEnroll->modificacion_usuario_id = auth()->user()->id;
+            $advisoryEnroll->save();
+            
+            $procChkListItems = ProcessCheckListItem::where('activo','1')->orderby('codigo_orden')->get();
 
-        foreach($procChkListItems as $item)
-        {
-            $advisoryProcess = new AdvisoryProcess;
-            $advisoryProcess->asesoria_id = $advisory->asesoria_id;
-            $advisoryProcess->proceso_checklist_item_id = $item->proceso_checklist_item_id;
-            if ($item->codigo == 'RE')
+            foreach($procChkListItems as $item)
             {
-                $advisoryProcess->realizado_fecha = $advisory->creacion_fecha;
-                $advisoryProcess->realizado_usuario_id = auth()->user()->id;
+                $advisoryProcess = new AdvisoryProcess;
+                $advisoryProcess->asesoria_id = $advisory->asesoria_id;
+                $advisoryProcess->proceso_checklist_item_id = $item->proceso_checklist_item_id;
+                if ($item->codigo == 'RE')
+                {
+                    $advisoryProcess->realizado_fecha = $advisory->creacion_fecha;
+                    $advisoryProcess->realizado_usuario_id = auth()->user()->id;
+                }
+                $advisoryProcess->save();
             }
-            $advisoryProcess->save();
-        }
 
-        $redirection = $request->input('redirect');
-        if ($redirection == '1') {
-            return redirect('/editStep2/' . $advisory->asesoria_id);
-        }
-        else {
-            return redirect('/editStep1/' . $advisory->asesoria_id);
+            $redirection = $request->input('redirect');
+            if ($redirection == '1') {
+                return redirect('/editStep2/' . $advisory->asesoria_id);
+            }
+            else {
+                return redirect('/editStep1/' . $advisory->asesoria_id);
+            }
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            $error = \Illuminate\Validation\ValidationException::withMessages([
+                'field_name_1' => 'Duplicate entry, check the email/whatsapp, must be uniques' //[$e->getMessage()]
+             ]);
+             throw $error;
         }
     }
 
@@ -493,7 +502,7 @@ class AdvisoryController extends Controller
         $advStudent = $this->resolveFullName($student);
 
         $advisory->intencion_viaje_id = $request->input('purpose'); 
-        $advisory->fecha_estimada_viaje = date("Y-m-d", strtotime( $request->input('dateAproxFlight')));
+        $advisory->fecha_estimada_viaje = $request->input('dateAproxFlight') != '' ? date("Y-m-d", strtotime( $request->input('dateAproxFlight'))) : null;
         $advisory->metodo_contacto_id = $request->input('contactMean'); 
         //$advisory->asesoria_familia = $request->input('famAdvisory') == 'on' ? 1 : 0; 
         $advisory->asesoria_familia = $request->input('famAdvisoryhf'); 
@@ -555,7 +564,7 @@ class AdvisoryController extends Controller
             'dateArrive' => 'required',
             'dateStartClass' => 'required',
             'dateFinishClass' => 'required',
-            'dateHomestay' => 'required',
+            //'dateHomestay' => 'required',
         ]);
 
         $advisoryEnroll = AdvisoryEnrollment::find($id);
@@ -565,7 +574,7 @@ class AdvisoryController extends Controller
         $advisoryEnroll->fecha_llegada = date("Y-m-d", strtotime( $request->input('dateArrive'))); 
         $advisoryEnroll->fecha_inicio_clases = date("Y-m-d", strtotime( $request->input('dateStartClass'))); 
         $advisoryEnroll->fecha_fin_clases = date("Y-m-d", strtotime( $request->input('dateFinishClass'))); 
-        $advisoryEnroll->fecha_inicio_homestay = date("Y-m-d", strtotime( $request->input('dateHomestay'))); 
+        $advisoryEnroll->fecha_inicio_homestay = $request->input('dateHomestay') != '' ? date("Y-m-d", strtotime( $request->input('dateHomestay'))) : null; 
         $advisoryEnroll->save();
 
         $advisory = Advisory::find($advisoryEnroll->asesoria_id);

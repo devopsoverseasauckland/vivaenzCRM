@@ -162,8 +162,8 @@
             <div class="table-responsive">
                 <table class="table table-sm">
                     <tr>
-                        <td class="text-center" scope="row" >Inicio visa</td>
-                        <td class="text-center" scope="row" >Vencimiento visa</td>
+                        <td class="text-center" scope="row" >Inicio</td>
+                        <td class="text-center" scope="row" >Vencimiento</td>
                     </tr>
                     <tr>
                         <td >
