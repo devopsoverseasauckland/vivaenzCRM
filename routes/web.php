@@ -55,6 +55,9 @@ Route::match(['put', 'match'], '/updateStep3/{id}', 'AdvisoryController@updateSt
 
 Route::match(['put', 'match'], '/finishEnrollment/{id}', 'AdvisoryController@finishEnrollment')->name('advisory.finishEnrollment');
 
+Route::post('/remove/{id}', 'AdvisoryController@remove')->name('advisory.remove');
+
+Route::post('/extend/{id}', 'AdvisoryController@extend')->name('advisory.extend');
 
 
 Route::get('report/tracking', 'ReportController@tracking');

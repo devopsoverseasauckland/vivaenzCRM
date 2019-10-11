@@ -4,6 +4,7 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="shortcut icon" href="https://vivaenz.com/wp-content/uploads/2017/07/Favicon-Viva-New-Zealand.png" type="image/x-icon">
 
         <title>Laravel</title>
 
@@ -79,7 +80,7 @@
 
             <div class="content">
                 <div class="title m-b-md">
-                    <img class="mb-4" src="http://vivaenz.com/wp-content/uploads/2017/07/logo-colorx60.png" alt="Viva en New Zealand" width="340" height="124">
+                    <img class="mb-4" src="http://vivaenz.com/wp-content/uploads/2019/10/logo-Nueva-Zelanda-new-60px.png" alt="Viva en New Zealand" >
                 </div>
 
                 <div class="links">

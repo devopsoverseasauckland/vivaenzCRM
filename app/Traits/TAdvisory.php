@@ -8,11 +8,9 @@ use DB;
 
 trait TAdvisory {
     
-    public function getAdvisories($advisoryStateId, $student, $userId)
+    public function advisoriesQuery($student, $userId)
     {
-        if ($advisoryStateId == '' || $advisoryStateId == null)
-        {
-            $advisories = DB::table('asesoria')
+        $advisories = DB::table('asesoria')
             ->join('estudiante', 'estudiante.estudiante_id', '=', 'asesoria.estudiante_id')
             ->join('asesoria_estado', 'asesoria_estado.asesoria_estado_id', '=', 'asesoria.asesoria_estado_id')
             ->join('asesoria_proceso', 'asesoria_proceso.asesoria_id', '=', 'asesoria.asesoria_id')
@@ -34,49 +32,89 @@ trait TAdvisory {
             ->select(DB::raw("asesoria.asesoria_id, asesoria.estudiante_id, asesoria.asesoria_estado_id,
                     CONCAT(estudiante.primer_nombre, ' ' , estudiante.primer_apellido) AS cliente,
                     asesoria_estado.nombre estado, 
+                    asesoria_estado.codigo estadoCod, 
                     IFNULL(estudiante_seguro_historial.estudiante_seguro_historial_id, '') insurance_id,
                     IFNULL(estudiante_visa_historial.estudiante_visa_historial_id, '') visa_id, 
                     asesoria_proceso.realizado_fecha, asesoria_proceso.asesoria_proceso_id,
                     proceso_checklist_item.proceso_checklist_item_id,
                     proceso_checklist_item.codigo"))
             ->where('asesoria_estado.activo', '=', '1')
-            ->where('asesoria_estado.codigo', '<>', 'FI')
-            ->where('asesoria_estado.codigo', '<>', 'DE')
             ->where('estudiante.primer_nombre', 'LIKE', "%{$student}%")
             ->where('asesoria.creacion_usuario_id', '=', DB::raw("CASE WHEN {$userId} IS NULL THEN asesoria.creacion_usuario_id ELSE {$userId} END"));
+
+        return $advisories;
+    }
+
+    public function getAdvisories($advisoryStateId, $student, $userId)
+    {
+        $advisories = $this->advisoriesQuery($student, $userId);
+
+        if ($advisoryStateId == '' || $advisoryStateId == null)
+        {
+            // $advisories = DB::table('asesoria')
+            // ->join('estudiante', 'estudiante.estudiante_id', '=', 'asesoria.estudiante_id')
+            // ->join('asesoria_estado', 'asesoria_estado.asesoria_estado_id', '=', 'asesoria.asesoria_estado_id')
+            // ->join('asesoria_proceso', 'asesoria_proceso.asesoria_id', '=', 'asesoria.asesoria_id')
+            // ->join('proceso_checklist_item', function($join) 
+            // {
+            //     $join->on('proceso_checklist_item.proceso_checklist_item_id', '=', 'asesoria_proceso.proceso_checklist_item_id');
+            //     $join->on('proceso_checklist_item.codigo', '=', DB::raw("'NT'"));
+            // })
+            // ->leftjoin('estudiante_seguro_historial', function($join)
+            // {
+            //     $join->on('estudiante_seguro_historial.asesoria_id', '=', 'asesoria.asesoria_id');
+            //     $join->on('estudiante_seguro_historial.activo', '=', DB::raw("1"));
+            // })
+            // ->leftjoin('estudiante_visa_historial', function($join)
+            // {
+            //     $join->on('estudiante_visa_historial.asesoria_id', '=', 'asesoria.asesoria_id');
+            //     $join->on('estudiante_visa_historial.activo', '=', DB::raw("1"));
+            // })
+            // ->select(DB::raw("asesoria.asesoria_id, asesoria.estudiante_id, asesoria.asesoria_estado_id,
+            //         CONCAT(estudiante.primer_nombre, ' ' , estudiante.primer_apellido) AS cliente,
+            //         asesoria_estado.nombre estado, 
+            //         IFNULL(estudiante_seguro_historial.estudiante_seguro_historial_id, '') insurance_id,
+            //         IFNULL(estudiante_visa_historial.estudiante_visa_historial_id, '') visa_id, 
+            //         asesoria_proceso.realizado_fecha, asesoria_proceso.asesoria_proceso_id,
+            //         proceso_checklist_item.proceso_checklist_item_id,
+            //         proceso_checklist_item.codigo"))
+            $advisories = $advisories->where('asesoria_estado.codigo', '<>', 'FI')->where('asesoria_estado.codigo', '<>', 'DE');
+            // ->where('asesoria_estado.activo', '=', '1')
+            // ->where('estudiante.primer_nombre', 'LIKE', "%{$student}%")
+            // ->where('asesoria.creacion_usuario_id', '=', DB::raw("CASE WHEN {$userId} IS NULL THEN asesoria.creacion_usuario_id ELSE {$userId} END"));
         } else 
         {
-            $advisories = DB::table('asesoria')
-            ->join('estudiante', 'estudiante.estudiante_id', '=', 'asesoria.estudiante_id')
-            ->join('asesoria_estado', 'asesoria_estado.asesoria_estado_id', '=', 'asesoria.asesoria_estado_id')
-            ->join('asesoria_proceso', 'asesoria_proceso.asesoria_id', '=', 'asesoria.asesoria_id')
-            ->join('proceso_checklist_item', function($join) 
-            {
-                $join->on('proceso_checklist_item.proceso_checklist_item_id', '=', 'asesoria_proceso.proceso_checklist_item_id');
-                $join->on('proceso_checklist_item.codigo', '=', DB::raw("'NT'"));
-            })
-            ->leftjoin('estudiante_seguro_historial', function($join)
-            {
-                $join->on('estudiante_seguro_historial.asesoria_id', '=', 'asesoria.asesoria_id');
-                $join->on('estudiante_seguro_historial.activo', '=', DB::raw("1"));
-            })
-            ->leftjoin('estudiante_visa_historial', function($join)
-            {
-                $join->on('estudiante_visa_historial.asesoria_id', '=', 'asesoria.asesoria_id');
-                $join->on('estudiante_visa_historial.activo', '=', DB::raw("1"));
-            })
-            ->select(DB::raw("asesoria.asesoria_id, asesoria.estudiante_id, asesoria.asesoria_estado_id,
-                    CONCAT(estudiante.primer_nombre, ' ' , estudiante.primer_apellido) AS cliente,
-                    asesoria_estado.nombre estado,
-                    IFNULL(estudiante_seguro_historial.estudiante_seguro_historial_id, '') insurance_id,
-                    IFNULL(estudiante_visa_historial.estudiante_visa_historial_id, '') visa_id, 
-                    asesoria_proceso.realizado_fecha, asesoria_proceso.asesoria_proceso_id, 
-                    proceso_checklist_item.proceso_checklist_item_id,
-                    proceso_checklist_item.codigo"))
-            ->where('asesoria_estado.asesoria_estado_id', '=', $advisoryStateId)
-            ->where('asesoria_estado.activo', '=', '1')
-            ->where('estudiante.primer_nombre', 'LIKE', "%{$student}%")
-            ->where('asesoria.creacion_usuario_id', '=', DB::raw("CASE WHEN {$userId} IS NULL THEN asesoria.creacion_usuario_id ELSE {$userId} END"));
+            // $advisories = DB::table('asesoria')
+            // ->join('estudiante', 'estudiante.estudiante_id', '=', 'asesoria.estudiante_id')
+            // ->join('asesoria_estado', 'asesoria_estado.asesoria_estado_id', '=', 'asesoria.asesoria_estado_id')
+            // ->join('asesoria_proceso', 'asesoria_proceso.asesoria_id', '=', 'asesoria.asesoria_id')
+            // ->join('proceso_checklist_item', function($join) 
+            // {
+            //     $join->on('proceso_checklist_item.proceso_checklist_item_id', '=', 'asesoria_proceso.proceso_checklist_item_id');
+            //     $join->on('proceso_checklist_item.codigo', '=', DB::raw("'NT'"));
+            // })
+            // ->leftjoin('estudiante_seguro_historial', function($join)
+            // {
+            //     $join->on('estudiante_seguro_historial.asesoria_id', '=', 'asesoria.asesoria_id');
+            //     $join->on('estudiante_seguro_historial.activo', '=', DB::raw("1"));
+            // })
+            // ->leftjoin('estudiante_visa_historial', function($join)
+            // {
+            //     $join->on('estudiante_visa_historial.asesoria_id', '=', 'asesoria.asesoria_id');
+            //     $join->on('estudiante_visa_historial.activo', '=', DB::raw("1"));
+            // })
+            // ->select(DB::raw("asesoria.asesoria_id, asesoria.estudiante_id, asesoria.asesoria_estado_id,
+            //         CONCAT(estudiante.primer_nombre, ' ' , estudiante.primer_apellido) AS cliente,
+            //         asesoria_estado.nombre estado,
+            //         IFNULL(estudiante_seguro_historial.estudiante_seguro_historial_id, '') insurance_id,
+            //         IFNULL(estudiante_visa_historial.estudiante_visa_historial_id, '') visa_id, 
+            //         asesoria_proceso.realizado_fecha, asesoria_proceso.asesoria_proceso_id, 
+            //         proceso_checklist_item.proceso_checklist_item_id,
+            //         proceso_checklist_item.codigo"))
+            $advisories = $advisories->where('asesoria_estado.asesoria_estado_id', '=', $advisoryStateId);
+            // ->where('asesoria_estado.activo', '=', '1')
+            // ->where('estudiante.primer_nombre', 'LIKE', "%{$student}%")
+            // ->where('asesoria.creacion_usuario_id', '=', DB::raw("CASE WHEN {$userId} IS NULL THEN asesoria.creacion_usuario_id ELSE {$userId} END"));
         }
 
         return $advisories->orderBy('realizado_fecha', 'asc')->paginate(11);
@@ -88,75 +126,105 @@ trait TAdvisory {
             return $currentPage;
         });
 
+        $advisories = $this->advisoriesQuery($student, $userId);
+
+        // $advisories = DB::table('asesoria')
+        //     ->join('estudiante', 'estudiante.estudiante_id', '=', 'asesoria.estudiante_id')
+        //     ->join('asesoria_estado', 'asesoria_estado.asesoria_estado_id', '=', 'asesoria.asesoria_estado_id')
+        //     ->join('asesoria_proceso', 'asesoria_proceso.asesoria_id', '=', 'asesoria.asesoria_id')
+        //     ->join('proceso_checklist_item', function($join) 
+        //     {
+        //         $join->on('proceso_checklist_item.proceso_checklist_item_id', '=', 'asesoria_proceso.proceso_checklist_item_id');
+        //         $join->on('proceso_checklist_item.codigo', '=', DB::raw("'NT'"));
+        //     })
+        //     ->leftjoin('estudiante_seguro_historial', function($join)
+        //     {
+        //         $join->on('estudiante_seguro_historial.asesoria_id', '=', 'asesoria.asesoria_id');
+        //         $join->on('estudiante_seguro_historial.activo', '=', DB::raw("1"));
+        //     })
+        //     ->leftjoin('estudiante_visa_historial', function($join)
+        //     {
+        //         $join->on('estudiante_visa_historial.asesoria_id', '=', 'asesoria.asesoria_id');
+        //         $join->on('estudiante_visa_historial.activo', '=', DB::raw("1"));
+        //     })
+        //     ->select(DB::raw("asesoria.asesoria_id, asesoria.estudiante_id, asesoria.asesoria_estado_id,
+        //             CONCAT(estudiante.primer_nombre, ' ' , estudiante.primer_apellido) AS cliente,
+        //             asesoria_estado.nombre estado, 
+        //             IFNULL(estudiante_seguro_historial.estudiante_seguro_historial_id, '') insurance_id,
+        //             IFNULL(estudiante_visa_historial.estudiante_visa_historial_id, '') visa_id, 
+        //             asesoria_proceso.realizado_fecha, asesoria_proceso.asesoria_proceso_id,
+        //             proceso_checklist_item.proceso_checklist_item_id,
+        //             proceso_checklist_item.codigo"))
+        //     ->where('asesoria_estado.activo', '=', '1')
+        //     ->where('estudiante.primer_nombre', 'LIKE', "%{$student}%")
+        //     ->where('asesoria.creacion_usuario_id', '=', DB::raw("CASE WHEN {$userId} IS NULL THEN asesoria.creacion_usuario_id ELSE {$userId} END"));
+
         if ($advisoryStateId == '' || $advisoryStateId == null)
         {
-            $advisories = DB::table('asesoria')
-            ->join('estudiante', 'estudiante.estudiante_id', '=', 'asesoria.estudiante_id')
-            ->join('asesoria_estado', 'asesoria_estado.asesoria_estado_id', '=', 'asesoria.asesoria_estado_id')
-            ->join('asesoria_proceso', 'asesoria_proceso.asesoria_id', '=', 'asesoria.asesoria_id')
-            ->join('proceso_checklist_item', function($join) 
-            {
-                $join->on('proceso_checklist_item.proceso_checklist_item_id', '=', 'asesoria_proceso.proceso_checklist_item_id');
-                $join->on('proceso_checklist_item.codigo', '=', DB::raw("'NT'"));
-            })
-            ->leftjoin('estudiante_seguro_historial', function($join)
-            {
-                $join->on('estudiante_seguro_historial.asesoria_id', '=', 'asesoria.asesoria_id');
-                $join->on('estudiante_seguro_historial.activo', '=', DB::raw("1"));
-            })
-            ->leftjoin('estudiante_visa_historial', function($join)
-            {
-                $join->on('estudiante_visa_historial.asesoria_id', '=', 'asesoria.asesoria_id');
-                $join->on('estudiante_visa_historial.activo', '=', DB::raw("1"));
-            })
-            ->select(DB::raw("asesoria.asesoria_id, asesoria.estudiante_id, asesoria.asesoria_estado_id,
-                    CONCAT(estudiante.primer_nombre, ' ' , estudiante.primer_apellido) AS cliente,
-                    asesoria_estado.nombre estado, 
-                    IFNULL(estudiante_seguro_historial.estudiante_seguro_historial_id, '') insurance_id,
-                    IFNULL(estudiante_visa_historial.estudiante_visa_historial_id, '') visa_id, 
-                    asesoria_proceso.realizado_fecha, asesoria_proceso.asesoria_proceso_id,
-                    proceso_checklist_item.proceso_checklist_item_id,
-                    proceso_checklist_item.codigo"))
-            ->where('asesoria_estado.activo', '=', '1')
-            ->where('asesoria_estado.codigo', '<>', 'FI')
-            ->where('asesoria_estado.codigo', '<>', 'DE')
-            ->where('estudiante.primer_nombre', 'LIKE', "%{$student}%")
-            ->where('asesoria.creacion_usuario_id', '=', DB::raw("CASE WHEN {$userId} IS NULL THEN asesoria.creacion_usuario_id ELSE {$userId} END"));
-            //->paginate(11);
+            // $advisories = DB::table('asesoria')
+            // ->join('estudiante', 'estudiante.estudiante_id', '=', 'asesoria.estudiante_id')
+            // ->join('asesoria_estado', 'asesoria_estado.asesoria_estado_id', '=', 'asesoria.asesoria_estado_id')
+            // ->join('asesoria_proceso', 'asesoria_proceso.asesoria_id', '=', 'asesoria.asesoria_id')
+            // ->join('proceso_checklist_item', function($join) 
+            // {
+            //     $join->on('proceso_checklist_item.proceso_checklist_item_id', '=', 'asesoria_proceso.proceso_checklist_item_id');
+            //     $join->on('proceso_checklist_item.codigo', '=', DB::raw("'NT'"));
+            // })
+            // ->leftjoin('estudiante_seguro_historial', function($join)
+            // {
+            //     $join->on('estudiante_seguro_historial.asesoria_id', '=', 'asesoria.asesoria_id');
+            //     $join->on('estudiante_seguro_historial.activo', '=', DB::raw("1"));
+            // })
+            // ->leftjoin('estudiante_visa_historial', function($join)
+            // {
+            //     $join->on('estudiante_visa_historial.asesoria_id', '=', 'asesoria.asesoria_id');
+            //     $join->on('estudiante_visa_historial.activo', '=', DB::raw("1"));
+            // })
+            // ->select(DB::raw("asesoria.asesoria_id, asesoria.estudiante_id, asesoria.asesoria_estado_id,
+            //         CONCAT(estudiante.primer_nombre, ' ' , estudiante.primer_apellido) AS cliente,
+            //         asesoria_estado.nombre estado, 
+            //         IFNULL(estudiante_seguro_historial.estudiante_seguro_historial_id, '') insurance_id,
+            //         IFNULL(estudiante_visa_historial.estudiante_visa_historial_id, '') visa_id, 
+            //         asesoria_proceso.realizado_fecha, asesoria_proceso.asesoria_proceso_id,
+            //         proceso_checklist_item.proceso_checklist_item_id,
+            //         proceso_checklist_item.codigo"))
+            $advisories = $advisories->where('asesoria_estado.codigo', '<>', 'FI')->where('asesoria_estado.codigo', '<>', 'DE');
+            //->where('asesoria_estado.activo', '=', '1')
+            //->where('estudiante.primer_nombre', 'LIKE', "%{$student}%")
+            //->where('asesoria.creacion_usuario_id', '=', DB::raw("CASE WHEN {$userId} IS NULL THEN asesoria.creacion_usuario_id ELSE {$userId} END"));
         } else 
         {
-            $advisories = DB::table('asesoria')
-            ->join('estudiante', 'estudiante.estudiante_id', '=', 'asesoria.estudiante_id')
-            ->join('asesoria_estado', 'asesoria_estado.asesoria_estado_id', '=', 'asesoria.asesoria_estado_id')
-            ->join('asesoria_proceso', 'asesoria_proceso.asesoria_id', '=', 'asesoria.asesoria_id')
-            ->join('proceso_checklist_item', function($join) 
-            {
-                $join->on('proceso_checklist_item.proceso_checklist_item_id', '=', 'asesoria_proceso.proceso_checklist_item_id');
-                $join->on('proceso_checklist_item.codigo', '=', DB::raw("'NT'"));
-            })
-            ->leftjoin('estudiante_seguro_historial', function($join)
-            {
-                $join->on('estudiante_seguro_historial.asesoria_id', '=', 'asesoria.asesoria_id');
-                $join->on('estudiante_seguro_historial.activo', '=', DB::raw("1"));
-            })
-            ->leftjoin('estudiante_visa_historial', function($join)
-            {
-                $join->on('estudiante_visa_historial.asesoria_id', '=', 'asesoria.asesoria_id');
-                $join->on('estudiante_visa_historial.activo', '=', DB::raw("1"));
-            })
-            ->select(DB::raw("asesoria.asesoria_id, asesoria.estudiante_id, asesoria.asesoria_estado_id,
-                    CONCAT(estudiante.primer_nombre, ' ' , estudiante.primer_apellido) AS cliente,
-                    asesoria_estado.nombre estado,
-                    IFNULL(estudiante_seguro_historial.estudiante_seguro_historial_id, '') insurance_id,
-                    IFNULL(estudiante_visa_historial.estudiante_visa_historial_id, '') visa_id, 
-                    asesoria_proceso.realizado_fecha, asesoria_proceso.asesoria_proceso_id,
-                    proceso_checklist_item.proceso_checklist_item_id,
-                    proceso_checklist_item.codigo"))
-            ->where('asesoria_estado.asesoria_estado_id', '=', $advisoryStateId)
-            ->where('asesoria_estado.activo', '=', '1')
-            ->where('estudiante.primer_nombre', 'LIKE', "%{$student}%")
-            ->where('asesoria.creacion_usuario_id', '=', DB::raw("CASE WHEN {$userId} IS NULL THEN asesoria.creacion_usuario_id ELSE {$userId} END"));
-            //->paginate(11);
+            // $advisories = DB::table('asesoria')
+            // ->join('estudiante', 'estudiante.estudiante_id', '=', 'asesoria.estudiante_id')
+            // ->join('asesoria_estado', 'asesoria_estado.asesoria_estado_id', '=', 'asesoria.asesoria_estado_id')
+            // ->join('asesoria_proceso', 'asesoria_proceso.asesoria_id', '=', 'asesoria.asesoria_id')
+            // ->join('proceso_checklist_item', function($join) 
+            // {
+            //     $join->on('proceso_checklist_item.proceso_checklist_item_id', '=', 'asesoria_proceso.proceso_checklist_item_id');
+            //     $join->on('proceso_checklist_item.codigo', '=', DB::raw("'NT'"));
+            // })
+            // ->leftjoin('estudiante_seguro_historial', function($join)
+            // {
+            //     $join->on('estudiante_seguro_historial.asesoria_id', '=', 'asesoria.asesoria_id');
+            //     $join->on('estudiante_seguro_historial.activo', '=', DB::raw("1"));
+            // })
+            // ->leftjoin('estudiante_visa_historial', function($join)
+            // {
+            //     $join->on('estudiante_visa_historial.asesoria_id', '=', 'asesoria.asesoria_id');
+            //     $join->on('estudiante_visa_historial.activo', '=', DB::raw("1"));
+            // })
+            // ->select(DB::raw("asesoria.asesoria_id, asesoria.estudiante_id, asesoria.asesoria_estado_id,
+            //         CONCAT(estudiante.primer_nombre, ' ' , estudiante.primer_apellido) AS cliente,
+            //         asesoria_estado.nombre estado,
+            //         IFNULL(estudiante_seguro_historial.estudiante_seguro_historial_id, '') insurance_id,
+            //         IFNULL(estudiante_visa_historial.estudiante_visa_historial_id, '') visa_id, 
+            //         asesoria_proceso.realizado_fecha, asesoria_proceso.asesoria_proceso_id,
+            //         proceso_checklist_item.proceso_checklist_item_id,
+            //         proceso_checklist_item.codigo"))
+            $advisories = $advisories->where('asesoria_estado.asesoria_estado_id', '=', $advisoryStateId);
+            // ->where('asesoria_estado.activo', '=', '1')
+            // ->where('estudiante.primer_nombre', 'LIKE', "%{$student}%")
+            // ->where('asesoria.creacion_usuario_id', '=', DB::raw("CASE WHEN {$userId} IS NULL THEN asesoria.creacion_usuario_id ELSE {$userId} END"));
         }
 
         switch($ord)
@@ -185,6 +253,7 @@ trait TAdvisory {
                                 </a>
                                 <input type="hidden" value="' . $adv->asesoria_id . '" />
                                 <input type="hidden" value="' . $adv->estudiante_id . '" />
+                                <input type="hidden" value="' . $adv->estadoCod . '" />
                             </td>
                                 <td><a href="/advisory/' . $adv->asesoria_id . '">' . $adv->cliente . '</a></td>
                                 <td>' . $adv->estado . '</td>
@@ -198,9 +267,19 @@ trait TAdvisory {
                                 </small>
                             </td>
                             <td>
-                                <a id="advComments' . $adv->asesoria_id . '" href="#" class="btn btn-sm" 
+                                <a id="advComments' . $adv->asesoria_id . '" href="#" class="btn btn-warning btn-sm" 
                                     data-adv-id="' . $adv->asesoria_id . '" data-cli-name="' . $adv->cliente . '" >
                                     <i class="fa fa-comment" aria-hidden="true"></i>
+                                </a>
+                            </td>
+                            <td>
+                                <a id="advDelete' . $adv->asesoria_id . '" href="#" class="btn btn-warning btn-sm" title="Eliminar"
+                                    data-adv-id="' . $adv->asesoria_id . '" data-adv-scode="' . $adv->estadoCod . '" >
+                                    <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                </a>
+                                <a id="advExtend' . $adv->asesoria_id . '" href="#" class="btn btn-warning btn-sm" title="Extender"
+                                    data-adv-id="' . $adv->asesoria_id . '" data-adv-scode="' . $adv->estadoCod . '" >
+                                    <i class="fa fa-clone" aria-hidden="true"></i>
                                 </a>
                             </td>
                         </tr>';
@@ -215,73 +294,105 @@ trait TAdvisory {
             return $currentPage;
         });
 
+        $data = $this->advisoriesQuery($student, $userId);
+
+        // $data = DB::table('asesoria')
+        //     ->join('estudiante', 'estudiante.estudiante_id', '=', 'asesoria.estudiante_id')
+        //     ->join('asesoria_estado', 'asesoria_estado.asesoria_estado_id', '=', 'asesoria.asesoria_estado_id')
+        //     ->join('asesoria_proceso', 'asesoria_proceso.asesoria_id', '=', 'asesoria.asesoria_id')
+        //     ->join('proceso_checklist_item', function($join) 
+        //     {
+        //         $join->on('proceso_checklist_item.proceso_checklist_item_id', '=', 'asesoria_proceso.proceso_checklist_item_id');
+        //         $join->on('proceso_checklist_item.codigo', '=', DB::raw("'NT'"));
+        //     })
+        //     ->leftjoin('estudiante_seguro_historial', function($join)
+        //     {
+        //         $join->on('estudiante_seguro_historial.asesoria_id', '=', 'asesoria.asesoria_id');
+        //         $join->on('estudiante_seguro_historial.activo', '=', DB::raw("1"));
+        //     })
+        //     ->leftjoin('estudiante_visa_historial', function($join)
+        //     {
+        //         $join->on('estudiante_visa_historial.asesoria_id', '=', 'asesoria.asesoria_id');
+        //         $join->on('estudiante_visa_historial.activo', '=', DB::raw("1"));
+        //     })
+        //     ->select(DB::raw("asesoria.asesoria_id, asesoria.estudiante_id, asesoria.asesoria_estado_id,
+        //             CONCAT(estudiante.primer_nombre, ' ' , estudiante.primer_apellido) AS cliente,
+        //             asesoria_estado.nombre estado, 
+        //             IFNULL(estudiante_seguro_historial.estudiante_seguro_historial_id, '') insurance_id,
+        //             IFNULL(estudiante_visa_historial.estudiante_visa_historial_id, '') visa_id,
+        //             asesoria_proceso.realizado_fecha, asesoria_proceso.asesoria_proceso_id, 
+        //             proceso_checklist_item.proceso_checklist_item_id,
+        //             proceso_checklist_item.codigo"))
+        //     ->where('asesoria_estado.activo', '=', '1')
+        //     ->where('estudiante.primer_nombre', 'LIKE', "%{$student}%")
+        //     ->where('asesoria.creacion_usuario_id', '=', DB::raw("CASE WHEN {$userId} IS NULL THEN asesoria.creacion_usuario_id ELSE {$userId} END"));
+
         if ($advisoryStateId == '' || $advisoryStateId == null)
         {
-            $data = DB::table('asesoria')
-            ->join('estudiante', 'estudiante.estudiante_id', '=', 'asesoria.estudiante_id')
-            ->join('asesoria_estado', 'asesoria_estado.asesoria_estado_id', '=', 'asesoria.asesoria_estado_id')
-            ->join('asesoria_proceso', 'asesoria_proceso.asesoria_id', '=', 'asesoria.asesoria_id')
-            ->join('proceso_checklist_item', function($join) 
-            {
-                $join->on('proceso_checklist_item.proceso_checklist_item_id', '=', 'asesoria_proceso.proceso_checklist_item_id');
-                $join->on('proceso_checklist_item.codigo', '=', DB::raw("'NT'"));
-            })
-            ->leftjoin('estudiante_seguro_historial', function($join)
-            {
-                $join->on('estudiante_seguro_historial.asesoria_id', '=', 'asesoria.asesoria_id');
-                $join->on('estudiante_seguro_historial.activo', '=', DB::raw("1"));
-            })
-            ->leftjoin('estudiante_visa_historial', function($join)
-            {
-                $join->on('estudiante_visa_historial.asesoria_id', '=', 'asesoria.asesoria_id');
-                $join->on('estudiante_visa_historial.activo', '=', DB::raw("1"));
-            })
-            ->select(DB::raw("asesoria.asesoria_id, asesoria.estudiante_id, asesoria.asesoria_estado_id,
-                    CONCAT(estudiante.primer_nombre, ' ' , estudiante.primer_apellido) AS cliente,
-                    asesoria_estado.nombre estado, 
-                    IFNULL(estudiante_seguro_historial.estudiante_seguro_historial_id, '') insurance_id,
-                    IFNULL(estudiante_visa_historial.estudiante_visa_historial_id, '') visa_id,
-                    asesoria_proceso.realizado_fecha, asesoria_proceso.asesoria_proceso_id, 
-                    proceso_checklist_item.proceso_checklist_item_id,
-                    proceso_checklist_item.codigo"))
-            ->where('asesoria_estado.activo', '=', '1')
-            ->where('asesoria_estado.codigo', '<>', 'FI')
-            ->where('asesoria_estado.codigo', '<>', 'DE')
-            ->where('estudiante.primer_nombre', 'LIKE', "%{$student}%")
-            ->where('asesoria.creacion_usuario_id', '=', DB::raw("CASE WHEN {$userId} IS NULL THEN asesoria.creacion_usuario_id ELSE {$userId} END"));
+            // $data = DB::table('asesoria')
+            // ->join('estudiante', 'estudiante.estudiante_id', '=', 'asesoria.estudiante_id')
+            // ->join('asesoria_estado', 'asesoria_estado.asesoria_estado_id', '=', 'asesoria.asesoria_estado_id')
+            // ->join('asesoria_proceso', 'asesoria_proceso.asesoria_id', '=', 'asesoria.asesoria_id')
+            // ->join('proceso_checklist_item', function($join) 
+            // {
+            //     $join->on('proceso_checklist_item.proceso_checklist_item_id', '=', 'asesoria_proceso.proceso_checklist_item_id');
+            //     $join->on('proceso_checklist_item.codigo', '=', DB::raw("'NT'"));
+            // })
+            // ->leftjoin('estudiante_seguro_historial', function($join)
+            // {
+            //     $join->on('estudiante_seguro_historial.asesoria_id', '=', 'asesoria.asesoria_id');
+            //     $join->on('estudiante_seguro_historial.activo', '=', DB::raw("1"));
+            // })
+            // ->leftjoin('estudiante_visa_historial', function($join)
+            // {
+            //     $join->on('estudiante_visa_historial.asesoria_id', '=', 'asesoria.asesoria_id');
+            //     $join->on('estudiante_visa_historial.activo', '=', DB::raw("1"));
+            // })
+            // ->select(DB::raw("asesoria.asesoria_id, asesoria.estudiante_id, asesoria.asesoria_estado_id,
+            //         CONCAT(estudiante.primer_nombre, ' ' , estudiante.primer_apellido) AS cliente,
+            //         asesoria_estado.nombre estado, 
+            //         IFNULL(estudiante_seguro_historial.estudiante_seguro_historial_id, '') insurance_id,
+            //         IFNULL(estudiante_visa_historial.estudiante_visa_historial_id, '') visa_id,
+            //         asesoria_proceso.realizado_fecha, asesoria_proceso.asesoria_proceso_id, 
+            //         proceso_checklist_item.proceso_checklist_item_id,
+            //         proceso_checklist_item.codigo"))
+            $data = $data->where('asesoria_estado.codigo', '<>', 'FI')->where('asesoria_estado.codigo', '<>', 'DE');
+            // ->where('asesoria_estado.activo', '=', '1')
+            // ->where('estudiante.primer_nombre', 'LIKE', "%{$student}%")
+            // ->where('asesoria.creacion_usuario_id', '=', DB::raw("CASE WHEN {$userId} IS NULL THEN asesoria.creacion_usuario_id ELSE {$userId} END"));
         } else 
         {
-            $data = DB::table('asesoria')
-            ->join('estudiante', 'estudiante.estudiante_id', '=', 'asesoria.estudiante_id')
-            ->join('asesoria_estado', 'asesoria_estado.asesoria_estado_id', '=', 'asesoria.asesoria_estado_id')
-            ->join('asesoria_proceso', 'asesoria_proceso.asesoria_id', '=', 'asesoria.asesoria_id')
-            ->join('proceso_checklist_item', function($join) 
-            {
-                $join->on('proceso_checklist_item.proceso_checklist_item_id', '=', 'asesoria_proceso.proceso_checklist_item_id');
-                $join->on('proceso_checklist_item.codigo', '=', DB::raw("'NT'"));
-            })
-            ->leftjoin('estudiante_seguro_historial', function($join)
-            {
-                $join->on('estudiante_seguro_historial.asesoria_id', '=', 'asesoria.asesoria_id');
-                $join->on('estudiante_seguro_historial.activo', '=', DB::raw("1"));
-            })
-            ->leftjoin('estudiante_visa_historial', function($join)
-            {
-                $join->on('estudiante_visa_historial.asesoria_id', '=', 'asesoria.asesoria_id');
-                $join->on('estudiante_visa_historial.activo', '=', DB::raw("1"));
-            })
-            ->select(DB::raw("asesoria.asesoria_id, asesoria.estudiante_id, asesoria.asesoria_estado_id,
-                    CONCAT(estudiante.primer_nombre, ' ' , estudiante.primer_apellido) AS cliente,
-                    asesoria_estado.nombre estado,
-                    IFNULL(estudiante_seguro_historial.estudiante_seguro_historial_id, '') insurance_id,
-                    IFNULL(estudiante_visa_historial.estudiante_visa_historial_id, '') visa_id, 
-                    asesoria_proceso.realizado_fecha, asesoria_proceso.asesoria_proceso_id, 
-                    proceso_checklist_item.proceso_checklist_item_id,
-                    proceso_checklist_item.codigo"))
-            ->where('asesoria_estado.asesoria_estado_id', '=', $advisoryStateId)
-            ->where('asesoria_estado.activo', '=', '1')
-            ->where('estudiante.primer_nombre', 'LIKE', "%{$student}%")
-            ->where('asesoria.creacion_usuario_id', '=', DB::raw("CASE WHEN {$userId} IS NULL THEN asesoria.creacion_usuario_id ELSE {$userId} END"));
+            // $data = DB::table('asesoria')
+            // ->join('estudiante', 'estudiante.estudiante_id', '=', 'asesoria.estudiante_id')
+            // ->join('asesoria_estado', 'asesoria_estado.asesoria_estado_id', '=', 'asesoria.asesoria_estado_id')
+            // ->join('asesoria_proceso', 'asesoria_proceso.asesoria_id', '=', 'asesoria.asesoria_id')
+            // ->join('proceso_checklist_item', function($join) 
+            // {
+            //     $join->on('proceso_checklist_item.proceso_checklist_item_id', '=', 'asesoria_proceso.proceso_checklist_item_id');
+            //     $join->on('proceso_checklist_item.codigo', '=', DB::raw("'NT'"));
+            // })
+            // ->leftjoin('estudiante_seguro_historial', function($join)
+            // {
+            //     $join->on('estudiante_seguro_historial.asesoria_id', '=', 'asesoria.asesoria_id');
+            //     $join->on('estudiante_seguro_historial.activo', '=', DB::raw("1"));
+            // })
+            // ->leftjoin('estudiante_visa_historial', function($join)
+            // {
+            //     $join->on('estudiante_visa_historial.asesoria_id', '=', 'asesoria.asesoria_id');
+            //     $join->on('estudiante_visa_historial.activo', '=', DB::raw("1"));
+            // })
+            // ->select(DB::raw("asesoria.asesoria_id, asesoria.estudiante_id, asesoria.asesoria_estado_id,
+            //         CONCAT(estudiante.primer_nombre, ' ' , estudiante.primer_apellido) AS cliente,
+            //         asesoria_estado.nombre estado,
+            //         IFNULL(estudiante_seguro_historial.estudiante_seguro_historial_id, '') insurance_id,
+            //         IFNULL(estudiante_visa_historial.estudiante_visa_historial_id, '') visa_id, 
+            //         asesoria_proceso.realizado_fecha, asesoria_proceso.asesoria_proceso_id, 
+            //         proceso_checklist_item.proceso_checklist_item_id,
+            //         proceso_checklist_item.codigo"))
+            $data = $data->where('asesoria_estado.asesoria_estado_id', '=', $advisoryStateId);
+            // ->where('asesoria_estado.activo', '=', '1')
+            // ->where('estudiante.primer_nombre', 'LIKE', "%{$student}%")
+            // ->where('asesoria.creacion_usuario_id', '=', DB::raw("CASE WHEN {$userId} IS NULL THEN asesoria.creacion_usuario_id ELSE {$userId} END"));
         }
 
         switch($ord)
@@ -723,7 +834,6 @@ trait TAdvisory {
         return $output;
     }
 
-
     public function getComments($advisoryId)
     {
         $advComments = DB::table('asesoria')->where('asesoria.asesoria_id', '=', $advisoryId)
@@ -731,4 +841,5 @@ trait TAdvisory {
 
         return $advComments;
     }
+
 }

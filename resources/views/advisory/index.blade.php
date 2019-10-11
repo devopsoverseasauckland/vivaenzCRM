@@ -45,6 +45,7 @@
                     <i id="ordIconTrack" class="fa fa-sort-asc" aria-hidden="true"></i>
                 </th>
                 <th>Notas</th>
+                <th></th>
             </tr>
             </thead>
             <tbody id="tbbody" >
@@ -60,6 +61,7 @@
                         </a>
                         <input type="hidden" value="{{ $advisory->asesoria_id }}" />
                         <input type="hidden" value="{{ $advisory->estudiante_id }}" />
+                        <input type="hidden" value="{{ $advisory->estadoCod }}" />
                     </td>
                     <td><a href="/advisory/{{$advisory->asesoria_id}}">{{ $advisory->cliente }}</a></td>
                     <td>{{ $advisory->estado }}</td>
@@ -73,9 +75,19 @@
                         </small>
                     </td>
                     <td>
-                        <a id="advComments{{ $advisory->asesoria_id }}" href="#" class="btn btn-sm" 
-                            data-adv-id="{{ $advisory->asesoria_id }}" data-cli-name="{{ $advisory->cliente }}"  >
+                        <a id="advComments{{ $advisory->asesoria_id }}" href="#" class="btn btn-warning btn-sm" 
+                            data-adv-id="{{ $advisory->asesoria_id }}" data-cli-name="{{ $advisory->cliente }}" >
                             <i class="fa fa-comment" aria-hidden="true"></i>
+                        </a>
+                    </td>
+                    <td>
+                        <a id="advDelete{{ $advisory->asesoria_id }}" href="#" class="btn btn-warning btn-sm" title="Eliminar"
+                            data-adv-id="{{ $advisory->asesoria_id }}" data-adv-scode="{{ $advisory->estadoCod }}" >
+                            <i class="fa fa-trash-o" aria-hidden="true"></i>
+                        </a>
+                        <a id="advExtend{{ $advisory->asesoria_id }}" href="#" class="btn btn-warning btn-sm" title="Extender"
+                            data-adv-id="{{ $advisory->asesoria_id }}" data-adv-scode="{{ $advisory->estadoCod }}" >
+                            <i class="fa fa-clone" aria-hidden="true"></i>
                         </a>
                     </td>
                 </tr>
@@ -223,7 +235,36 @@
     @parent
     $( document ).ready(function() {
         loadDatePickersGrid();
+        SetGridIcons();
     });
+
+    function SetGridIcons() {
+        $("[id*='advDelete']").each(function( index, value ) {
+            var state = $(this).data('adv-scode')
+            switch(state)
+            {
+                case 'RE':
+                    break;
+                default:
+                    $(this).css('visibility', 'hidden');
+                    break;
+            }
+        });
+
+        $("[id*='advExtend']").each(function( index, value ) {
+            var state = $(this).data('adv-scode')
+            switch(state)
+            {
+                case 'OK':
+                case 'FI':
+                case 'DE':
+                    break;
+                default:
+                    $(this).css('visibility', 'hidden');
+                    break;
+            }
+        });
+    }
 
     $('#dialog').dialog({ 
         autoOpen: false,
@@ -246,18 +287,16 @@
         width: 450
     });
 
-    $(document).on('change', '#statesFl,#studentFl', function()
+    function loadGrid(stateId, studentId, ord, ordBy, _token, urlAdv, urlAdvPagig)
     {
-        var stateId = $('select#statesFl option:checked').val();
-        var student = $('#studentFl').val();
-        var _token = $('input[name="_token"]').val();
-
         $.ajax({
-            url: "{{ route('combo.advisories') }}",
+            url: urlAdv,
             method: "GET",
             data: { 
                 stateId: stateId,
-                student: student,
+                student: studentId,
+                ord: ord,
+                ordBy: ordBy,  
                 _token: _token
             },
             success:function(result)
@@ -266,16 +305,19 @@
                 $('#tbbody').empty();
                 $( result ).appendTo('#tbbody');
                 loadDatePickersGrid();
+                SetGridIcons();
             }
         });
 
         $('.pagination').remove();
         $.ajax({
-            url: "{{ route('combo.advisoriesPagination') }}",
+            url: urlAdvPagig,
             method: "GET",
             data: { 
                 stateId: stateId,
-                student: student,                
+                student: studentId,
+                ord: ord,
+                ordBy: ordBy,                  
                 _token: _token
             },
             success:function(result)
@@ -283,6 +325,25 @@
                 $('#tbAdvisories').after( result );
             }
         });
+    }
+
+    $(document).on('change', '#statesFl,#studentFl', function()
+    {
+        var ord = $('#order').val();
+        var ordBy = $('#orderBy').val();
+        if (ordBy == 'asc')
+            ordBy = 'desc';
+        else 
+            ordBy = 'asc';
+
+        var stateId = $('select#statesFl option:checked').val();
+        var studentId = $('#studentFl').val();
+        var _token = $('input[name="_token"]').val();
+
+        var urlAdv = "{{ route('combo.advisories') }}";
+        var urlAdvPagig = "{{ route('combo.advisoriesPagination') }}";
+
+        loadGrid(stateId, studentId, ord, ordBy, _token, urlAdv, urlAdvPagig);
     });
 
     function initializeOrderingBy(ord)
@@ -320,6 +381,88 @@
         $('#order').val(ord);
     }
 
+    $(document).on("click", "a[id*='advDelete']", function() {
+        if (confirm('Desea realmente ELIMINAR la asesoria y la informacion relacionada?'))
+        {
+            var advisoryId = $(this).data('adv-id');
+            var _token = $('input[name="_token"]').val();
+
+            var ord = $('#order').val();
+                    var ordBy = $('#orderBy').val();
+                    if (ordBy == 'asc')
+                        ordBy = 'desc';
+                    else 
+                        ordBy = 'asc';
+
+                    var stateId = $('select#statesFl option:checked').val();
+                    var studentId = $('#studentFl').val();
+
+            var url = "{{ route('advisory.remove', ":id") }}";
+            url = url.replace(':id', advisoryId);
+            //alert(url);
+            $.ajax({
+                url: url,
+                method: "POST",
+                data: { 
+                    id: advisoryId,
+                    stateId: stateId,
+                    student: studentId,
+                    ord: ord,
+                    ordBy: ordBy,           
+                    _token: _token
+                },
+                success:function(result)
+                {
+                    $('#tbbody').empty();
+                    $( result ).appendTo('#tbbody');
+                    loadDatePickersGrid();
+                    SetGridIcons();
+                }
+            });
+        }
+    });
+
+    $(document).on("click", "a[id*='advExtend']", function() {
+        if (confirm('Desea realmente FINALIZAR la actual asesoria y crear una EXTENSION asociada?'))
+        {
+            var advisoryId = $(this).data('adv-id');
+            var _token = $('input[name="_token"]').val();
+
+            var ord = $('#order').val();
+            var ordBy = $('#orderBy').val();
+            if (ordBy == 'asc')
+                ordBy = 'desc';
+            else 
+                ordBy = 'asc';
+
+            var stateId = $('select#statesFl option:checked').val();
+            var studentId = $('#studentFl').val();
+
+            var url = "{{ route('advisory.extend', ":id") }}";
+            url = url.replace(':id', advisoryId);
+            //alert(url);
+            $.ajax({
+                url: url,
+                method: "POST",
+                data: { 
+                    id: advisoryId,
+                    stateId: stateId,
+                    student: studentId,
+                    ord: ord,
+                    ordBy: ordBy,
+                    _token: _token
+                },
+                success:function(result)
+                {
+                    $('#tbbody').empty();
+                    $( result ).appendTo('#tbbody');
+                    loadDatePickersGrid();
+                    SetGridIcons();
+                }
+            });
+        }
+    });
+
     $(document).on("click", "#ordStud,#ordTrack", function()
     {
         var ord = $(this).data('ord-id');
@@ -337,44 +480,13 @@
         }
         
         var stateId = $('select#statesFl option:checked').val();
-        var student = $('#studentFl').val();
+        var studentId = $('#studentFl').val();
         var _token = $('input[name="_token"]').val();
 
-        $.ajax({
-            url: "{{ route('combo.advisories') }}",
-            method: "GET",
-            data: { 
-                stateId: stateId,
-                student: student,
-                ord: ord,
-                ordBy: ordBy,
-                _token: _token
-            },
-            success:function(result)
-            {
-                //$('li').remove('#li' + result);
-                $('#tbbody').empty();
-                $( result ).appendTo('#tbbody');
-                loadDatePickersGrid();
-            }
-        });
+        var urlAdv = "{{ route('combo.advisories') }}";
+        var urlAdvPagig = "{{ route('combo.advisoriesPagination') }}";
 
-        $('.pagination').remove();
-        $.ajax({
-            url: "{{ route('combo.advisoriesPagination') }}",
-            method: "GET",
-            data: { 
-                stateId: stateId,
-                student: student,
-                ord: ord,
-                ordBy: ordBy,              
-                _token: _token
-            },
-            success:function(result)
-            {
-                $('#tbAdvisories').after( result );
-            }
-        });
+        loadGrid(stateId, studentId, ord, ordBy, _token, urlAdv, urlAdvPagig);
     });
 
     $(document).on("click", "a[class='page-link']", function()
@@ -387,45 +499,14 @@
             ordBy = 'asc';
 
         var stateId = $('select#statesFl option:checked').val();
-        var student = $('#studentFl').val();
+        var studentId = $('#studentFl').val();
         var page = $(this).data('pg-id');
         var _token = $('input[name="_token"]').val();
 
-        $.ajax({
-            url: "{{ route('combo.advisories') }}" + "?page=" + page,
-            method: "GET",
-            data: { 
-                stateId: stateId,
-                student: student,
-                ord: ord,
-                ordBy: ordBy,  
-                _token: _token
-            },
-            success:function(result)
-            {
-                //$('li').remove('#li' + result);
-                $('#tbbody').empty();
-                $( result ).appendTo('#tbbody');
-                loadDatePickersGrid();
-            }
-        })
+        var urlAdv = "{{ route('combo.advisories') }}" + "?page=" + page;
+        var urlAdvPagig = "{{ route('combo.advisoriesPagination') }}" + "?page=" + page;
 
-        $('.pagination').remove();
-        $.ajax({
-            url: "{{ route('combo.advisoriesPagination') }}" + "?page=" + page,
-            method: "GET",
-            data: { 
-                stateId: stateId,
-                student: student,  
-                ord: ord,
-                ordBy: ordBy,                
-                _token: _token
-            },
-            success:function(result)
-            {
-                $('#tbAdvisories').after( result );
-            }
-        });
+        loadGrid(stateId, studentId, ord, ordBy, _token, urlAdv, urlAdvPagig);
     });
 
     // Get Comments
@@ -492,8 +573,16 @@
         })
     });
 
+    // Process popup panel date selector to set the step of the advisory
     $(document).on("change", "[id*='procStep']", function()
     {
+        var ord = $('#order').val();
+        var ordBy = $('#orderBy').val();
+        if (ordBy == 'asc')
+            ordBy = 'desc';
+        else 
+            ordBy = 'asc';
+
         var advProcessId = $(this).data('proc-id');
         var date = $(this).val();
         var advisoryId = $('#advisoryId').val();
@@ -501,12 +590,20 @@
         var stateId = $('select#statesFl option:checked').val();
         var student = $('#studentFl').val();
         var _token = $('input[name="_token"]').val();
-
-        registerDateProcess(advProcessId, date, advisoryId, cod, stateId, student, _token);        
+        //alert(cod);
+        registerDateProcess(advProcessId, date, advisoryId, cod, stateId, student, ord, ordBy, _token);        
     });
 
+    // Grid date selector for track advisory
     $(document).on("change", "[id*='proxTrack']", function()
     {
+        var ord = $('#order').val();
+        var ordBy = $('#orderBy').val();
+        if (ordBy == 'asc')
+            ordBy = 'desc';
+        else 
+            ordBy = 'asc';
+
         var advProcessId = $(this).data('adv-advproc'); 
         var date = $(this).val();
         var advisoryId = $(this).data('adv-id');
@@ -515,10 +612,10 @@
         var student = $('#studentFl').val();
         var _token = $('input[name="_token"]').val();
 
-        registerDateProcess(advProcessId, date, advisoryId, cod, stateId, student, _token);        
+        registerDateProcess(advProcessId, date, advisoryId, cod, stateId, student, ord, ordBy, _token);        
     });
 
-    function registerDateProcess(advProcessId, date, advisoryId, cod, stateId, student, _token)
+    function registerDateProcess(advProcessId, date, advisoryId, cod, stateId, student, ord, ordBy, _token)
     {
         $.ajax({
             url: "{{ route('advisoryProcess.registerDate') }}",
@@ -530,6 +627,8 @@
                 cod: cod,
                 stateId: stateId,
                 student: student,
+                ord: ord,
+                ordBy: ordBy,
                 _token: _token
             },
             success:function(result)
@@ -539,6 +638,7 @@
                 $('#tbbody').empty();
                 $( result ).appendTo('#tbbody');
                 loadDatePickersGrid();
+                SetGridIcons();
             },
             error:function(jqXHR, exception)
             {

@@ -4,7 +4,7 @@
 
     <div class="container">
         <div class="row justify-content-center">
-            <img class="mb-4" src="http://vivaenz.com/wp-content/uploads/2017/07/logo-colorx60.png" alt="Viva en New Zealand" width="180" height="72">
+            <img class="mb-4" src="http://vivaenz.com/wp-content/uploads/2019/10/logo-Nueva-Zelanda-new-60px.png" alt="Viva en New Zealand" >
         </div>
         <div class="row justify-content-center">
             

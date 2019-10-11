@@ -44,7 +44,7 @@ class AdvisoryProcessController extends Controller
         if ($advisory_state->codigo != 'FI' && $advisory_state->codigo != 'DE')
         {
             /// Not all the date registrations generate(or calls of this method) change of state
-            if ($cod != 'DE' && $cod != 'RE' && $cod != 'SG' && $cod != 'HS' && $cod != 'IV' && $cod != 'NT' && $cod != 'FA')
+            if ($cod != 'DE' && $cod != 'RE' && $cod != 'SG' && $cod != 'HS' && $cod != 'IV' && $cod != 'NT' /*&& $cod != 'FA'*/)
             {
                 // Each process checklist item has an advisory state linked, which is the state the advisory has to receive
                 // when the date will be registered
@@ -84,11 +84,13 @@ class AdvisoryProcessController extends Controller
         $page = $request->get('page');
         $stateId = $request->get('stateId');
         $student = $request->get('student');
+        $ord = $request->get('ord');
+        $ordBy = $request->get('ordBy');
 
         $userId = $this->getUserFilter();
 
         // Get the advisories to refresh the information on the screen after the response of this method
-        $advisories = $this->getAdvisoriesPaginate($stateId, $student, $userId, $page);
+        $advisories = $this->getAdvisoriesPaginate($stateId, $student, $userId, $page, $ord, $ordBy);
         // $output = '';
         // foreach($advisories as $adv)
         // {

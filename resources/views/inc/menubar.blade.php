@@ -1,7 +1,7 @@
 <nav class="h-100 col-md- d-none d-md-block bg-light sidebar shadow">
     <div class="sidebar-sticky">
             
-        <img src="http://vivaenz.com/wp-content/uploads/2017/07/logo-colorx60.png" alt="Viva en New Zealand" class="mx-auto img-fluid" width="180" height="72" />
+        <img src="https://vivaenz.com/wp-content/uploads/2019/10/logo-nueva-zelanda-white.png" alt="Viva en New Zealand" class="mx-auto img-fluid" width="140" height="32" />
 
         <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
             <span>Asesorias</span>

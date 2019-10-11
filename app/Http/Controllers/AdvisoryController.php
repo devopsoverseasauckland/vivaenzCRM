@@ -60,7 +60,7 @@ class AdvisoryController extends Controller
 
         $advisories = $this->getAdvisories('', '', $userId);
 
-        $states = AdvisoryState::pluck('nombre', 'asesoria_estado_id');
+        $states = AdvisoryState::orderBy('nombre','asc')->pluck('nombre', 'asesoria_estado_id');
 
         return view('advisory.index', [
                 'advisories'=>$advisories,
@@ -158,6 +158,7 @@ class AdvisoryController extends Controller
             //$advisory->metodo_contacto_id =
             //$advisory->asesoria_familia =
             //$advisory->observaciones =
+            $advisory->activo = 1;
             $advisory->creacion_fecha = date("Y-m-d H:i:s");
             $advisory->creacion_usuario_id = auth()->user()->id;
             $advisory->modificacion_fecha = date("Y-m-d H:i:s");
@@ -619,15 +620,99 @@ class AdvisoryController extends Controller
         return redirect('/advisory');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
+    public function remove(Request $request, $id)
     {
-        //
+        $advisory = Advisory::find($id);
+
+        DB::table('asesoria_comentario')->where('asesoria_id', '=', $id)->delete();
+        DB::table('asesoria_enrollment')->where('asesoria_id', '=', $id)->delete();
+        DB::table('asesoria_informacion_enviada')->where('asesoria_id', '=', $id)->delete();
+        DB::table('asesoria_proceso')->where('asesoria_id', '=', $id)->delete();
+        DB::table('asesoria')->where('asesoria_id', '=', $id)->delete();
+
+
+        DB::table('estudiante_experiencia')->where('estudiante_id', '=', $advisory->estudiante_id)->delete();
+        DB::table('estudiante_seguro_historial')->where('estudiante_id', '=', $advisory->estudiante_id)->where('asesoria_id', '=', $id)->delete();
+        DB::table('estudiante_visa_historial')->where('estudiante_id', '=', $advisory->estudiante_id)->where('asesoria_id', '=', $id)->delete();
+        DB::table('estudiante')->where('estudiante_id', '=', $advisory->estudiante_id)->delete();
+
+        $page = $request->get('page');
+        $advisoryStateId = $request->get('stateId');
+        $student = $request->get('student');
+        $ord = $request->get('ord');
+        $ordBy = $request->get('ordBy');
+
+        $userId = $this->getUserFilter();
+        
+        $advisories = $this->getAdvisoriesPaginate($advisoryStateId, $student, $userId, $page, $ord, $ordBy);
+
+        echo $advisories;
+    }
+
+    public function extend(Request $request, $id)
+    {
+        try {
+            $advisory = Advisory::find($id);
+
+            $newAdvisory = new Advisory;
+                
+            $newAdvisory->estudiante_id =  $advisory->estudiante_id;
+            $newAdvisory->asesoria_estado_id = 1; // how to define constants
+            //$advisory->intencion_viaje_id =
+            //$advisory->fecha_estimada_viaje =
+            //$advisory->metodo_contacto_id =
+            //$advisory->asesoria_familia =
+            $advisory->observaciones = "Extension";
+            $newAdvisory->activo = 1;
+            $newAdvisory->creacion_fecha = date("Y-m-d H:i:s");
+            $newAdvisory->creacion_usuario_id = auth()->user()->id;
+            $newAdvisory->modificacion_fecha = date("Y-m-d H:i:s");
+            $newAdvisory->modificacion_usuario_id = auth()->user()->id;
+            $newAdvisory->save();
+
+            
+            $newAdvisoryEnroll = new AdvisoryEnrollment;
+            $newAdvisoryEnroll->asesoria_id = $newAdvisory->asesoria_id;
+            $newAdvisoryEnroll->modificacion_fecha = date("Y-m-d H:i:s");
+            $newAdvisoryEnroll->modificacion_usuario_id = auth()->user()->id;
+            $newAdvisoryEnroll->save();
+            
+            $procChkListItems = ProcessCheckListItem::where('activo','1')->orderby('codigo_orden')->get();
+
+            foreach($procChkListItems as $item)
+            {
+                $newAdvisoryProcess = new AdvisoryProcess;
+                $newAdvisoryProcess->asesoria_id = $newAdvisory->asesoria_id;
+                $newAdvisoryProcess->proceso_checklist_item_id = $item->proceso_checklist_item_id;
+                if ($item->codigo == 'RE')
+                {
+                    $newAdvisoryProcess->realizado_fecha = $newAdvisory->creacion_fecha;
+                    $newAdvisoryProcess->realizado_usuario_id = auth()->user()->id;
+                }
+                $newAdvisoryProcess->save();
+            }
+
+            $advisory->asesoria_estado_id = 11; // Finalize advisory
+            $advisory->save();
+
+            $page = $request->get('page');
+            $advisoryStateId = $request->get('stateId');
+            $student = $request->get('student');
+            $ord = $request->get('ord');
+            $ordBy = $request->get('ordBy');
+
+            $userId = $this->getUserFilter();
+            
+            $advisories = $this->getAdvisoriesPaginate($advisoryStateId, $student, $userId, $page, $ord, $ordBy);
+
+            echo $advisories;
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            $error = \Illuminate\Validation\ValidationException::withMessages([
+                'field_name_1' => 'Duplicate entry, check the email/whatsapp, must be uniques' //[$e->getMessage()]
+            ]);
+            throw $error;
+        }
     }
 
 }
