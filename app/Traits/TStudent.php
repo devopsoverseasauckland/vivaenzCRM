@@ -95,7 +95,7 @@ trait TStudent {
                     </td>
                     <td>
                         <a id="stdpComments' . $student->estudiante_id  . '" href="#" class="btn btn-warning btn-sm" 
-                            data-cli-name="' . $student->cliente  . '" >
+                            data-cli-name="' . $student->cliente  . '" data-stud-id="' . $student->estudiante_id . '" >
                             <i class="fa fa-comment" aria-hidden="true"></i>
                         </a>
                     </td>
