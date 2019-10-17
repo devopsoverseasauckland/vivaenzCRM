@@ -25,6 +25,22 @@ Route::get('/', function () {
 
 //Route::get('/reporteSeguimiento', 'PagesController@reporteSeguimiento');
 
+Route::get('student/potential', 'StudentController@potential');
+
+Route::post('student/registerPotential', 'StudentController@registerPotential')->name('student.registerPotential');
+
+Route::post('student/deletePotential/{id}', 'StudentController@deletePotential')->name('student.deletePotential');
+
+Route::get('student/getComment', 'StudentController@getComment')->name('student.getComment');
+
+Route::post('student/updateComment', 'StudentController@updateComment')->name('student.updateComment');
+
+Route::post('student/createAdvisory', 'StudentController@createAdvisory')->name('student.createAdvisory');
+
+Route::post('student/registerDateTrack', 'StudentController@registerDateTrack')->name('student.registerDateTrack');
+
+
+
 Route::post('advisory/storeStep1', 'AdvisoryController@storeStep1');
 
 Route::resource('advisory', 'AdvisoryController');
@@ -60,7 +76,10 @@ Route::post('/remove/{id}', 'AdvisoryController@remove')->name('advisory.remove'
 Route::post('/extend/{id}', 'AdvisoryController@extend')->name('advisory.extend');
 
 
+
+
 Route::get('report/tracking', 'ReportController@tracking');
+
 
 
 
@@ -75,6 +94,12 @@ Route::get('combo/advisories', 'ComboController@advisories')->name('combo.adviso
 Route::get('combo/advisoriesPagination', 'ComboController@advisoriesPagination')->name('combo.advisoriesPagination');
 
 Route::get('combo/advisoryProcess', 'ComboController@advisoryProcess')->name('combo.advisoryProcess');
+
+
+
+Route::get('combo/students', 'ComboController@students')->name('combo.students');
+
+Route::get('combo/studentPagination', 'ComboController@studentPagination')->name('combo.studentPagination');
 
 
 

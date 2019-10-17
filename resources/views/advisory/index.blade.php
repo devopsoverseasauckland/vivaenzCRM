@@ -29,7 +29,7 @@
     </div>
 
     @if(count($advisories) > 0)
-
+    
     <div id="tbAdvisories" class="table-responsive">
         <table class="table table-striped table-hover table-sm">
             <thead>
@@ -136,32 +136,32 @@
 
     <div id="dialogVA" class="container m-1" title="Detalle Visa" >
 
-            <div class="card w-auto">
-                <div class="table-responsive">
-                    <table class="table table-sm">
-                        <tr>
-                            <td class="text-center" scope="row" >Inicio visa</td>
-                            <td class="text-center" scope="row" >Vencimiento visa</td>
-                        </tr>
-                        <tr>
-                            <td >
-                                <div class="form-inline text-center mt-3">
-                                    <small>
-                                        <input type="text" class="form-control form-control-sm p-0 w-50 text-center" id="dateVisaIni" readonly>
-                                    </small>
-                                </div>
-                            </td>
-                            <td  >
-                                <div class="form-inline text-center mt-3">
-                                    <small>
-                                        <input type="text" class="form-control form-control-sm p-0 w-50 text-center" id="dateVisaFin" readonly >
-                                    </small>
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
+        <div class="card w-auto">
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <tr>
+                        <td class="text-center" scope="row" >Inicio visa</td>
+                        <td class="text-center" scope="row" >Vencimiento visa</td>
+                    </tr>
+                    <tr>
+                        <td >
+                            <div class="form-inline text-center mt-3">
+                                <small>
+                                    <input type="text" class="form-control form-control-sm p-0 w-50 text-center" id="dateVisaIni" readonly>
+                                </small>
+                            </div>
+                        </td>
+                        <td  >
+                            <div class="form-inline text-center mt-3">
+                                <small>
+                                    <input type="text" class="form-control form-control-sm p-0 w-50 text-center" id="dateVisaFin" readonly >
+                                </small>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
             </div>
+        </div>
 
         <button id="btnUpdateVisa" type="submit" class="btn btn-primary mt-3">Actualizar</button>
         <button id="btnNewVisa" type="submit" class="btn btn-primary mt-3">Nuevo Registro</button>

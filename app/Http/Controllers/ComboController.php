@@ -9,6 +9,7 @@ use App\Traits\TCountry;
 use App\Traits\TCity;
 use App\Traits\TInstitution;
 use App\Traits\TProfession;
+use App\Traits\TStudent;
 
 use Illuminate\Http\Request;
 
@@ -163,6 +164,39 @@ class ComboController extends Controller
         $advisories = $this->getAdvisoriesTrackingPagination($advisoryStateId, $student, $invoiced, $arrived, $upcomingTrack, $page); 
 
         echo $advisories;
+    }
+
+    use TStudent;
+    public function students(Request $request)
+    {
+        $page = $request->get('page');
+        $name = $request->get('name');
+        $email = $request->get('email');
+        $phone = $request->get('phone');
+        $trackdate = $request->get('trackdate');
+        $observ = $request->get('observ');
+        $userId = auth()->user()->id;
+
+        $output = '';
+        $output = $this->getPotentialStudentsPaginate(1, '', '', '', $userId, $page);
+
+        echo $output;
+    }
+
+    public function studentPagination(Request $request)
+    {
+        $page = $request->get('page');
+        $name = $request->get('name');
+        $email = $request->get('email');
+        $phone = $request->get('phone');
+        $trackdate = $request->get('trackdate');
+        $observ = $request->get('observ');
+        $userId = auth()->user()->id;
+
+        $output = '';
+        $output = $this->getPotentialStudentsPagination(1, '', '', '', $userId, $page);
+
+        echo $output;
     }
 
     use TCountry;

@@ -27,7 +27,13 @@ class AuthorizationController extends Controller
         $roleId = Auth::user()->role_id;
         $role = Role::find($roleId);
 
-        $menu = ' <li class="nav-item">
+        $menu = '   <li class="nav-item">
+                        <a class="nav-link" href="/student/potential">
+                        <span data-feather="users"></span>
+                        Estudiantes Potenciales
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="/advisory/create">
                         <span data-feather="users"></span>
                         Nueva Asesoria
